@@ -12,6 +12,16 @@ interface WinrateCardProps {
 
 const WIN_COLOR = "#22c55e";
 const LOSS_COLOR = "#ef4444";
+const MID_COLOR = "#71717a";
+const MAX_DATE_LABELS = 14;
+
+function formatShortDate(ts?: number): string {
+  if (!ts) return "";
+  return new Date(ts).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+  });
+}
 
 export function WinrateCard({
   matches,
@@ -23,6 +33,7 @@ export function WinrateCard({
     let wins = 0;
     let losses = 0;
     const series: number[] = [];
+    const dates: number[] = [];
 
     for (const match of matches) {
       const participant = match?.info?.participants?.find(
@@ -38,27 +49,91 @@ export function WinrateCard({
 
       const total = wins + losses;
       series.push((wins / total) * 100);
+      dates.push(
+        match?.info?.gameStartTimestamp ??
+          match?.info?.gameCreation ??
+          match?.info?.game_datetime,
+      );
     }
 
     const total = wins + losses;
     const winrate = total > 0 ? (wins / total) * 100 : 0;
     const color = winrate >= 50 ? WIN_COLOR : LOSS_COLOR;
 
-    return { wins, losses, total, winrate, series, color };
+    return { wins, losses, total, winrate, series, dates, color };
   }, [matches, puuid, mode]);
 
-  const { wins, losses, total, winrate, series, color } = stats;
+  const { wins, losses, total, winrate, series, dates, color } = stats;
+
+  // Ordem cronológica (mais antigo à esquerda, mais recente à direita)
+  const orderedSeries = useMemo(() => [...series].reverse(), [series]);
+  const orderedDates = useMemo(() => [...dates].reverse(), [dates]);
 
   const chartPoints = useMemo(() => {
-    if (series.length === 0) return [];
+    if (orderedSeries.length === 0) return [];
 
-    return series.map((pct, i) => {
-      const x = series.length === 1 ? 50 : (i / (series.length - 1)) * 100;
+    return orderedSeries.map((pct, i) => {
+      const x =
+        orderedSeries.length === 1
+          ? 50
+          : (i / (orderedSeries.length - 1)) * 100;
       const y = 10 - (pct / 100) * 8;
 
       return { x, y, pct };
     });
-  }, [series]);
+  }, [orderedSeries]);
+
+  // Setores: um por dia jogado, com linha divisória pontilhada e rótulo da data
+  const daySectors = useMemo(() => {
+    const n = orderedDates.length;
+    if (n === 0) return [];
+
+    const groups: { label: string; start: number; count: number }[] = [];
+    let currentKey = "";
+    let currentLabel = "";
+    let start = 0;
+
+    orderedDates.forEach((ts, i) => {
+      const key = ts ? new Date(ts).toDateString() : "unknown";
+      if (key !== currentKey) {
+        if (currentKey !== "") {
+          groups.push({ label: currentLabel, start, count: i - start });
+        }
+        currentKey = key;
+        currentLabel = formatShortDate(ts);
+        start = i;
+      }
+    });
+    groups.push({ label: currentLabel, start, count: n - start });
+
+    const span = n - 1;
+
+    return groups.map((g) => ({
+      ...g,
+      centerX:
+        span === 0 ? 50 : ((g.start + (g.count - 1) / 2) / span) * 100,
+      boundaryX:
+        span === 0 || g.start + g.count >= n
+          ? null
+          : ((g.start + g.count) / span) * 100,
+    }));
+  }, [orderedDates]);
+
+  const dividers = useMemo(
+    () => daySectors.flatMap((g) => (g.boundaryX !== null ? [g.boundaryX] : [])),
+    [daySectors],
+  );
+
+  // Mostra o rótulo de data apenas nos dias com mais jogos (limite MAX_DATE_LABELS)
+  const labeledSectors = useMemo(() => {
+    const top = new Set(
+      [...daySectors]
+        .sort((a, b) => b.count - a.count || a.start - b.start)
+        .slice(0, MAX_DATE_LABELS)
+        .map((s) => s.start),
+    );
+    return daySectors.filter((s) => top.has(s.start));
+  }, [daySectors]);
 
   if (total === 0) {
     return (
@@ -135,7 +210,7 @@ export function WinrateCard({
 
       <div className="mt-4">
         <svg
-          viewBox="0 0 100 12"
+          viewBox="0 0 100 15"
           className="w-full"
           role="img"
           aria-label={`Gráfico de winrate dos últimos ${total} jogos`}
@@ -145,11 +220,26 @@ export function WinrateCard({
             y1="6"
             x2="100"
             y2="6"
-            stroke="#71717a"
-            strokeWidth="0.25"
+            stroke={MID_COLOR}
+            strokeWidth="0.15"
             strokeDasharray="1.5 1.5"
             opacity="0.6"
           />
+
+          {dividers.map((x) => (
+            <line
+              key={x}
+              x1={x}
+              y1="1.2"
+              x2={x}
+              y2="10.8"
+              stroke={MID_COLOR}
+              strokeWidth="0.15"
+              strokeLinecap="round"
+              strokeDasharray="0.4 1.1"
+              opacity="0.5"
+            />
+          ))}
 
           {areaPath && (
             <path
@@ -170,7 +260,54 @@ export function WinrateCard({
               strokeLinejoin="round"
             />
           )}
+
+          {total > 1 &&
+            labeledSectors.map((sector) =>
+              sector.label ? (
+                <text
+                  key={`${sector.start}-${sector.label}`}
+                  x={sector.centerX}
+                  y="14.4"
+                  textAnchor="middle"
+                  fontSize="1"
+                  fill="#a1a1aa"
+                >
+                  {sector.label}
+                </text>
+              ) : null,
+            )}
         </svg>
+      </div>
+
+      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 pt-3 border-t border-zinc-800/50 text-[11px] text-muted-foreground">
+        <span className="flex items-center gap-1.5">
+          <span
+            className="inline-block w-4 h-[2px] rounded-full"
+            style={{ backgroundColor: WIN_COLOR }}
+          />
+          Winrate ≥ 50%
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span
+            className="inline-block w-4 h-[2px] rounded-full"
+            style={{ backgroundColor: LOSS_COLOR }}
+          />
+          Winrate &lt; 50%
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span
+            className="inline-block w-4 border-t border-dashed"
+            style={{ borderColor: MID_COLOR }}
+          />
+          Linha base 50%
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span
+            className="inline-block w-4 border-l border-dotted h-3"
+            style={{ borderColor: MID_COLOR }}
+          />
+          Divisões por dia
+        </span>
       </div>
     </Card>
   );
