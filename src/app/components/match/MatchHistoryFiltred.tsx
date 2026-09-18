@@ -1,6 +1,7 @@
 "use client";
 
 import { MatchHistoryItem } from "./MatchHistoryItem";
+import { WinrateCard } from "../winrate/WinrateCard";
 import { useEffect, useState, useCallback, useRef } from "react";
 
 interface Participant {
@@ -319,6 +320,8 @@ export function MatchHistoryFiltred({
 
   return (
     <div className="space-y-4">
+      <WinrateCard matches={matches} puuid={puuid} mode="lol" title="LoL Winrate" />
+
       {matches.map((match) => {
         const participant = match.info?.participants?.find(
           (p) => p.puuid === puuid,

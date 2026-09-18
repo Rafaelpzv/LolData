@@ -4,8 +4,8 @@
 - rankings ✔ (Challenger, GrandMaster, Master)
 - Otimizar tempo de resposta ✔ (Feito usando [supabase](https://supabase.com/))
 - Arrumar filtro de champ ✔ (Arrumado, o problema era que o front n tava entregando o nome do campeao pro backend filtrar)
-- Adicionar perfil do tft(futuro um pouco distante).
-- Adicionar um card de winrate tipo do OP.GG com informacoes recentes(ultimos jogos carregados provavelmente).
+- Adicionar perfil do tft(futuro um pouco distante).✔ (ta feito mas ainda n tenho a api_key do tft pra testar mas ta feito a estrutura.)
+- Adicionar um card de winrate tipo do OP.GG com informacoes recentes(ultimos jogos carregados provavelmente). ✔ (feito, bem simples de fazer na real criei um componente separado)
 
 ---
 

@@ -248,7 +248,11 @@ function TftPageBody({
             </div>
           }
         >
-          <TftMatchList matches={data.matches} puuid={data.summoner.puuid} />
+          <TftMatchList
+            matches={data.matches}
+            puuid={data.summoner.puuid}
+            region={region}
+          />
         </Suspense>
       </div>
     </main>

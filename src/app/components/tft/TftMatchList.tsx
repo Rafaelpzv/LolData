@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Card } from "../ui/Card";
+import { WinrateCard } from "../winrate/WinrateCard";
 
 interface TftTrait {
   name: string;
@@ -53,6 +54,7 @@ interface TftMatch {
 interface TftMatchListProps {
   matches: TftMatch[];
   puuid: string;
+  region: string;
 }
 
 const TRAIT_STYLES: Record<number, string> = {
@@ -73,8 +75,23 @@ function formatDuration(seconds: number) {
   return `${m}m ${s}s`;
 }
 
-export function TftMatchList({ matches, puuid }: TftMatchListProps) {
+export function TftMatchList({ matches, puuid, region }: TftMatchListProps) {
   const [leagueVersion, setLeagueVersion] = useState<string | null>(null);
+  const [loadedMatches, setLoadedMatches] = useState<TftMatch[]>(matches);
+  const [start, setStart] = useState(matches.length);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(matches.length >= 10);
+
+  const startRef = useRef(start);
+  startRef.current = start;
+  const loadingRef = useRef(false);
+
+  useEffect(() => {
+    setLoadedMatches(matches);
+    setStart(matches.length);
+    startRef.current = matches.length;
+    setHasMore(matches.length >= 10);
+  }, [matches]);
 
   useEffect(() => {
     let active = true;
@@ -94,6 +111,52 @@ export function TftMatchList({ matches, puuid }: TftMatchListProps) {
     };
   }, []);
 
+  const fetchMoreMatches = useCallback(async () => {
+    if (loadingRef.current || !hasMore) return;
+
+    loadingRef.current = true;
+    setLoadingMore(true);
+
+    try {
+      const params = new URLSearchParams({
+        region,
+        puuid,
+        start: startRef.current.toString(),
+        count: "20",
+      });
+
+      const res = await fetch(`/api/tft/matches?${params.toString()}`);
+      if (!res.ok) throw new Error("Erro na API de partidas TFT");
+
+      const json = await res.json();
+      const newMatches: TftMatch[] = json.data || [];
+
+      if (newMatches.length === 0) {
+        setHasMore(false);
+      } else {
+        setLoadedMatches((prev) => {
+          const existingIds = new Set(prev.map((m) => m.metadata.match_id));
+          const uniqueNew = newMatches.filter(
+            (m) => !existingIds.has(m.metadata.match_id),
+          );
+          return [...prev, ...uniqueNew];
+        });
+        setStart((prev) => {
+          const next = prev + newMatches.length;
+          startRef.current = next;
+          return next;
+        });
+        setHasMore(json.hasMore !== false && newMatches.length >= 10);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar mais partidas TFT:", error);
+      setHasMore(false);
+    } finally {
+      loadingRef.current = false;
+      setLoadingMore(false);
+    }
+  }, [hasMore, region, puuid]);
+
   const getUnitIconUrl = (characterId: string, version: string) =>
     `https://ddragon.leagueoflegends.com/cdn/${version}/tft-champion/${characterId}.png`;
 
@@ -110,7 +173,7 @@ export function TftMatchList({ matches, puuid }: TftMatchListProps) {
     );
   }
 
-  if (!matches?.length) {
+  if (!loadedMatches?.length) {
     return (
       <div className="flex flex-col items-center justify-center py-20 border rounded-lg bg-card/50">
         <p className="text-muted-foreground">
@@ -122,7 +185,9 @@ export function TftMatchList({ matches, puuid }: TftMatchListProps) {
 
   return (
     <div className="space-y-4">
-      {matches.map((match) => {
+      <WinrateCard matches={loadedMatches} puuid={puuid} mode="tft" title="TFT Winrate" />
+
+      {loadedMatches.map((match) => {
         const participant = match.info?.participants?.find(
           (p) => p.puuid === puuid,
         );
@@ -263,6 +328,19 @@ export function TftMatchList({ matches, puuid }: TftMatchListProps) {
           </Card>
         );
       })}
+
+      <div className="flex justify-center pt-4">
+        {hasMore && (
+          <button
+            type="button"
+            className="h-10 px-6 py-2 text-sm font-medium border rounded-md bg-accent hover:bg-accent/80 disabled:opacity-50 transition-colors"
+            onClick={fetchMoreMatches}
+            disabled={loadingMore}
+          >
+            {loadingMore ? "Loading..." : "Load more games"}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
