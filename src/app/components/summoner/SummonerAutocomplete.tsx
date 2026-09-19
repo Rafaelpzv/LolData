@@ -85,7 +85,7 @@ export function SummonerAutocomplete({
   return (
     <div className="relative w-full">
       <input
-        className="w-full px-4 py-3 font-mono text-sm bg-slate-900 border border-slate-700 rounded-lg text-gray-100 placeholder-gray-400 transition-all duration-200 cursor-text focus:outline-none focus:border-slate-600 focus:ring-2 focus:ring-slate-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full px-4 py-3 font-mono text-sm bg-slate-900 border border-slate-700 rounded-lg text-gray-100 placeholder-gray-400 transition-all duration-200 cursor-text focus:outline-none focus:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
         type="text"
         placeholder="Riot ID (e.g.: Player#BR1)"
         value={value}

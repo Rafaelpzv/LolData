@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { SummonerProfile } from "@/app/components/summoner/SummonerProfile";
-import { SummonerSearch } from "@/app/components/summoner/SummonerSearch";
+import { SummonerSearchHeader } from "@/app/components/summoner/SummonerSearchHeader";
 import {
   getChampionMasteries,
   getQueueTypes,
@@ -120,11 +120,7 @@ export default async function SummonerPage({
       console.warn(`⚠️ Summoner "${gameName}#${tagLine}" não encontrado na região ${region}`);
       return (
         <div className="flex flex-col min-h-screen">
-          <header role="banner" className="w-full">
-            <nav role="navigation" aria-label="Pesquisa de invocador">
-              <SummonerSearch defaultRegion={region} />
-            </nav>
-          </header>
+          <SummonerSearchHeader defaultRegion={region} />
           <main className="container flex-grow py-8 mx-auto">
             <div className="p-6 border rounded-lg border-destructive bg-destructive/10 text-destructive">
               <h2 className="text-lg font-semibold">Invocador não encontrado</h2>
@@ -266,15 +262,11 @@ export default async function SummonerPage({
     const lastLoses = last20Matches.length - lastWins;
 
     // ============================================================
-    // Render (inalterado)
+    // Render (com SummonerSearchBar integrado)
     // ============================================================
     return (
       <div className="flex flex-col min-h-screen">
-        <header role="banner" className="w-full">
-          <nav role="navigation" aria-label="Pesquisa de invocador">
-            <SummonerSearch defaultRegion={region} />
-          </nav>
-        </header>
+        <SummonerSearchHeader defaultRegion={region} />
 
         <main
           className="container flex-grow py-8 mx-auto space-y-8"
@@ -360,15 +352,18 @@ export default async function SummonerPage({
   } catch (error) {
     console.error("Erro ao carregar dados:", error);
     return (
-      <main className="container min-h-screen py-8 mx-auto">
-        <div className="p-6 border rounded-lg border-destructive bg-destructive/10 text-destructive">
-          <h2 className="text-lg font-semibold">Erro ao carregar dados</h2>
-          <p>
-            Não foi possível carregar os dados do invocador. Por favor, tente
-            novamente mais tarde.
-          </p>
-        </div>
-      </main>
+      <div className="flex flex-col min-h-screen">
+        <SummonerSearchHeader defaultRegion="BR1" />
+        <main className="container min-h-screen py-8 mx-auto">
+          <div className="p-6 border rounded-lg border-destructive bg-destructive/10 text-destructive">
+            <h2 className="text-lg font-semibold">Erro ao carregar dados</h2>
+            <p>
+              Não foi possível carregar os dados do invocador. Por favor, tente
+              novamente mais tarde.
+            </p>
+          </div>
+        </main>
+      </div>
     );
   }
 }
