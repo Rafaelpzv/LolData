@@ -71,7 +71,7 @@ export function SummonerProfile({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-6 p-6">
+      <div className="flex items-center gap-6">
         <div className="relative w-24 h-24">
           <Image
             src={`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${profileIconId}.jpg`}
@@ -146,7 +146,7 @@ export function SummonerProfile({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 p-6 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
         {masteries.map((champion) => (
           <Card
             key={champion.championId}
