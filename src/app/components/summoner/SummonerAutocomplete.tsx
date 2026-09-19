@@ -85,7 +85,7 @@ export function SummonerAutocomplete({
   return (
     <div className="relative w-full">
       <input
-        className="w-full p-3 transition border-2 border-gray-300 rounded input focus:outline-none focus:border-blue-500"
+        className="w-full px-4 py-3 font-mono text-sm bg-slate-900 border border-slate-700 rounded-lg text-gray-100 placeholder-gray-400 transition-all duration-200 cursor-text focus:outline-none focus:border-slate-600 focus:ring-2 focus:ring-slate-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
         type="text"
         placeholder="Riot ID (e.g.: Player#BR1)"
         value={value}
@@ -96,9 +96,9 @@ export function SummonerAutocomplete({
       />
 
       {open && (
-        <ul className="absolute z-50 w-full mt-1 overflow-hidden bg-background border rounded-md shadow-lg border-input max-h-64 overflow-y-auto">
+        <ul className="absolute z-50 w-full mt-1 overflow-hidden bg-slate-900 border border-slate-700 rounded-lg shadow-lg max-h-64 overflow-y-auto backdrop-blur-sm">
           {suggestions.length === 0 && (
-            <li className="px-3 py-2 text-sm text-muted-foreground">
+            <li className="px-4 py-3 text-sm text-gray-400 font-mono">
               Nenhum invocador encontrado no banco.
             </li>
           )}
@@ -106,8 +106,10 @@ export function SummonerAutocomplete({
             <li key={`${s.region}:${s.gameName}:${s.tagLine}`}>
               <button
                 type="button"
-                className={`flex items-center justify-between w-full px-3 py-2 text-sm text-left hover:bg-accent/60 ${
-                  i === highlight ? "bg-accent/60" : ""
+                className={`flex items-center justify-between w-full px-4 py-3 text-sm text-left font-mono transition-colors duration-150 ${
+                  i === highlight
+                    ? "bg-slate-700/60 text-gray-100"
+                    : "hover:bg-slate-700/40 text-gray-200"
                 }`}
                 onMouseDown={(e) => {
                   e.preventDefault();
@@ -116,12 +118,12 @@ export function SummonerAutocomplete({
                 onMouseEnter={() => setHighlight(i)}
               >
                 <span className="min-w-0 truncate">
-                  <span className="font-medium">
+                  <span className="text-gray-100">
                     {s.gameName}
-                    <span className="text-muted-foreground">#{s.tagLine}</span>
+                    <span className="text-gray-400">#{s.tagLine}</span>
                   </span>
                 </span>
-                <span className="flex-shrink-0 text-xs font-semibold text-primary">
+                <span className="flex-shrink-0 text-xs font-semibold text-gray-300 ml-2">
                   {s.region.toUpperCase()}
                 </span>
               </button>

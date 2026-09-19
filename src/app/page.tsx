@@ -1,154 +1,190 @@
-// Home.tsx
-'use client';
+  // Home.tsx
+  'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useSearchHandler } from './searchHandler';
-import { SummonerAutocomplete } from './components/summoner/SummonerAutocomplete';
-import type { SummonerSuggestion } from './components/summoner/SummonerAutocomplete';
-
-/**
- * Home page component
- * Implements the Single Responsibility Principle (S of SOLID)
- */
-const Home: React.FC = () => {
-  // Local state for form
-  const [riotid, setRiotid] = useState<string>('');
-  const [region, setRegion] = useState<string>('');
-  const [mode, setMode] = useState<'lol' | 'tft'>('lol');
-
-  // Custom hook for search
-  const { handleSearch, isLoading, error } = useSearchHandler();
+  import React, { useState } from 'react';
+  import Link from 'next/link';
+  import { useSearchHandler } from './searchHandler';
+  import { SummonerAutocomplete } from './components/summoner/SummonerAutocomplete';
+  import type { SummonerSuggestion } from './components/summoner/SummonerAutocomplete';
 
   /**
-   * Performs the search when called
-   */
-  const search = () => {
-    // Start new search
-    handleSearch(riotid, region, mode);
-  };
+  * Home page component
+  * Implements the Single Responsibility Principle (S of SOLID)
+  */
+  const Home: React.FC = () => {
+    // Local state for form
+    const [riotid, setRiotid] = useState<string>('');
+    const [region, setRegion] = useState<string>('');
+    const [mode, setMode] = useState<'lol' | 'tft'>('lol');
 
-  /**
-   * Callback do autocomplete: preenche o input + região e já busca
-   */
-  const handleSelectSummoner = (suggestion: SummonerSuggestion) => {
-    const fullRiotId = `${suggestion.gameName}#${suggestion.tagLine}`;
-    const regionUp = suggestion.region.toUpperCase();
-    setRiotid(fullRiotId);
-    setRegion(regionUp);
-    handleSearch(fullRiotId, regionUp, mode);
-  };
+    // Custom hook for search
+    const { handleSearch, isLoading, error } = useSearchHandler();
 
-  return (
-    <div className="flex flex-col min-h-screen">
-      <header role="banner" className="w-full">
-      </header>
+    /**
+    * Performs the search when called
+    */
+    const search = () => {
+      // Start new search
+      handleSearch(riotid, region, mode);
+    };
 
-      <main className="flex flex-col items-center justify-center flex-grow p-4" role="main">
-        <div id="title" className="mb-8 text-center">
-          <h1 className="mb-2 font-mono text-4xl">LoLData</h1>
-          <p className="mb-2 text-lg text-gray-600">
-            Search for League of Legends or Teamfight Tactics player
-            information
-          </p>
-          {error && (
-            <p className="font-medium text-red-500" role="alert" aria-live="assertive">{error}</p>
-          )}
+    /**
+    * Callback do autocomplete: preenche o input + região e já busca
+    */
+    const handleSelectSummoner = (suggestion: SummonerSuggestion) => {
+      const fullRiotId = `${suggestion.gameName}#${suggestion.tagLine}`;
+      const regionUp = suggestion.region.toUpperCase();
+      setRiotid(fullRiotId);
+      setRegion(regionUp);
+      handleSearch(fullRiotId, regionUp, mode);
+    };
+
+    return (
+      <div className="relative flex flex-col min-h-screen overflow-hidden">
+        {/* Background com gradiente */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-black" />
+          <div className="absolute top-0 right-0 w-96 h-96 -z-10 opacity-15 blur-3xl rounded-full bg-slate-700" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 -z-10 opacity-10 blur-3xl rounded-full bg-slate-800" />
         </div>
 
-        <div id="input-container" className="flex flex-col w-full max-w-lg gap-4" role="search" aria-label="Pesquisa de invocador">
-          <div className="grid grid-cols-2 gap-2 p-1 border border-gray-300 rounded-lg">
-            <button
-              type="button"
-              onClick={() => setMode('lol')}
-              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                mode === 'lol' ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'
-              }`}
-            >
-              League of Legends
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('tft')}
-              className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                mode === 'tft' ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'
-              }`}
-            >
-              Teamfight Tactics
-            </button>
+        <main className="flex flex-col items-center justify-center flex-grow p-4 relative z-10" role="main">
+          <div id="title" className="mb-12 text-center max-w-2xl">
+            <h1 className="font-mono text-5xl font-bold text-white tracking-tighter mb-8">LoLData</h1>
+            <p className="text-base font-mono text-gray-400 mb-6">
+              {mode === 'lol'
+                ? 'LEAGUE OF LEGENDS PLAYER ANALYTICS'
+                : 'TEAMFIGHT TACTICS PLAYER ANALYTICS'}
+            </p>
+            <p className="text-lg text-gray-300 mb-8">
+              Search for player statistics, rank progression, and match history
+            </p>
+            {error && (
+              <p className="font-medium text-red-400 bg-red-950/30 px-4 py-3 rounded border border-red-800/50 backdrop-blur-sm"
+                role="alert"
+                aria-live="assertive">
+                {error}
+              </p>
+            )}
           </div>
-        <SummonerAutocomplete
-          value={riotid}
-          onChangeValue={setRiotid}
-          onSelect={handleSelectSummoner}
-          onEnter={search}
-          disabled={isLoading}
-        />
 
-        <select
-          className="w-full p-3 transition border-2 border-gray-300 rounded cursor-pointer input focus:outline-none focus:border-blue-500"
-          id="region"
-          value={region}
-          onChange={(e) => setRegion(e.target.value)}
-        >
-          <option className='cursor-pointer' value="">Region</option>
-          <optgroup label="Americas">
-            <option className='cursor-pointer' value="BR1">🇧🇷 - Brazil</option>
-            <option className='cursor-pointer' value="NA1">🇺🇸 - North America</option>
-            <option className='cursor-pointer' value="LA1">🇲🇽 - Latin America North</option>
-            <option className='cursor-pointer' value="LA2">🇦🇷 - Latin America South</option>
-          </optgroup>
-          <optgroup label="Europe">
-            <option className='cursor-pointer' value="EUW1">🇪🇸 - Western Europe</option>
-            <option className='cursor-pointer' value="EUN1">🇸🇪 - Northern & Eastern Europe</option>
-            <option className='cursor-pointer' value="RU">🇷🇺 - Russia</option>
-            <option className='cursor-pointer' value="ME1">🇪🇬 - Middle East</option>
-            <option className='cursor-pointer' value="TR1">🇹🇷 - Turkey</option>
-          </optgroup>
-          <optgroup label="Asia">
-            <option className='cursor-pointer' value="KR">🇰🇷 - Korea</option>
-            <option className='cursor-pointer' value="JP1">🇯🇵 - Japan</option>
-          </optgroup>
-          <optgroup label="South Asia">
-            <option className='cursor-pointer' value="OC1">🇦🇺 - Oceania</option>
-            <option className='cursor-pointer' value="TW2">🇹🇼 - Taiwan, Hong Kong & Macau</option>
-            <option className='cursor-pointer' value="VN2">🇻🇳 - Vietnam</option>
-            <option className='cursor-pointer' value="SG2">🇸🇬 - Singapore</option>
-          </optgroup>
-        </select>
-        <Link
-          href="/rankings/soloDuo/BR1/1"
-          className="w-full p-3 m-auto transition bg-gray-700 border-2 border-gray-300 rounded input hover:bg-gray-600 focus:outline-none focus:border-blue-500"
-        >
-          View LoL Rankings
-        </Link>
-        <Link
-          href="/tft/rankings/BR1/1"
-          className="w-full p-3 m-auto transition bg-gray-800 border-2 border-gray-300 rounded input hover:bg-gray-700 focus:outline-none focus:border-blue-500"
-        >
-          View TFT Rankings
-        </Link>
-        <button
-          className="w-full p-3 font-medium text-white transition bg-blue-600 rounded input hover:bg-blue-700 disabled:bg-blue-400"
-          id="search_button"
-          type="button"
-          onClick={search}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Searching...' : 'Search Summoner'}
-        </button>
-      </div>
-    </main>
-    <footer>
-      <div className="mt-10 text-center text-gray-500">
-        <p>
-          LoLData is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games
-          or anyone officially involved in the production or management of League of Legends.
-        </p>
-      </div>
-    </footer>
-    </div>
-  );
-};
+          <div id="input-container"
+              className="flex flex-col w-full max-w-md gap-6"
+              role="search"
+              aria-label="Pesquisa de invocador">
 
-export default Home;
+            {/* Mode Selector */}
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setMode('lol')}
+                className={`flex-1 px-4 py-3 font-mono text-sm font-semibold rounded-lg transition-all duration-300 border ${
+                  mode === 'lol'
+                  ? 'bg-slate-900 border-slate-700 hover:bg-slate-800'
+                  : 'bg-background text-gray-300 border-slate-700 hover:border-slate-600'
+                }`}
+              >
+                LoL
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode('tft')}
+                className={`flex-1 px-4 py-3 font-mono text-sm font-semibold rounded-lg transition-all duration-300 border ${
+                  mode === 'tft'
+                  ? 'bg-slate-900 border-slate-700 hover:bg-slate-800'
+                  : 'bg-background text-gray-300 border-slate-700 hover:bg-slate-900'
+                }`}
+              >
+                TFT
+              </button>
+            </div>
+
+            {/* Summoner Autocomplete */}
+            <div className="backdrop-blur-sm">
+              <SummonerAutocomplete
+                value={riotid}
+                onChangeValue={setRiotid}
+                onSelect={handleSelectSummoner}
+                onEnter={search}
+                disabled={isLoading}
+              />
+            </div>
+
+            {/* Region Selector */}
+            <select
+              className="w-full px-4 py-3 font-mono text-sm bg-slate-900 border border-slate-700 rounded-lg text-gray-100 cursor-pointer transition-all duration-200 hover:border-slate-600 focus:outline-none focus:border-slate-600 focus:ring-2 focus:ring-slate-600/20"
+              id="region"
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+            >
+              <option value="">Select Region</option>
+              <optgroup label="AMERICAS">
+                <option value="BR1">🇧🇷 Brazil</option>
+                <option value="NA1">🇺🇸 North America</option>
+                <option value="LA1">🇲🇽 Latin America North</option>
+                <option value="LA2">🇦🇷 Latin America South</option>
+              </optgroup>
+              <optgroup label="EUROPE">
+                <option value="EUW1">🇪🇸 Western Europe</option>
+                <option value="EUN1">🇸🇪 Northern & Eastern Europe</option>
+                <option value="RU">🇷🇺 Russia</option>
+                <option value="ME1">🇪🇬 Middle East</option>
+                <option value="TR1">🇹🇷 Turkey</option>
+              </optgroup>
+              <optgroup label="ASIA">
+                <option value="KR">🇰🇷 Korea</option>
+                <option value="JP1">🇯🇵 Japan</option>
+              </optgroup>
+              <optgroup label="SOUTH ASIA">
+                <option value="OC1">🇦🇺 Oceania</option>
+                <option value="TW2">🇹🇼 Taiwan, Hong Kong & Macau</option>
+                <option value="VN2">🇻🇳 Vietnam</option>
+                <option value="SG2">🇸🇬 Singapore</option>
+              </optgroup>
+            </select>
+
+            {/* Search Button */}
+            <button
+              className="w-full px-4 py-3 font-mono font-semibold text-white bg-slate-800 border border-gray-600 rounded-lg transition-all duration-300 hover:bg-gray-700 disabled:bg-gray-500"
+              id="search_button"
+              type="button"
+              onClick={search}
+              disabled={isLoading}
+            >
+              {isLoading ? '⟳ Searching...' : '→ Search Summoner'}
+            </button>
+
+            {/* Conditional Rankings Links */}
+            {mode === 'lol' && (
+              <Link
+                href="/rankings/soloDuo/BR1/1"
+                className="w-full px-4 py-3 font-mono font-semibold text-white rounded-lg transition-all duration-300 border bg-background border-slate-700 hover:bg-slate-900 text-center"
+              >
+                → View LoL Rankings
+              </Link>
+            )}
+
+            {mode === 'tft' && (
+              <Link
+                href="/tft/rankings/BR1/1"
+                className="w-full px-4 py-3 font-mono font-semibold text-white rounded-lg transition-all duration-300 border bg-background border-slate-700 hover:bg-slate-900 text-center"
+              >
+                → View TFT Rankings
+              </Link>
+            )}
+          </div>
+        </main>
+
+        <footer className="relative z-10 py-8 px-4">
+          <div className="max-w-4xl mx-auto text-center text-gray-500 text-sm font-mono">
+            <p>
+              LoLData is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games
+              or anyone officially involved in the production or management of League of Legends.
+            </p>
+          </div>
+        </footer>
+      </div>
+    );
+  };
+
+  export default Home;
