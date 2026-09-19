@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -87,9 +87,9 @@ export function MatchHistoryItem({
   const runningRef = useRef(false);
   const stopRef = useRef(false);
 
-  // Ao expandir a partida, baixa (em background) o histórico completo de
-  // cada jogador, página por página, alimentando o cache do Supabase.
-  // Sem UI: o objetivo é só popular o banco de dados via /api/summoner/matches.
+  // Ao expandir a partida, baixa (em background) o histÃ³rico completo de
+  // cada jogador, pÃ¡gina por pÃ¡gina, alimentando o cache do Supabase.
+  // Sem UI: o objetivo Ã© sÃ³ popular o banco de dados via /api/summoner/matches.
   const warmPlayersCache = useCallback(async () => {
     if (runningRef.current) return;
     runningRef.current = true;
@@ -100,7 +100,7 @@ export function MatchHistoryItem({
         if (stopRef.current) break;
         if (!player.puuid) continue;
 
-        // Se o puuid já tem o histórico no banco, não precisa reaquecer.
+        // Se o puuid jÃ¡ tem o histÃ³rico no banco, nÃ£o precisa reaquecer.
         try {
           const status = await fetch(
             `/api/summoner/players/status?region=${encodeURIComponent(
@@ -111,7 +111,7 @@ export function MatchHistoryItem({
           const { exists } = await status.json();
           if (exists) continue;
         } catch {
-          // Se a verificação falhar, segue o aquecimento normalmente.
+          // Se a verificaÃ§Ã£o falhar, segue o aquecimento normalmente.
         }
 
         let start = 0;
@@ -153,7 +153,7 @@ export function MatchHistoryItem({
 
           if (finished) break;
 
-          // intervalo gentil: não bombardeia a API da Riot
+          // intervalo gentil: nÃ£o bombardeia a API da Riot
           await sleep(600);
         }
       }
@@ -198,7 +198,7 @@ export function MatchHistoryItem({
       <div className="flex flex-col space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-medium sm:text-sm text-muted-foreground">
-            {gameMode} • {gameType}
+            {gameMode} â€¢ {gameType}
           </span>
           <span
             className={cn(
@@ -210,7 +210,7 @@ export function MatchHistoryItem({
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          {/* Perks do campeão principal */}
+          {/* Perks do campeÃ£o principal */}
           <div className="relative flex items-center gap-1">
             {champion.mainStyle && (
               <Image
@@ -232,7 +232,7 @@ export function MatchHistoryItem({
             )}
           </div>
 
-          {/* Ícone do campeão */}
+          {/* Ãcone do campeÃ£o */}
           <div className="relative flex-shrink-0 w-16 h-16">
             <Image
               src={champion.imageUrl}
@@ -244,7 +244,7 @@ export function MatchHistoryItem({
             />
           </div>
 
-          {/* Spells do campeão principal */}
+          {/* Spells do campeÃ£o principal */}
           <div className="flex-wrap items-center gap-1 flexbox">
             {champion.spell1Url && (
               <Image
@@ -287,12 +287,12 @@ export function MatchHistoryItem({
             </div>
           </div>
 
-          {/* Itens do campeão principal */}
+          {/* Itens do campeÃ£o principal */}
           <div className="flex items-center gap-2 ml-auto mr-auto">
             <div className="flex flex-wrap items-center gap-1">
               {items.map((item, index) => (
                 <div
-                  // Usando o índice para garantir que cada slot de item seja único,
+                  // Usando o Ã­ndice para garantir que cada slot de item seja Ãºnico,
                   // mesmo que o ID do item seja repetido ou 0.
                   key={`item-slot-${index}`}
                   className="relative rounded-md h-9 w-9 bg-background/50 overflow-hidden"
@@ -394,12 +394,12 @@ export function MatchHistoryItem({
                         )}
                       </div>
 
-                      {/* Ícone campeão */}
+                      {/* Ãcone campeÃ£o */}
                       <div
                         className="relative flex-shrink-0 w-8 h-8 cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.location.href = `/summoner/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
+                          window.location.href = `/lol/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
                         }}
                       >
                         <Image
@@ -438,7 +438,7 @@ export function MatchHistoryItem({
                           className="hidden sm:inline text-sm truncate cursor-pointer hover:underline max-w-[120px] inline-block"
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.location.href = `/summoner/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
+                            window.location.href = `/lol/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
                           }}
                           title={participant.summonerName}
                         >
@@ -448,7 +448,7 @@ export function MatchHistoryItem({
                           className="text-sm font-medium cursor-pointer sm:hidden hover:underline"
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.location.href = `/summoner/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
+                            window.location.href = `/lol/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
                           }}
                         >
                           {participant.riotIdGameName.slice(0, 3)}
@@ -516,12 +516,12 @@ export function MatchHistoryItem({
                         )}
                       </div>
 
-                      {/* Ícone campeão */}
+                      {/* Ãcone campeÃ£o */}
                       <div
                         className="relative flex-shrink-0 w-8 h-8 cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.location.href = `/summoner/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
+                          window.location.href = `/lol/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
                         }}
                       >
                         <Image
@@ -560,7 +560,7 @@ export function MatchHistoryItem({
                           className="hidden sm:inline text-sm truncate cursor-pointer hover:underline max-w-[120px] inline-block"
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.location.href = `/summoner/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
+                            window.location.href = `/lol/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
                           }}
                           title={participant.summonerName}
                         >
@@ -570,7 +570,7 @@ export function MatchHistoryItem({
                           className="text-sm font-medium cursor-pointer sm:hidden hover:underline"
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.location.href = `/summoner/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
+                            window.location.href = `/lol/${region}/${participant.riotIdGameName}/${participant.riotIdTagline}/all/all`;
                           }}
                         >
                           {participant.summonerName.slice(0, 3)}
