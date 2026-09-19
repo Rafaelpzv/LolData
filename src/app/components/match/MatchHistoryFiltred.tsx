@@ -99,39 +99,39 @@ export function MatchHistoryFiltred({
   const consecutiveEmptyRef = useRef(0);
   const [loadError, setLoadError] = useState(false);
 
-  // Sempre reflete matchesByQueue mais recente sem ser dep do efeito de reset.
+  // Always reflects the most recent matchesByQueue without being a dependency of the reset effect.
   const latestMatchesByQueueRef = useRef(matchesByQueue);
   latestMatchesByQueueRef.current = matchesByQueue;
 
-  // FIX 1 -- tagLine e gameName em refs.
+  // FIX 1 -- tagLine and gameName in refs.
   //
-  // Problema: o pai pode re-renderizar com tagLine="" antes de ter o valor
-  // correto (route params resolvidos de forma assincrona no Next.js).
-  // Com tagLine e gameName nas deps do useCallback, a funcao fetchMoreMatches
-  // era recriada com o valor vazio capturado no closure, e enviava tagLine=
-  // na URL. Isso causava cache miss no Supabase (a chave salva originalmente
-  // tinha tagLine="nri", a nova nao tinha).
+  // Problem: the parent may re-render with tagLine="" before having the
+  // correct value (route params resolved asynchronously in Next.js).
+  // With tagLine and gameName in the useCallback deps, the fetchMoreMatches
+  // function was recreated with the empty value captured in the closure, and
+  // sent tagLine= in the URL. This caused a cache miss in Supabase (the key
+  // originally saved had tagLine="nri", the new one did not).
   //
-  // Com refs, a funcao sempre le o valor ATUAL no momento do clique,
-  // independente de quando o useCallback foi criado.
+  // With refs, the function always reads the CURRENT value at click time,
+  // regardless of when the useCallback was created.
   const tagLineRef = useRef(tagLine);
   tagLineRef.current = tagLine;
   const gameNameRef = useRef(gameName);
   gameNameRef.current = gameName;
 
-  // FIX 2 -- start em ref.
+  // FIX 2 -- start in a ref.
   //
-  // Problema: setStart() e assincrono -- agenda atualizacao de estado.
-  // O React pode re-renderizar o botao antes de recriar fetchMoreMatches.
-  // O proximo clique usava o closure com o start anterior ao setStart,
-  // buscando as mesmas partidas. O botao parecia travado/inativo.
+  // Problem: setStart() is asynchronous -- it schedules a state update.
+  // React may re-render the button before recreating fetchMoreMatches.
+  // The next click used the closure with the start value from before setStart,
+  // fetching the same matches. The button appeared stuck/inactive.
   //
-  // Com ref sincronizada dentro do proprio setStart, o valor correto esta
-  // disponivel imediatamente para o proximo clique, antes mesmo do re-render.
+  // With the ref synchronized inside setStart itself, the correct value is
+  // immediately available for the next click, even before the re-render.
   const startRef = useRef(start);
   startRef.current = start;
 
-  // 1. Carregar versao e dados estaticos (DDragon)
+  // 1. Load version and static data (DDragon)
   useEffect(() => {
     const loadStaticData = async () => {
       try {
@@ -157,17 +157,17 @@ export function MatchHistoryFiltred({
         setRunesData(runes);
         setSpellsData(spells.data);
       } catch (e) {
-        console.error("Erro ao carregar dados do DDragon:", e);
+        console.error("Error loading DDragon data:", e);
       }
     };
     loadStaticData();
   }, []);
 
-  // 2. Resetar lista SOMENTE quando o filtro real muda.
+  // 2. Reset the list ONLY when the actual filter changes.
   //
-  // filterKey usa apenas escalares -- nao muda quando o array de prop
-  // recebe nova referencia (o que acontecia a cada re-render do pai e
-  // resetava o start de volta para matchesByQueue.length).
+  // filterKey uses only scalars -- it does not change when the prop array
+  // receives a new reference (which used to happen on every parent re-render
+  // and reset start back to matchesByQueue.length).
   const filterKey = `${region}||${puuid}||${queueId ?? ""}||${championName ?? ""}`;
   const prevFilterKeyRef = useRef(filterKey);
 
@@ -178,13 +178,13 @@ export function MatchHistoryFiltred({
     const fresh = latestMatchesByQueueRef.current;
     setMatches(fresh);
     setStart(fresh.length);
-    startRef.current = fresh.length; // sincroniza o ref imediatamente
+    startRef.current = fresh.length; // synchronize the ref immediately
     setHasMore(fresh.length >= 10);
     consecutiveEmptyRef.current = 0;
     setLoadError(false);
   }, [filterKey]);
 
-  // 3. Atualizar estatisticas globais (Wins/Losses)
+  // 3. Update global statistics (Wins/Losses)
   useEffect(() => {
     const wins = matches.filter((m) => {
       const p = m.info?.participants?.find((p) => p.puuid === puuid);
@@ -198,11 +198,11 @@ export function MatchHistoryFiltred({
     );
   }, [matches, puuid]);
 
-  // 4. Buscar mais partidas (paginacao)
+  // 4. Fetch more matches (pagination)
   //
-  // Deps minimas: so o que muda o TIPO de busca (filtros de consulta).
-  // tagLine, gameName e start foram removidos das deps -- ficam em refs.
-  // hasMore permanece porque e a condicao de parada (nao causa stale closure).
+  // Minimal deps: only what changes the TYPE of search (query filters).
+  // tagLine, gameName and start were removed from the deps -- they live in refs.
+  // hasMore remains because it is the stop condition (it does not cause a stale closure).
   const fetchMoreMatches = useCallback(async () => {
     if (loadingRef.current || !hasMore) return;
 
@@ -216,10 +216,10 @@ export function MatchHistoryFiltred({
       const params = new URLSearchParams({
         region,
         puuid,
-        start: startRef.current.toString(), // sempre o valor atual, sem stale closure
+        start: startRef.current.toString(), // always the current value, no stale closure
         count: "20",
-        gameName: gameNameRef.current || "", // sempre o valor atual
-        tagLine: tagLineRef.current || "", // sempre o valor atual
+        gameName: gameNameRef.current || "", // always the current value
+        tagLine: tagLineRef.current || "", // always the current value
       });
 
       if (queueId && queueId !== "all")
@@ -231,14 +231,14 @@ export function MatchHistoryFiltred({
         signal: abortControllerRef.current.signal,
       });
 
-      if (!res.ok) throw new Error("Erro na API de partidas");
+      if (!res.ok) throw new Error("Match API error");
 
       const json = await res.json();
       const newMatches: Match[] = json.data || [];
 
-      // Se a API devolveu vazio mas diz que tem mais partidas (hasMore true),
-      // é um erro transitório (ex.: cache do servidor retornou página vazia).
-      // NÃO desligar o botão na primeira vez — permitir nova tentativa.
+      // If the API returned empty but says there are more matches (hasMore true),
+      // it's a transient error (e.g.: the server cache returned an empty page).
+      // Do NOT disable the button the first time -- allow another attempt.
       if (newMatches.length === 0) {
         if (json.hasMore === false) {
           setHasMore(false);
@@ -246,7 +246,7 @@ export function MatchHistoryFiltred({
           consecutiveEmptyRef.current += 1;
           setLoadError(consecutiveEmptyRef.current >= 2);
           if (consecutiveEmptyRef.current >= 2) setHasMore(false);
-          // mantém hasMore=true para o usuário tentar de novo
+          // keeps hasMore=true so the user can try again
         }
       } else {
         consecutiveEmptyRef.current = 0;
@@ -260,18 +260,18 @@ export function MatchHistoryFiltred({
         });
         setStart((prev) => {
           const next = prev + newMatches.length;
-          startRef.current = next; // sincroniza o ref antes do proximo render
+          startRef.current = next; // synchronize the ref before the next render
           return next;
         });
         setHasMore(json.hasMore !== false && newMatches.length >= 10);
       }
     } catch (error: any) {
       if (error.name !== "AbortError") {
-        console.error("Erro ao carregar mais partidas:", error);
+        console.error("Error loading more matches:", error);
         consecutiveEmptyRef.current += 1;
         setLoadError(true);
-        // Não desliga o botão no erro de rede/5xx: permite nova tentativa.
-        // Depois de 2 falhas seguidas, desliga para evitar loop.
+        // Do not disable the button on network/5xx errors: allow another attempt.
+        // After 2 consecutive failures, disable it to avoid a loop.
         if (consecutiveEmptyRef.current >= 2) setHasMore(false);
       }
     } finally {
@@ -280,7 +280,7 @@ export function MatchHistoryFiltred({
     }
   }, [hasMore, region, puuid, queueId, championName]);
 
-  // Helpers de imagem
+  // Image helpers
   const getSummonerSpellImageUrl = useCallback(
     (spellId: string | number) => {
       if (!leagueVersion) return null;
@@ -326,13 +326,13 @@ export function MatchHistoryFiltred({
     return (
       <div className="flex flex-col items-center justify-center py-20 border rounded-lg bg-card/50">
         <p className="text-muted-foreground mb-4">
-          Nenhuma partida encontrada.
+          No matches found.
         </p>
         <button
           onClick={() => window.location.reload()}
           className="text-sm font-medium text-primary hover:underline"
         >
-          Recarregar pagina
+          Reload page
         </button>
       </div>
     );
@@ -367,7 +367,7 @@ export function MatchHistoryFiltred({
           gameMode: match.info.gameMode,
           gameType:
             queueTypes.find((q) => q.queueId === match.info.queueId)
-              ?.description || "Partida",
+              ?.description || "GAME",
           isWin: participant.win,
           kills: participant.kills,
           deaths: participant.deaths,
@@ -394,7 +394,7 @@ export function MatchHistoryFiltred({
           totalDamageDealt: participant.totalDamageDealtToChampions,
           totalDamageTaken: participant.totalDamageTaken,
 
-          // 🔥 fallback importante
+          // 🔥 important fallback
           summonerName: participant.summonerName,
 
           participants: match.info.participants.map((p) => ({
@@ -402,7 +402,7 @@ export function MatchHistoryFiltred({
             championName: p.championName,
             championId: p.championId,
 
-            // 🔥 AGORA SIM (isso resolve teu bug)
+            // 🔥 NOW YES (this fixes your bug)
             riotIdGameName: p.riotIdGameName,
             riotIdTagline: p.riotIdTagline,
 
@@ -451,7 +451,7 @@ export function MatchHistoryFiltred({
         )}
         {loadError && !loadingMore && (
           <p className="text-xs text-destructive">
-            Não foi possível carregar mais partidas. Tente novamente.
+            Could not load more matches. Please try again.
           </p>
         )}
       </div>

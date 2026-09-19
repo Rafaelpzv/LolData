@@ -113,7 +113,7 @@ export async function getTftSummonerByRiotId(
   });
 
   if (!accountData?.puuid) {
-    throw new Error("PUUID não encontrado para este invocador.");
+    throw new Error("PUUID not found for this summoner.");
   }
 
   const puuid = accountData.puuid;

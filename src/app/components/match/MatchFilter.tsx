@@ -302,7 +302,7 @@ export function MatchFilter() {
 
   return (
     <div className="mt-4 flex flex-col gap-3">
-      {/* Filtro de Filas — pill buttons */}
+      {/* Queue Filter — pill buttons */}
       <div className="flex flex-wrap gap-2">
         {queues.map((queue) => (
           <a
@@ -322,7 +322,7 @@ export function MatchFilter() {
         ))}
       </div>
 
-      {/* Filtro de Campeões — dropdown com busca */}
+      {/* Champion Filter — dropdown with search */}
       <div className="relative w-48 min-w-[180px]" ref={championMenuRef}>
         <button
           type="button"
@@ -330,14 +330,14 @@ export function MatchFilter() {
           onClick={() => setChampionMenuOpen((open) => !open)}
         >
           {champions.find((c) => c.id === championId)?.name ??
-            "Filtro de Campeão"}
+            "Champion Filter"}
           <span className="ml-2">&#9662;</span>
         </button>
         {championMenuOpen && (
           <div className="absolute z-10 mt-1 w-56 border rounded shadow-lg p-2 bg-background">
             <input
               autoFocus
-              placeholder="Buscar campeão..."
+              placeholder="Search champion..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full px-2 py-1 mb-2 border rounded bg-background text-sm outline-none"
@@ -364,7 +364,7 @@ export function MatchFilter() {
                   ))
                 ) : (
                   <li className="px-2 py-1 text-sm text-muted-foreground">
-                    Nenhum campeão encontrado
+                    No champions found
                   </li>
                 )}
               </ul>

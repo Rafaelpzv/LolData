@@ -161,10 +161,7 @@ export default async function TftSummonerPage({
       <footer role="contentinfo" className="w-full py-4 mt-auto">
         <div className="container mx-auto">
           <div className="p-6 text-sm text-center text-muted-foreground">
-            <p>
-              © {new Date().getFullYear()} LolData - Dados fornecidos pela API
-              da Riot Games
-            </p>
+            <p>© {new Date().getFullYear()} LolData - Data provided by the Riot Games API</p>
           </div>
         </div>
       </footer>

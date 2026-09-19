@@ -159,7 +159,7 @@ export async function getSummonerByRiotId(
   });
 
   if (!accountData?.puuid) {
-    throw new Error("PUUID não encontrado para este invocador.");
+    throw new Error("PUUID not found for this summoner.");
   }
 
   const puuid = accountData.puuid;
@@ -238,7 +238,7 @@ export async function getMatchHistory(region: string, puuid: string) {
       "❌ Erro em getMatchHistory:",
       error.response?.data || error.message || error,
     );
-    throw new Error("Falha ao buscar histórico de partidas");
+    throw new Error("Failed to fetch match history");
   }
 }
 
@@ -271,7 +271,7 @@ export async function getMatchHistoryByQueue(
       ),
     );
   } catch {
-    throw new Error("Falha ao buscar histórico de partidas");
+    throw new Error("Failed to fetch match history");
   }
 }
 
@@ -287,7 +287,7 @@ export async function getQueueTypes() {
 }
 
 export async function getRankedByPuuid(region: string, puuid: string) {
-  if (!puuid) throw new Error("PUUID do invocador não fornecido");
+  if (!puuid) throw new Error("Summoner PUUID not provided");
 
   const data = await safeAxios<any[]>({
     method: "get",
