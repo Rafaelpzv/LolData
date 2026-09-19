@@ -513,7 +513,7 @@ export default function RankingsPage({
           <h1 className="hidden text-2xl font-bold md:block">
             <div className="flex flex-col gap-2">
               <span>
-                High Elo Rankings â€“{" "}
+                High Elo Rankings  •{" "}
                 {region ? (displayRegionMap[region.toUpperCase()] || region.toUpperCase()) : "RegiÃ£o nÃ£o especificada"}{" "}
                 â€“ {queueDisplayNames[friendlyQueueType] || friendlyQueueType}
               </span>
@@ -602,30 +602,30 @@ export default function RankingsPage({
               onChange={(e) => changeRegion(e.target.value)}
               className="w-12 px-3 py-2 text-sm border rounded-md cursor-pointer border-input bg-background"
             >
-              <optgroup label="Americas">
-                <option value="BR1">ðŸ‡§ðŸ‡· â€“ Brazil</option>
-                <option value="NA1">ðŸ‡ºðŸ‡¸ â€“ North America</option>
-                <option value="LA1">ðŸ‡²ðŸ‡½ â€“ Latin America North</option>
-                <option value="LA2">ðŸ‡¦ðŸ‡· â€“ Latin America South</option>
-              </optgroup>
-              <optgroup label="Europe">
-                <option value="EUW1">ðŸ‡ªðŸ‡¸ â€“ Western Europe</option>
-                <option value="EUN1">ðŸ‡¸ðŸ‡ª â€“ Northern & Eastern Europe</option>
-                <option value="RU">ðŸ‡·ðŸ‡º â€“ Russia</option>
-                <option value="ME1">ðŸ‡ªðŸ‡¬ â€“ Middle East</option>
-                <option value="TR1">ðŸ‡¹ðŸ‡· â€“ Turkey</option>
-              </optgroup>
-              <optgroup label="Asia">
-                <option value="KR">ðŸ‡°ðŸ‡· â€“ Korea</option>
-                <option value="JP1">ðŸ‡¯ðŸ‡µ â€“ Japan</option>
-              </optgroup>
-              <optgroup label="South Asia">
-                <option value="OC1">ðŸ‡¦ðŸ‡º â€“ Oceania</option>
-                <option value="TW2">ðŸ‡¹ðŸ‡¼ â€“ Taiwan, HK & Macau</option>
-                <option value="VN2">ðŸ‡»ðŸ‡³ â€“ Vietnam</option>
-                <option value="SG2">ðŸ‡¸ðŸ‡¬ â€“ Singapore</option>
-              </optgroup>
-            </select>
+             <optgroup label="Americas">
+		  <option value="BR1">🇧🇷 – Brazil</option>
+		  <option value="NA1">🇺🇸 – North America</option>
+		  <option value="LA1">🇲🇽 – Latin America North</option>
+		  <option value="LA2">🇦🇷 – Latin America South</option>
+		</optgroup>
+		<optgroup label="Europe">
+		  <option value="EUW1">🇪🇸 – Western Europe</option>
+		  <option value="EUN1">🇸🇪 – Northern &amp; Eastern Europe</option>
+		  <option value="RU">🇷🇺 – Russia</option>
+		  <option value="ME1">🇪🇬 – Middle East</option>
+		  <option value="TR1">🇹🇷 – Turkey</option>
+		</optgroup>
+		<optgroup label="Asia">
+		  <option value="KR">🇰🇷 – Korea</option>
+		  <option value="JP1">🇯🇵 – Japan</option>
+		</optgroup>
+		<optgroup label="South Asia">
+		  <option value="OC1">🇦🇺 – Oceania</option>
+		  <option value="VN2">🇻🇳 – Vietnam</option>
+		  <option value="TW2">🇹🇼 – Taiwan, HK & Macau</option>
+		  <option value="SG2">🇸🇬 – Singapore</option>
+		</optgroup>         
+		</select>
             <select
               value={friendlyQueueType}
               onChange={(e) => changeQueueType(e.target.value)}
@@ -803,7 +803,7 @@ export default function RankingsPage({
                 {/* Pagination */}
                 <div className="flex items-center justify-between px-2 mt-4">
                   <div className="text-sm text-muted-foreground">
-                    {`Showing ${(currentPage - 1) * ITEMS_PER_PAGE + 1}â€“${Math.min(
+                    {`Showing ${(currentPage - 1) * ITEMS_PER_PAGE + 1}•${Math.min(
                       currentPage * ITEMS_PER_PAGE,
                       totalEntries,
                     )} of ${totalEntries}`}
@@ -879,7 +879,7 @@ export default function RankingsPage({
           </p>
         )}
         <p>
-          Â© {new Date().getFullYear()} LolData â€“ High Elo Rankings. Data
+          © {new Date().getFullYear()} LolData  • High Elo Rankings. Data
           provided by Riot Games API.
         </p>
       </footer>
