@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Card } from "../ui/Card";
 
 interface WinrateCardProps {
@@ -31,6 +31,7 @@ export function WinrateCard({
   title = "Winrate",
   pendingMatchesToday = 0,
 }: WinrateCardProps) {
+  const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
   const stats = useMemo(() => {
     let globalWins = 0;
     let globalLosses = 0;
@@ -76,6 +77,7 @@ export function WinrateCard({
     const series: number[] = [];
     const dates: number[] = [];
     const dayLabels: string[] = [];
+    const dayStats: Array<{ wins: number; losses: number; total: number; wr: number }> = [];
 
     sortedDays.forEach(([dateKey, stats]) => {
       const total = stats.wins + stats.losses;
@@ -83,6 +85,7 @@ export function WinrateCard({
       series.push(dayWr);
       dates.push(stats.ts);
       dayLabels.push(formatShortDate(stats.ts));
+      dayStats.push({ wins: stats.wins, losses: stats.losses, total, wr: dayWr });
     });
 
     const globalTotal = globalWins + globalLosses;
@@ -97,6 +100,7 @@ export function WinrateCard({
       series,
       dates,
       dayLabels,
+      dayStats,
       color,
       dayGroups: Object.fromEntries(sortedDays),
     };
@@ -109,6 +113,7 @@ export function WinrateCard({
     globalWinrate,
     series,
     dayLabels,
+    dayStats,
     color,
   } = stats;
 
@@ -150,6 +155,16 @@ export function WinrateCard({
     return result;
   }, [dayLabels, series.length]);
 
+  // Informações do tooltip baseado no dia hovereado
+  const tooltipInfo = useMemo(() => {
+    if (hoveredDayIndex === null || !dayStats[hoveredDayIndex]) return null;
+    const day = dayStats[hoveredDayIndex];
+    return {
+      label: dayLabels[hoveredDayIndex],
+      ...day,
+    };
+  }, [hoveredDayIndex, dayStats, dayLabels]);
+
   if (globalTotal === 0) {
     return (
       <Card className="p-4">
@@ -184,7 +199,7 @@ export function WinrateCard({
       : "";
 
   return (
-    <Card className="p-5">
+    <Card className="p-5 relative overflow-visible">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-primary">{title}</p>
@@ -209,12 +224,13 @@ export function WinrateCard({
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 relative overflow-visible">
         <svg
           viewBox="0 0 100 15"
           className="w-full"
           role="img"
           aria-label={`Gráfico de winrate por dia - ${series.length} dias`}
+          style={{ pointerEvents: "auto" }}
         >
           {/* Linha base 50% */}
           <line
@@ -266,7 +282,21 @@ export function WinrateCard({
             />
           )}
 
-          {/* Pontos de dados */}
+          {/* Hit areas invisíveis (maiores) para melhor interação */}
+          {chartPoints.map((point, i) => (
+            <circle
+              key={`hit-area-${i}`}
+              cx={point.x}
+              cy={point.y}
+              r="1.5"
+              fill="transparent"
+              onMouseEnter={() => setHoveredDayIndex(i)}
+              onMouseLeave={() => setHoveredDayIndex(null)}
+              style={{ cursor: "pointer" }}
+            />
+          ))}
+
+          {/* Pontos de dados visíveis */}
           {chartPoints.map((point, i) => (
             <circle
               key={`point-${i}`}
@@ -275,6 +305,7 @@ export function WinrateCard({
               r="0.25"
               fill={color}
               opacity="0.7"
+              pointerEvents="none"
             />
           ))}
 
@@ -299,6 +330,28 @@ export function WinrateCard({
               );
             })}
         </svg>
+
+        {/* Tooltip - posicionado acima da bolinha hovereada */}
+        {tooltipInfo && hoveredDayIndex !== null && chartPoints[hoveredDayIndex] && (
+          <div 
+            className="absolute bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-xs text-zinc-100 whitespace-nowrap shadow-lg z-50 pointer-events-none"
+            style={{
+              left: `${chartPoints[hoveredDayIndex].x}%`,
+              transform: "translateX(-50%)",
+              top: `${chartPoints[hoveredDayIndex].y - 3}%`,
+            }}>
+            <div className="font-semibold mb-1">{tooltipInfo.label}</div>
+            <div className="flex items-center gap-2">
+              <span style={{ color: WIN_COLOR }}>{tooltipInfo.wins}W</span>
+              <span className="text-zinc-500">·</span>
+              <span style={{ color: LOSS_COLOR }}>{tooltipInfo.losses}L</span>
+              <span className="text-zinc-500">·</span>
+              <span style={{ color: tooltipInfo.wr >= 50 ? WIN_COLOR : LOSS_COLOR }}>
+                {tooltipInfo.wr.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 pt-3 border-t border-zinc-800/50 text-[11px] text-muted-foreground">
