@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 function formatNumber(n?: number) {
   if (n == null) return "0";
@@ -37,6 +37,7 @@ interface MatchHistoryItemProps {
   totalDamageTaken?: number;
   summonerName: string;
   participants?: Array<{
+    puuid: string;
     subStyle: string | null;
     mainStyle: string | null;
     championName: string;
@@ -56,6 +57,8 @@ interface MatchHistoryItemProps {
     spell2Url?: string | null;
   }>;
 }
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export function MatchHistoryItem({
   champion,
@@ -78,6 +81,98 @@ export function MatchHistoryItem({
   const params = useParams();
   const region = params.region as string;
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const playersRef = useRef(participants);
+  playersRef.current = participants;
+  const runningRef = useRef(false);
+  const stopRef = useRef(false);
+
+  // Ao expandir a partida, baixa (em background) o histórico completo de
+  // cada jogador, página por página, alimentando o cache do Supabase.
+  // Sem UI: o objetivo é só popular o banco de dados via /api/summoner/matches.
+  const warmPlayersCache = useCallback(async () => {
+    if (runningRef.current) return;
+    runningRef.current = true;
+
+    try {
+      const players = playersRef.current || [];
+      for (const player of players) {
+        if (stopRef.current) break;
+        if (!player.puuid) continue;
+
+        // Se o puuid já tem o histórico no banco, não precisa reaquecer.
+        try {
+          const status = await fetch(
+            `/api/summoner/players/status?region=${encodeURIComponent(
+              region,
+            )}&puuid=${encodeURIComponent(player.puuid)}`,
+          );
+          if (stopRef.current) break;
+          const { exists } = await status.json();
+          if (exists) continue;
+        } catch {
+          // Se a verificação falhar, segue o aquecimento normalmente.
+        }
+
+        let start = 0;
+        let failCount = 0;
+
+        while (!stopRef.current) {
+          let finished = false;
+          try {
+            const query = new URLSearchParams({
+              region,
+              puuid: player.puuid,
+              start: String(start),
+              count: "20",
+            });
+            if (player.riotIdGameName)
+              query.set("gameName", player.riotIdGameName);
+            if (player.riotIdTagline) query.set("tagLine", player.riotIdTagline);
+
+            const res = await fetch(`/api/summoner/matches?${query.toString()}`);
+
+            if (stopRef.current) break;
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+            const json = await res.json();
+            if (stopRef.current) break;
+
+            const data: any[] = json.data || [];
+
+            if (data.length === 0 || json.hasMore === false) finished = true;
+            else start += data.length;
+            failCount = 0;
+          } catch {
+            if (stopRef.current) break;
+            failCount += 1;
+            if (failCount >= 3) break;
+            await sleep(1500);
+            continue;
+          }
+
+          if (finished) break;
+
+          // intervalo gentil: não bombardeia a API da Riot
+          await sleep(600);
+        }
+      }
+    } finally {
+      runningRef.current = false;
+    }
+  }, [region]);
+
+  useEffect(() => {
+    if (isExpanded) {
+      stopRef.current = false;
+      warmPlayersCache();
+    } else {
+      stopRef.current = true;
+    }
+    return () => {
+      if (isExpanded) stopRef.current = true;
+    };
+  }, [isExpanded, warmPlayersCache]);
 
   const kda = ((kills + assists) / Math.max(1, deaths)).toFixed(2);
   const csPerMin = (() => {

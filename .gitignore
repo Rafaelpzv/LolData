@@ -36,3 +36,10 @@ dev-server.log
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# logs do dev server
+_dev*.log
+_dev.*.log
+*.out.log
+*.err.log
+

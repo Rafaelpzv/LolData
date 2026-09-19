@@ -4,6 +4,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useSearchHandler } from './searchHandler';
+import { SummonerAutocomplete } from './components/summoner/SummonerAutocomplete';
+import type { SummonerSuggestion } from './components/summoner/SummonerAutocomplete';
 
 /**
  * Home page component
@@ -27,13 +29,14 @@ const Home: React.FC = () => {
   };
 
   /**
-   * Handles key down event on input
-   * @param event - Keyboard event
+   * Callback do autocomplete: preenche o input + região e já busca
    */
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      search();
-    }
+  const handleSelectSummoner = (suggestion: SummonerSuggestion) => {
+    const fullRiotId = `${suggestion.gameName}#${suggestion.tagLine}`;
+    const regionUp = suggestion.region.toUpperCase();
+    setRiotid(fullRiotId);
+    setRegion(regionUp);
+    handleSearch(fullRiotId, regionUp, mode);
   };
 
   return (
@@ -74,14 +77,12 @@ const Home: React.FC = () => {
               Teamfight Tactics
             </button>
           </div>
-        <input
-          className="w-full p-3 transition border-2 border-gray-300 rounded input focus:outline-none focus:border-blue-500"
-          type="text"
-          id="riotid"
-          placeholder="Riot ID (e.g.: Player#BR1)"
+        <SummonerAutocomplete
           value={riotid}
-          onChange={(e) => setRiotid(e.target.value)}
-          onKeyDown={handleKeyDown}
+          onChangeValue={setRiotid}
+          onSelect={handleSelectSummoner}
+          onEnter={search}
+          disabled={isLoading}
         />
 
         <select

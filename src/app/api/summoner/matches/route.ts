@@ -165,6 +165,45 @@ async function saveMatchDetailsBatch(matches: any[]): Promise<void> {
   if (rows.length === 0) return;
 
   await supabaseAdmin.from("match_cache").upsert(rows);
+
+  // Índice para autocomplete: guarda cada invocador visto em uma partida.
+  // A região vem do prefixo do matchId (ex.: "BR1_123..." -> br1).
+  const seen = new Set<string>();
+  const summonerRows: any[] = [];
+
+  for (const m of matches) {
+    const matchId = m?.metadata?.matchId;
+    if (!matchId) continue;
+    const region = String(matchId).split("_")[0].toLowerCase();
+
+    for (const p of m?.info?.participants || []) {
+      const name = p?.riotIdGameName;
+      const tag = p?.riotIdTagline;
+      if (!name || !tag) continue;
+
+      const key = `summoner:${region}:${name.toLowerCase()}:${tag.toLowerCase()}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      summonerRows.push({
+        id: key,
+        data: {
+          region,
+          gameName: name,
+          tagLine: tag,
+          puuid: p.puuid,
+          championId: p.championId,
+        },
+        game_name: name.toLowerCase(),
+        tagline: tag.toLowerCase(),
+        cached_at: new Date().toISOString(),
+      });
+    }
+  }
+
+  if (summonerRows.length > 0) {
+    await supabaseAdmin.from("match_cache").upsert(summonerRows);
+  }
 }
 
 export async function GET(request: NextRequest) {

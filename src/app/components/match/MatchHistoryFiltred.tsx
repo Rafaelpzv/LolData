@@ -398,6 +398,7 @@ export function MatchHistoryFiltred({
           summonerName: participant.summonerName,
 
           participants: match.info.participants.map((p) => ({
+            puuid: p.puuid,
             championName: p.championName,
             championId: p.championId,
 
