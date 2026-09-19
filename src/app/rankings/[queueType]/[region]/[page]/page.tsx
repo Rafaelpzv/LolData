@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { use, useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
@@ -74,7 +74,7 @@ interface LocalStorageSummonerEntry {
 
 // Must match the server-side TTL (2 days)
 const RANKINGS_CACHE_TTL_MS = 2 * 24 * 60 * 60 * 1000;
-// Summoner names/icons can change — refresh daily
+// Summoner names/icons can change â€” refresh daily
 const SUMMONER_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 const ITEMS_PER_PAGE = 200;
@@ -119,7 +119,7 @@ function readSummonerCache(region: string): Record<string, SummonerInfo> {
       const isValid = Boolean(
         info?.gameName &&
           info.gameName !== "Unknown" &&
-          info.gameName !== "Loading…" &&
+          info.gameName !== "Loadingâ€¦" &&
           info?.tagLine &&
           info.tagLine !== "???",
       );
@@ -279,7 +279,7 @@ export default function RankingsPage({
               return Boolean(
                 info?.gameName &&
                   info.gameName !== "Unknown" &&
-                  info.gameName !== "Loading…" &&
+                  info.gameName !== "Loadingâ€¦" &&
                   info.tagLine &&
                   info.tagLine !== "???",
               );
@@ -308,7 +308,7 @@ export default function RankingsPage({
           return Boolean(
             info?.gameName &&
               info.gameName !== "Unknown" &&
-              info.gameName !== "Loading…" &&
+              info.gameName !== "Loadingâ€¦" &&
               info?.tagLine &&
               info.tagLine !== "???",
           );
@@ -381,7 +381,7 @@ export default function RankingsPage({
       return Boolean(
         info?.gameName &&
           info.gameName !== "Unknown" &&
-          info.gameName !== "Loading…" &&
+          info.gameName !== "Loadingâ€¦" &&
           info?.tagLine &&
           info.tagLine !== "???",
       );
@@ -513,9 +513,9 @@ export default function RankingsPage({
           <h1 className="hidden text-2xl font-bold md:block">
             <div className="flex flex-col gap-2">
               <span>
-                High Elo Rankings –{" "}
-                {region ? (displayRegionMap[region.toUpperCase()] || region.toUpperCase()) : "Região não especificada"}{" "}
-                – {queueDisplayNames[friendlyQueueType] || friendlyQueueType}
+                High Elo Rankings â€“{" "}
+                {region ? (displayRegionMap[region.toUpperCase()] || region.toUpperCase()) : "RegiÃ£o nÃ£o especificada"}{" "}
+                â€“ {queueDisplayNames[friendlyQueueType] || friendlyQueueType}
               </span>
               {(cutoffs.challenger || cutoffs.grandmaster) && (
                 <div className="flex items-center gap-4 text-base font-normal">
@@ -603,27 +603,27 @@ export default function RankingsPage({
               className="w-12 px-3 py-2 text-sm border rounded-md cursor-pointer border-input bg-background"
             >
               <optgroup label="Americas">
-                <option value="BR1">🇧🇷 – Brazil</option>
-                <option value="NA1">🇺🇸 – North America</option>
-                <option value="LA1">🇲🇽 – Latin America North</option>
-                <option value="LA2">🇦🇷 – Latin America South</option>
+                <option value="BR1">ðŸ‡§ðŸ‡· â€“ Brazil</option>
+                <option value="NA1">ðŸ‡ºðŸ‡¸ â€“ North America</option>
+                <option value="LA1">ðŸ‡²ðŸ‡½ â€“ Latin America North</option>
+                <option value="LA2">ðŸ‡¦ðŸ‡· â€“ Latin America South</option>
               </optgroup>
               <optgroup label="Europe">
-                <option value="EUW1">🇪🇸 – Western Europe</option>
-                <option value="EUN1">🇸🇪 – Northern & Eastern Europe</option>
-                <option value="RU">🇷🇺 – Russia</option>
-                <option value="ME1">🇪🇬 – Middle East</option>
-                <option value="TR1">🇹🇷 – Turkey</option>
+                <option value="EUW1">ðŸ‡ªðŸ‡¸ â€“ Western Europe</option>
+                <option value="EUN1">ðŸ‡¸ðŸ‡ª â€“ Northern & Eastern Europe</option>
+                <option value="RU">ðŸ‡·ðŸ‡º â€“ Russia</option>
+                <option value="ME1">ðŸ‡ªðŸ‡¬ â€“ Middle East</option>
+                <option value="TR1">ðŸ‡¹ðŸ‡· â€“ Turkey</option>
               </optgroup>
               <optgroup label="Asia">
-                <option value="KR">🇰🇷 – Korea</option>
-                <option value="JP1">🇯🇵 – Japan</option>
+                <option value="KR">ðŸ‡°ðŸ‡· â€“ Korea</option>
+                <option value="JP1">ðŸ‡¯ðŸ‡µ â€“ Japan</option>
               </optgroup>
               <optgroup label="South Asia">
-                <option value="OC1">🇦🇺 – Oceania</option>
-                <option value="TW2">🇹🇼 – Taiwan, HK & Macau</option>
-                <option value="VN2">🇻🇳 – Vietnam</option>
-                <option value="SG2">🇸🇬 – Singapore</option>
+                <option value="OC1">ðŸ‡¦ðŸ‡º â€“ Oceania</option>
+                <option value="TW2">ðŸ‡¹ðŸ‡¼ â€“ Taiwan, HK & Macau</option>
+                <option value="VN2">ðŸ‡»ðŸ‡³ â€“ Vietnam</option>
+                <option value="SG2">ðŸ‡¸ðŸ‡¬ â€“ Singapore</option>
               </optgroup>
             </select>
             <select
@@ -646,7 +646,7 @@ export default function RankingsPage({
               aria-hidden="true"
             />
             <p className="mt-2 text-sm text-muted-foreground">
-              {isSortingAll ? "Loading all players for sorting…" : "Loading rankings and summoner names…"}
+              {isSortingAll ? "Loading all players for sortingâ€¦" : "Loading rankings and summoner namesâ€¦"}
             </p>
           </div>
         )}
@@ -747,7 +747,7 @@ export default function RankingsPage({
                               <Link
                                 href={
                                   summonerInfo
-                                    ? `/summoner/${region}/${summonerInfo.gameName}/${summonerInfo.tagLine}/all/all`
+                                    ? `/lol/${region}/${summonerInfo.gameName}/${summonerInfo.tagLine}/all/all`
                                     : "#"
                                 }
                                 className="block min-w-0 truncate cursor-pointer hover:underline"
@@ -803,7 +803,7 @@ export default function RankingsPage({
                 {/* Pagination */}
                 <div className="flex items-center justify-between px-2 mt-4">
                   <div className="text-sm text-muted-foreground">
-                    {`Showing ${(currentPage - 1) * ITEMS_PER_PAGE + 1}–${Math.min(
+                    {`Showing ${(currentPage - 1) * ITEMS_PER_PAGE + 1}â€“${Math.min(
                       currentPage * ITEMS_PER_PAGE,
                       totalEntries,
                     )} of ${totalEntries}`}
@@ -818,7 +818,7 @@ export default function RankingsPage({
                         disabled={currentPage === 1}
                         className="px-3 py-1 text-sm border rounded-md bg-background hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        ‹
+                        â€¹
                       </button>
 
                       {generatePageNumbers(currentPage, totalPages).map(
@@ -849,7 +849,7 @@ export default function RankingsPage({
                         disabled={currentPage >= totalPages}
                         className="px-3 py-1 text-sm border rounded-md bg-background hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        ›
+                        â€º
                       </button>
                     </div>
                   )}
@@ -870,7 +870,7 @@ export default function RankingsPage({
                 rankings?.cache?.isStale ? "text-yellow-500" : "text-green-600"
               }
             >
-              ●
+              â—
             </span>{" "}
             {lastUpdatedLabel}
             {rankings?.cache?.isStale && (
@@ -879,7 +879,7 @@ export default function RankingsPage({
           </p>
         )}
         <p>
-          © {new Date().getFullYear()} LolData – High Elo Rankings. Data
+          Â© {new Date().getFullYear()} LolData â€“ High Elo Rankings. Data
           provided by Riot Games API.
         </p>
       </footer>

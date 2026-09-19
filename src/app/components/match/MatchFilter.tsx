@@ -276,7 +276,7 @@ export function MatchFilter() {
         .replace("1700", "arena");
     }
 
-    return `/summoner/${region}/${gameName}/${tagLine}/${queueParam}${championParam}`;
+    return `/lol/${region}/${gameName}/${tagLine}/${queueParam}${championParam}`;
   }
 
   const filtered = champions.filter((c) =>

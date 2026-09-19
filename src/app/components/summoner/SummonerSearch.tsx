@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export function SummonerSearch({ defaultRegion = "br1" }: SummonerSearchProps) {
     const tagLine =
       parts.length > 1 ? encodeURIComponent(parts[1].trim()) : "BR1";
     const regionLower = region.toLowerCase();
-    router.push(`/summoner/${regionLower}/${gameName}/${tagLine}/all/all`);
+    router.push(`/lol/${regionLower}/${gameName}/${tagLine}/all/all`);
   };
 
   return (
@@ -71,55 +71,55 @@ export function SummonerSearch({ defaultRegion = "br1" }: SummonerSearchProps) {
           </option>
           <optgroup label="Americas">
             <option className="cursor-pointer" value="BR1">
-              🇧🇷 - Brazil
+              ðŸ‡§ðŸ‡· - Brazil
             </option>
             <option className="cursor-pointer" value="NA1">
-              🇺🇸 - North America
+              ðŸ‡ºðŸ‡¸ - North America
             </option>
             <option className="cursor-pointer" value="LA1">
-              🇲🇽 - Latin America North
+              ðŸ‡²ðŸ‡½ - Latin America North
             </option>
             <option className="cursor-pointer" value="LA2">
-              🇦🇷 - Latin America South
+              ðŸ‡¦ðŸ‡· - Latin America South
             </option>
           </optgroup>
           <optgroup label="Europe">
             <option className="cursor-pointer" value="EUW1">
-              🇪🇸 - Western Europe
+              ðŸ‡ªðŸ‡¸ - Western Europe
             </option>
             <option className="cursor-pointer" value="EUN1">
-              🇸🇪 - Northern & Eastern Europe
+              ðŸ‡¸ðŸ‡ª - Northern & Eastern Europe
             </option>
             <option className="cursor-pointer" value="RU">
-              🇷🇺 - Russia
+              ðŸ‡·ðŸ‡º - Russia
             </option>
             <option className="cursor-pointer" value="ME1">
-              🇪🇬 - Middle East
+              ðŸ‡ªðŸ‡¬ - Middle East
             </option>
             <option className="cursor-pointer" value="TR1">
-              🇹🇷 - Turkey
+              ðŸ‡¹ðŸ‡· - Turkey
             </option>
           </optgroup>
           <optgroup label="Asia">
             <option className="cursor-pointer" value="KR">
-              🇰🇷 - Korea
+              ðŸ‡°ðŸ‡· - Korea
             </option>
             <option className="cursor-pointer" value="JP1">
-              🇯🇵 - Japan
+              ðŸ‡¯ðŸ‡µ - Japan
             </option>
           </optgroup>
           <optgroup label="South Asia">
             <option className="cursor-pointer" value="OC1">
-              🇦🇺 - Oceania
+              ðŸ‡¦ðŸ‡º - Oceania
             </option>
             <option className="cursor-pointer" value="TW2">
-              🇹🇼 - Taiwan, Hong Kong & Macau
+              ðŸ‡¹ðŸ‡¼ - Taiwan, Hong Kong & Macau
             </option>
             <option className="cursor-pointer" value="VN2">
-              🇻🇳 - Vietnam
+              ðŸ‡»ðŸ‡³ - Vietnam
             </option>
             <option className="cursor-pointer" value="SG2">
-              🇸🇬 - Singapore
+              ðŸ‡¸ðŸ‡¬ - Singapore
             </option>
           </optgroup>
         </select>
