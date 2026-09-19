@@ -28,7 +28,6 @@ const matchCache = new Map<
   { data: any; expires: number; hasMore: boolean }
 >();
 const L1_TTL = 5 * 60 * 1000;
-const L2_TTL_MINUTES = 30;
 const MAX_RIOT_OFFSET = 200;
 
 const DETAIL_BATCH_SIZE = 5;
@@ -59,27 +58,6 @@ function getRegionalUrl(region: string): string {
   if (["oc1", "tw2", "vn2", "sg2"].some((k) => r.includes(k)))
     return SEA_API_URL;
   return AMERICAS_API_URL;
-}
-
-async function getFromSupabase(cacheKey: string): Promise<any | null> {
-  try {
-    const { data } = await supabaseAdmin
-      .from("match_cache")
-      .select("data, cached_at")
-      .eq("id", cacheKey)
-      .maybeSingle();
-
-    if (!data) return null;
-
-    const ageMinutes =
-      (Date.now() - new Date(data.cached_at).getTime()) / 60000;
-
-    if (ageMinutes > L2_TTL_MINUTES) return null;
-
-    return data.data;
-  } catch {
-    return null;
-  }
 }
 
 async function getMatchDetailsBatch(
@@ -240,7 +218,9 @@ export async function GET(request: NextRequest) {
       matchIds.length >= validatedData.count &&
       validatedData.start + validatedData.count < MAX_RIOT_OFFSET;
 
-    matchCache.set(l1Key, { data, expires: now + L1_TTL, hasMore });
+    if (data.length > 0 || validatedData.start === 0) {
+      matchCache.set(l1Key, { data, expires: now + L1_TTL, hasMore });
+    }
 
     return NextResponse.json({
       data,

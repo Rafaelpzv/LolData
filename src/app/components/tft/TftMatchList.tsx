@@ -81,16 +81,20 @@ export function TftMatchList({ matches, puuid, region }: TftMatchListProps) {
   const [start, setStart] = useState(matches.length);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(matches.length >= 10);
+  const [loadError, setLoadError] = useState(false);
 
   const startRef = useRef(start);
   startRef.current = start;
   const loadingRef = useRef(false);
+  const consecutiveEmptyRef = useRef(0);
 
   useEffect(() => {
     setLoadedMatches(matches);
     setStart(matches.length);
     startRef.current = matches.length;
     setHasMore(matches.length >= 10);
+    consecutiveEmptyRef.current = 0;
+    setLoadError(false);
   }, [matches]);
 
   useEffect(() => {
@@ -131,9 +135,19 @@ export function TftMatchList({ matches, puuid, region }: TftMatchListProps) {
       const json = await res.json();
       const newMatches: TftMatch[] = json.data || [];
 
+      // Página vazia com hasMore=true = erro transitório do servidor.
+      // NÃO desligar o botão na primeira vez — permitir nova tentativa.
       if (newMatches.length === 0) {
-        setHasMore(false);
+        if (json.hasMore === false) {
+          setHasMore(false);
+        } else {
+          consecutiveEmptyRef.current += 1;
+          setLoadError(consecutiveEmptyRef.current >= 2);
+          if (consecutiveEmptyRef.current >= 2) setHasMore(false);
+        }
       } else {
+        consecutiveEmptyRef.current = 0;
+        setLoadError(false);
         setLoadedMatches((prev) => {
           const existingIds = new Set(prev.map((m) => m.metadata.match_id));
           const uniqueNew = newMatches.filter(
@@ -150,7 +164,9 @@ export function TftMatchList({ matches, puuid, region }: TftMatchListProps) {
       }
     } catch (error) {
       console.error("Erro ao carregar mais partidas TFT:", error);
-      setHasMore(false);
+      consecutiveEmptyRef.current += 1;
+      setLoadError(true);
+      if (consecutiveEmptyRef.current >= 2) setHasMore(false);
     } finally {
       loadingRef.current = false;
       setLoadingMore(false);
@@ -329,7 +345,7 @@ export function TftMatchList({ matches, puuid, region }: TftMatchListProps) {
         );
       })}
 
-      <div className="flex justify-center pt-4">
+      <div className="flex flex-col items-center gap-2 pt-4">
         {hasMore && (
           <button
             type="button"
@@ -339,6 +355,11 @@ export function TftMatchList({ matches, puuid, region }: TftMatchListProps) {
           >
             {loadingMore ? "Loading..." : "Load more games"}
           </button>
+        )}
+        {loadError && !loadingMore && (
+          <p className="text-xs text-destructive">
+            Não foi possível carregar mais partidas. Tente novamente.
+          </p>
         )}
       </div>
     </div>

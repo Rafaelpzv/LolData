@@ -437,18 +437,25 @@ export async function GET(request: NextRequest) {
       (!hitOffsetLimit && currentStart < MAX_RIOT_OFFSET);
 
     // ================= SAVE =================
-    saveToSupabase(
-      cacheKey,
-      { matches: mergedMatches, riotOffset: currentStart },
-      gameName,
-      tagLine,
-    ).catch(() => {});
+    // Se a página veio vazia (start > 0) sem ter chegado ao fim, é um miss
+    // transitório (ex.: leitura falha do cache/fetch) — NÃO gravar essa
+    // degradação no cache, para a próxima tentativa refazer do zero.
+    if (finalMatches.length > 0 || start === 0) {
+      saveToSupabase(
+        cacheKey,
+        { matches: mergedMatches, riotOffset: currentStart },
+        gameName,
+        tagLine,
+      ).catch(() => {});
+    }
 
-    matchCache.set(l1Key, {
-      data: finalMatches,
-      expires: now + L1_TTL,
-      hasMore,
-    });
+    if (finalMatches.length > 0 || start === 0) {
+      matchCache.set(l1Key, {
+        data: finalMatches,
+        expires: now + L1_TTL,
+        hasMore,
+      });
+    }
 
     return NextResponse.json({
       data: finalMatches,

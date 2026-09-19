@@ -96,6 +96,8 @@ export function MatchHistoryFiltred({
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const loadingRef = useRef(false);
+  const consecutiveEmptyRef = useRef(0);
+  const [loadError, setLoadError] = useState(false);
 
   // Sempre reflete matchesByQueue mais recente sem ser dep do efeito de reset.
   const latestMatchesByQueueRef = useRef(matchesByQueue);
@@ -178,6 +180,8 @@ export function MatchHistoryFiltred({
     setStart(fresh.length);
     startRef.current = fresh.length; // sincroniza o ref imediatamente
     setHasMore(fresh.length >= 10);
+    consecutiveEmptyRef.current = 0;
+    setLoadError(false);
   }, [filterKey]);
 
   // 3. Atualizar estatisticas globais (Wins/Losses)
@@ -232,9 +236,21 @@ export function MatchHistoryFiltred({
       const json = await res.json();
       const newMatches: Match[] = json.data || [];
 
+      // Se a API devolveu vazio mas diz que tem mais partidas (hasMore true),
+      // é um erro transitório (ex.: cache do servidor retornou página vazia).
+      // NÃO desligar o botão na primeira vez — permitir nova tentativa.
       if (newMatches.length === 0) {
-        setHasMore(false);
+        if (json.hasMore === false) {
+          setHasMore(false);
+        } else {
+          consecutiveEmptyRef.current += 1;
+          setLoadError(consecutiveEmptyRef.current >= 2);
+          if (consecutiveEmptyRef.current >= 2) setHasMore(false);
+          // mantém hasMore=true para o usuário tentar de novo
+        }
       } else {
+        consecutiveEmptyRef.current = 0;
+        setLoadError(false);
         setMatches((prev) => {
           const existingIds = new Set(prev.map((m) => m.metadata.matchId));
           const uniqueNew = newMatches.filter(
@@ -252,7 +268,11 @@ export function MatchHistoryFiltred({
     } catch (error: any) {
       if (error.name !== "AbortError") {
         console.error("Erro ao carregar mais partidas:", error);
-        setHasMore(false);
+        consecutiveEmptyRef.current += 1;
+        setLoadError(true);
+        // Não desliga o botão no erro de rede/5xx: permite nova tentativa.
+        // Depois de 2 falhas seguidas, desliga para evitar loop.
+        if (consecutiveEmptyRef.current >= 2) setHasMore(false);
       }
     } finally {
       loadingRef.current = false;
@@ -417,7 +437,7 @@ export function MatchHistoryFiltred({
         );
       })}
 
-      <div className="flex justify-center pt-4">
+      <div className="flex flex-col items-center gap-2 pt-4">
         {hasMore && (
           <button
             type="button"
@@ -427,6 +447,11 @@ export function MatchHistoryFiltred({
           >
             {loadingMore ? "Loading..." : "Load more games"}
           </button>
+        )}
+        {loadError && !loadingMore && (
+          <p className="text-xs text-destructive">
+            Não foi possível carregar mais partidas. Tente novamente.
+          </p>
         )}
       </div>
     </div>

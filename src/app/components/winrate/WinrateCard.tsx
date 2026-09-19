@@ -8,6 +8,7 @@ interface WinrateCardProps {
   puuid: string;
   mode: "lol" | "tft";
   title?: string;
+  pendingMatchesToday?: number;
 }
 
 const WIN_COLOR = "#22c55e";
@@ -28,12 +29,15 @@ export function WinrateCard({
   puuid,
   mode,
   title = "Winrate",
+  pendingMatchesToday = 0,
 }: WinrateCardProps) {
   const stats = useMemo(() => {
-    let wins = 0;
-    let losses = 0;
-    const series: number[] = [];
-    const dates: number[] = [];
+    let globalWins = 0;
+    let globalLosses = 0;
+
+    // Agrupar matches por dia
+    const dayGroups: Map<string, { wins: number; losses: number; ts: number }> =
+      new Map();
 
     for (const match of matches) {
       const participant = match?.info?.participants?.find(
@@ -44,98 +48,109 @@ export function WinrateCard({
       const isWin =
         mode === "tft" ? participant.placement <= 4 : participant.win === true;
 
-      if (isWin) wins++;
-      else losses++;
-
-      const total = wins + losses;
-      series.push((wins / total) * 100);
-      dates.push(
+      const ts =
         match?.info?.gameStartTimestamp ??
           match?.info?.gameCreation ??
-          match?.info?.game_datetime,
-      );
+          match?.info?.game_datetime;
+      const dateKey = ts ? new Date(ts).toDateString() : "unknown";
+
+      if (!dayGroups.has(dateKey)) {
+        dayGroups.set(dateKey, { wins: 0, losses: 0, ts: ts || 0 });
+      }
+
+      const dayStats = dayGroups.get(dateKey)!;
+      if (isWin) {
+        dayStats.wins++;
+        globalWins++;
+      } else {
+        dayStats.losses++;
+        globalLosses++;
+      }
     }
 
-    const total = wins + losses;
-    const winrate = total > 0 ? (wins / total) * 100 : 0;
-    const color = winrate >= 50 ? WIN_COLOR : LOSS_COLOR;
+    // Ordenar cronologicamente (mais antigo primeiro)
+    const sortedDays = Array.from(dayGroups.entries())
+      .sort((a, b) => (a[1].ts || 0) - (b[1].ts || 0));
 
-    return { wins, losses, total, winrate, series, dates, color };
+    // Calcular WR por dia e séries para o gráfico
+    const series: number[] = [];
+    const dates: number[] = [];
+    const dayLabels: string[] = [];
+
+    sortedDays.forEach(([dateKey, stats]) => {
+      const total = stats.wins + stats.losses;
+      const dayWr = total > 0 ? (stats.wins / total) * 100 : 0;
+      series.push(dayWr);
+      dates.push(stats.ts);
+      dayLabels.push(formatShortDate(stats.ts));
+    });
+
+    const globalTotal = globalWins + globalLosses;
+    const globalWinrate = globalTotal > 0 ? (globalWins / globalTotal) * 100 : 0;
+    const color = globalWinrate >= 50 ? WIN_COLOR : LOSS_COLOR;
+
+    return {
+      globalWins,
+      globalLosses,
+      globalTotal,
+      globalWinrate,
+      series,
+      dates,
+      dayLabels,
+      color,
+      dayGroups: Object.fromEntries(sortedDays),
+    };
   }, [matches, puuid, mode]);
 
-  const { wins, losses, total, winrate, series, dates, color } = stats;
-
-  // Ordem cronológica (mais antigo à esquerda, mais recente à direita)
-  const orderedSeries = useMemo(() => [...series].reverse(), [series]);
-  const orderedDates = useMemo(() => [...dates].reverse(), [dates]);
+  const {
+    globalWins,
+    globalLosses,
+    globalTotal,
+    globalWinrate,
+    series,
+    dayLabels,
+    color,
+  } = stats;
 
   const chartPoints = useMemo(() => {
-    if (orderedSeries.length === 0) return [];
+    if (series.length === 0) return [];
 
-    return orderedSeries.map((pct, i) => {
-      const x =
-        orderedSeries.length === 1
-          ? 50
-          : (i / (orderedSeries.length - 1)) * 100;
+    return series.map((pct, i) => {
+      const x = series.length === 1 ? 50 : (i / (series.length - 1)) * 100;
       const y = 10 - (pct / 100) * 8;
 
       return { x, y, pct };
     });
-  }, [orderedSeries]);
+  }, [series]);
 
-  // Setores: um por dia jogado, com linha divisória pontilhada e rótulo da data
-  const daySectors = useMemo(() => {
-    const n = orderedDates.length;
-    if (n === 0) return [];
-
-    const groups: { label: string; start: number; count: number }[] = [];
-    let currentKey = "";
-    let currentLabel = "";
-    let start = 0;
-
-    orderedDates.forEach((ts, i) => {
-      const key = ts ? new Date(ts).toDateString() : "unknown";
-      if (key !== currentKey) {
-        if (currentKey !== "") {
-          groups.push({ label: currentLabel, start, count: i - start });
-        }
-        currentKey = key;
-        currentLabel = formatShortDate(ts);
-        start = i;
-      }
+  // Divisores entre dias (pontos centrais e linhas)
+  const dayDividers = useMemo(() => {
+    if (series.length <= 1) return [];
+    return Array.from({ length: series.length - 1 }, (_, i) => {
+      return ((i + 1) / (series.length - 1)) * 100;
     });
-    groups.push({ label: currentLabel, start, count: n - start });
+  }, [series]);
 
-    const span = n - 1;
+  // Mostrar labels apenas dos dias mais relevantes
+  const labeledDays = useMemo(() => {
+    const maxLabels = Math.min(MAX_DATE_LABELS, series.length);
+    if (series.length <= maxLabels) {
+      return dayLabels.map((label, i) => ({ label, index: i }));
+    }
 
-    return groups.map((g) => ({
-      ...g,
-      centerX:
-        span === 0 ? 50 : ((g.start + (g.count - 1) / 2) / span) * 100,
-      boundaryX:
-        span === 0 || g.start + g.count >= n
-          ? null
-          : ((g.start + g.count) / span) * 100,
-    }));
-  }, [orderedDates]);
+    const step = Math.ceil(series.length / maxLabels);
+    const result: { label: string; index: number }[] = [];
+    for (let i = 0; i < series.length; i += step) {
+      result.push({ label: dayLabels[i], index: i });
+    }
+    // Sempre mostrar o último dia
+    if (result[result.length - 1]?.index !== series.length - 1) {
+      result.push({ label: dayLabels[series.length - 1], index: series.length - 1 });
+    }
+    return result;
+  }, [dayLabels, series.length]);
 
-  const dividers = useMemo(
-    () => daySectors.flatMap((g) => (g.boundaryX !== null ? [g.boundaryX] : [])),
-    [daySectors],
-  );
-
-  // Mostra o rótulo de data apenas nos dias com mais jogos (limite MAX_DATE_LABELS)
-  const labeledSectors = useMemo(() => {
-    const top = new Set(
-      [...daySectors]
-        .sort((a, b) => b.count - a.count || a.start - b.start)
-        .slice(0, MAX_DATE_LABELS)
-        .map((s) => s.start),
-    );
-    return daySectors.filter((s) => top.has(s.start));
-  }, [daySectors]);
-
-  if (total === 0) {
+  if (globalTotal === 0) {
     return (
       <Card className="p-4">
         <div className="flex items-center justify-between">
@@ -150,29 +165,14 @@ export function WinrateCard({
     );
   }
 
-  // Cria uma curva suave usando Bézier cúbica.
+  // Cria linePath conectando pontos de WR por dia (sem bezier para manter picos agudos)
   const linePath =
     chartPoints.length === 1
       ? `M${chartPoints[0].x.toFixed(2)},${chartPoints[0].y.toFixed(2)}`
       : chartPoints
           .map((p, i) => {
-            if (i === 0) {
-              return `M${p.x.toFixed(2)},${p.y.toFixed(2)}`;
-            }
-
-            const prev = chartPoints[i - 1];
-
-            const controlX1 = prev.x + (p.x - prev.x) * 0.5;
-            const controlY1 = prev.y;
-
-            const controlX2 = p.x - (p.x - prev.x) * 0.5;
-            const controlY2 = p.y;
-
-            return `C${controlX1.toFixed(2)},${controlY1.toFixed(
-              2,
-            )} ${controlX2.toFixed(2)},${controlY2.toFixed(
-              2,
-            )} ${p.x.toFixed(2)},${p.y.toFixed(2)}`;
+            const cmd = i === 0 ? "M" : "L";
+            return `${cmd}${p.x.toFixed(2)},${p.y.toFixed(2)}`;
           })
           .join(" ");
 
@@ -189,7 +189,8 @@ export function WinrateCard({
         <div>
           <p className="text-sm font-semibold text-primary">{title}</p>
           <p className="text-xs text-muted-foreground">
-            Últimos {total} jogos carregados
+            {globalTotal} jogos · {series.length} dias
+            {pendingMatchesToday > 0 && ` · +${pendingMatchesToday} pendentes`}
           </p>
         </div>
 
@@ -198,12 +199,12 @@ export function WinrateCard({
             className="text-3xl font-bold leading-none"
             style={{ color }}
           >
-            {winrate.toFixed(1)}%
+            {globalWinrate.toFixed(1)}%
           </p>
 
           <p className="mt-1 text-xs text-muted-foreground">
-            <span style={{ color: WIN_COLOR }}>{wins} V</span> ·{" "}
-            <span style={{ color: LOSS_COLOR }}>{losses} D</span>
+            <span style={{ color: WIN_COLOR }}>{globalWins} V</span> ·{" "}
+            <span style={{ color: LOSS_COLOR }}>{globalLosses} D</span>
           </p>
         </div>
       </div>
@@ -213,8 +214,9 @@ export function WinrateCard({
           viewBox="0 0 100 15"
           className="w-full"
           role="img"
-          aria-label={`Gráfico de winrate dos últimos ${total} jogos`}
+          aria-label={`Gráfico de winrate por dia - ${series.length} dias`}
         >
+          {/* Linha base 50% */}
           <line
             x1="0"
             y1="6"
@@ -226,56 +228,76 @@ export function WinrateCard({
             opacity="0.6"
           />
 
-          {dividers.map((x) => (
+          {/* Divisores verticais entre dias */}
+          {dayDividers.map((x, i) => (
             <line
-              key={x}
+              key={`divider-${i}`}
               x1={x}
               y1="1.2"
               x2={x}
               y2="10.8"
               stroke={MID_COLOR}
-              strokeWidth="0.15"
+              strokeWidth="0.12"
               strokeLinecap="round"
-              strokeDasharray="0.4 1.1"
-              opacity="0.5"
+              strokeDasharray="0.3 0.9"
+              opacity="0.4"
             />
           ))}
 
+          {/* Preenchimento da área */}
           {areaPath && (
             <path
               d={areaPath}
               fill={color}
-              opacity="0.15"
+              opacity="0.12"
               stroke="none"
             />
           )}
 
+          {/* Linha do gráfico */}
           {linePath && (
             <path
               d={linePath}
               fill="none"
               stroke={color}
-              strokeWidth="0.15"
+              strokeWidth="0.2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           )}
 
-          {total > 1 &&
-            labeledSectors.map((sector) =>
-              sector.label ? (
+          {/* Pontos de dados */}
+          {chartPoints.map((point, i) => (
+            <circle
+              key={`point-${i}`}
+              cx={point.x}
+              cy={point.y}
+              r="0.25"
+              fill={color}
+              opacity="0.7"
+            />
+          ))}
+
+          {/* Labels de data */}
+          {series.length > 1 &&
+            labeledDays.map(({ label, index }) => {
+              const x =
+                series.length === 1
+                  ? 50
+                  : (index / (series.length - 1)) * 100;
+              return (
                 <text
-                  key={`${sector.start}-${sector.label}`}
-                  x={sector.centerX}
+                  key={`label-${index}`}
+                  x={x}
                   y="14.4"
                   textAnchor="middle"
-                  fontSize="1"
+                  fontSize="0.9"
                   fill="#a1a1aa"
                 >
-                  {sector.label}
+                  {label}
                 </text>
-              ) : null,
-            )}
+              );
+            })}
         </svg>
       </div>
 
