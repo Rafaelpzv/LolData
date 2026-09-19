@@ -32,6 +32,7 @@ export function WinrateCard({
   pendingMatchesToday = 0,
 }: WinrateCardProps) {
   const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const stats = useMemo(() => {
     let globalWins = 0;
     let globalLosses = 0;
@@ -231,6 +232,17 @@ export function WinrateCard({
           role="img"
           aria-label={`Gráfico de winrate por dia - ${series.length} dias`}
           style={{ pointerEvents: "auto" }}
+          onMouseMove={(e) => {
+            const rect = (e.currentTarget as SVGSVGElement).getBoundingClientRect();
+            setMousePos({
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top,
+            });
+          }}
+          onMouseLeave={() => {
+            setMousePos(null);
+            setHoveredDayIndex(null);
+          }}
         >
           {/* Linha base 50% */}
           <line
@@ -331,14 +343,14 @@ export function WinrateCard({
             })}
         </svg>
 
-        {/* Tooltip - posicionado acima da bolinha hovereada */}
-        {tooltipInfo && hoveredDayIndex !== null && chartPoints[hoveredDayIndex] && (
+        {/* Tooltip - segue o mouse */}
+        {tooltipInfo && hoveredDayIndex !== null && mousePos && (
           <div 
             className="absolute bg-zinc-900 border border-zinc-700 rounded px-3 py-2 text-xs text-zinc-100 whitespace-nowrap shadow-lg z-50 pointer-events-none"
             style={{
-              left: `${chartPoints[hoveredDayIndex].x}%`,
+              left: `${mousePos.x}px`,
+              top: `${mousePos.y - 60}px`,
               transform: "translateX(-50%)",
-              top: `${chartPoints[hoveredDayIndex].y - 3}%`,
             }}>
             <div className="font-semibold mb-1">{tooltipInfo.label}</div>
             <div className="flex items-center gap-2">
