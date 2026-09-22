@@ -87,9 +87,9 @@ export function MatchHistoryItem({
   const runningRef = useRef(false);
   const stopRef = useRef(false);
 
-  // Ao expandir a partida, baixa (em background) o histÃ³rico completo de
-  // cada jogador, pÃ¡gina por pÃ¡gina, alimentando o cache do Supabase.
-  // Sem UI: o objetivo Ã© sÃ³ popular o banco de dados via /api/summoner/matches.
+  // Ao expandir a partida, baixa (em background) o histórico completo de
+  // cada jogador, página por página, alimentando o cache do Supabase.
+  // Sem UI: o objetivo é só popular o banco de dados via /api/summoner/matches.
   const warmPlayersCache = useCallback(async () => {
     if (runningRef.current) return;
     runningRef.current = true;
@@ -100,7 +100,7 @@ export function MatchHistoryItem({
         if (stopRef.current) break;
         if (!player.puuid) continue;
 
-        // Se o puuid jÃ¡ tem o histÃ³rico no banco, nÃ£o precisa reaquecer.
+        // Se o puuid já tem o histórico no banco, não precisa reaquecer.
         try {
           const status = await fetch(
             `/api/summoner/players/status?region=${encodeURIComponent(
@@ -111,7 +111,7 @@ export function MatchHistoryItem({
           const { exists } = await status.json();
           if (exists) continue;
         } catch {
-          // Se a verificaÃ§Ã£o falhar, segue o aquecimento normalmente.
+          // Se a verificação falhar, segue o aquecimento normalmente.
         }
 
         let start = 0;
@@ -153,7 +153,7 @@ export function MatchHistoryItem({
 
           if (finished) break;
 
-          // intervalo gentil: nÃ£o bombardeia a API da Riot
+          // intervalo gentil: não bombardeia a API da Riot
           await sleep(600);
         }
       }
@@ -210,7 +210,7 @@ export function MatchHistoryItem({
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          {/* Perks do campeÃ£o principal */}
+          {/* Perks do campeão principal */}
           <div className="relative flex items-center gap-1">
             {champion.mainStyle && (
               <Image
@@ -232,7 +232,7 @@ export function MatchHistoryItem({
             )}
           </div>
 
-          {/* Ãcone do campeÃ£o */}
+          {/* Ícone do campeão */}
           <div className="relative flex-shrink-0 w-16 h-16">
             <Image
               src={champion.imageUrl}
@@ -244,7 +244,7 @@ export function MatchHistoryItem({
             />
           </div>
 
-          {/* Spells do campeÃ£o principal */}
+          {/* Spells do campeão principal */}
           <div className="flex-wrap items-center gap-1 flexbox">
             {champion.spell1Url && (
               <Image
@@ -287,12 +287,12 @@ export function MatchHistoryItem({
             </div>
           </div>
 
-          {/* Itens do campeÃ£o principal */}
+          {/* Itens do campeão principal */}
           <div className="flex items-center gap-2 ml-auto mr-auto">
             <div className="flex flex-wrap items-center gap-1">
               {items.map((item, index) => (
                 <div
-                  // Usando o Ã­ndice para garantir que cada slot de item seja Ãºnico,
+                  // Usando o índice para garantir que cada slot de item seja único,
                   // mesmo que o ID do item seja repetido ou 0.
                   key={`item-slot-${index}`}
                   className="relative rounded-md h-9 w-9 bg-background/50 overflow-hidden"
@@ -394,7 +394,7 @@ export function MatchHistoryItem({
                         )}
                       </div>
 
-                      {/* Ãcone campeÃ£o */}
+                      {/* Ícone campeão */}
                       <div
                         className="relative flex-shrink-0 w-8 h-8 cursor-pointer"
                         onClick={(e) => {
@@ -516,7 +516,7 @@ export function MatchHistoryItem({
                         )}
                       </div>
 
-                      {/* Ãcone campeÃ£o */}
+                      {/* Ícone campeão */}
                       <div
                         className="relative flex-shrink-0 w-8 h-8 cursor-pointer"
                         onClick={(e) => {

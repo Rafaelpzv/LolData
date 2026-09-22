@@ -4,14 +4,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 /**
- * Interface para o hook de manipulaÃ§Ã£o de pesquisa
+ * Interface para o hook de manipulação de pesquisa
  */
 interface SearchHandlerHook {
   /**
-   * FunÃ§Ã£o para lidar com a pesquisa de invocador
+   * Função para lidar com a pesquisa de invocador
    * @param riotid - ID do Riot (no formato "nome#tag")
-   * @param region - RegiÃ£o do servidor
-   * @param mode - "lol" (padrÃ£o) ou "tft"
+   * @param region - Região do servidor
+   * @param mode - "lol" (padrão) ou "tft"
    * @returns Promise void
    */
   handleSearch: (
@@ -21,7 +21,7 @@ interface SearchHandlerHook {
   ) => Promise<void>;
 
   /**
-   * Estado indicando se estÃ¡ carregando
+   * Estado indicando se está carregando
    */
   isLoading: boolean;
 
@@ -33,7 +33,7 @@ interface SearchHandlerHook {
 
 /**
  * Hook personalizado para gerenciar a pesquisa de invocadores
- * Implementa o princÃ­pio de responsabilidade Ãºnica (S do SOLID)
+ * Implementa o princípio de responsabilidade única (S do SOLID)
  * @returns Interface SearchHandlerHook
  */
 export function useSearchHandler(): SearchHandlerHook {
@@ -42,9 +42,9 @@ export function useSearchHandler(): SearchHandlerHook {
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Manipula a pesquisa de invocador, validando e redirecionando para a pÃ¡gina de perfil
+   * Manipula a pesquisa de invocador, validando e redirecionando para a página de perfil
    * @param riotid - ID do Riot (no formato "nome#tag")
-   * @param region - RegiÃ£o do servidor
+   * @param region - Região do servidor
    */
   async function handleSearch(
     riotid: string,
@@ -58,9 +58,9 @@ export function useSearchHandler(): SearchHandlerHook {
       const cleanText = (text: string) => {
         return text
           .normalize("NFC") // Normaliza a string
-          .replace(/[\u2066-\u2069]/g, "") // Remove caracteres invisÃ­veis
-          .replace(/\s+/g, " ") // Substitui mÃºltiplos espaÃ§os por um Ãºnico
-          .trim(); // Remove espaÃ§os extras nas extremidades
+          .replace(/[\u2066-\u2069]/g, "") // Remove caracteres invisíveis
+          .replace(/\s+/g, " ") // Substitui múltiplos espaços por um único
+          .trim(); // Remove espaços extras nas extremidades
       };
 
       const sanitizedRiotId = cleanText(riotid);
@@ -68,24 +68,24 @@ export function useSearchHandler(): SearchHandlerHook {
       // Separar nome e tag corretamente
       const parts = sanitizedRiotId.split("#");
       if (parts.length !== 2 || !parts[0] || !parts[1]) {
-        setError("Por favor, insira um Riot ID vÃ¡lido no formato Nome#Tag");
+        setError("Por favor, insira um Riot ID válido no formato Nome#Tag");
         return;
       }
 
       const [gameName, tagLine] = parts.map(cleanText);
 
-      // Codifica os segmentos para a URL (nomes com espaÃ§os/acentos/trema/emoji).
+      // Codifica os segmentos para a URL (nomes com espaços/acentos/trema/emoji).
       // Antes usava decodeURIComponent aqui, o que quebrava URLs com texto cru.
       const encodedGameName = encodeURIComponent(gameName.trim());
       const encodedTagLine = encodeURIComponent(tagLine.trim());
 
-      // Converter a regiÃ£o para lowercase
+      // Converter a região para lowercase
       const sanitizedRegion = region.toLowerCase();
       if (sanitizedRegion == "") {
-        setError("Por favor, seleciona uma regiÃ£o.");
+        setError("Por favor, seleciona uma região.");
         return;
       }
-      // Navega para a rota dinÃ¢mica (TFT ou LoL)
+      // Navega para a rota dinâmica (TFT ou LoL)
       if (mode === "tft") {
         router.push(
           `/tft/${sanitizedRegion}/${encodedGameName}/${encodedTagLine}`,
@@ -105,21 +105,21 @@ export function useSearchHandler(): SearchHandlerHook {
 
   // async function handleNewSearch(riotid: string){
   //   if (riotid === '') {
-  //     console.error('Antes de clicar no botÃ£o, escreva um Riot ID!');
+  //     console.error('Antes de clicar no botão, escreva um Riot ID!');
   //     return;
   //   }
   //   if (lastRegion === '') {
-  //     console.error('Nenhuma regiÃ£o foi usada anteriormente. FaÃ§a uma busca inicial primeiro!');
+  //     console.error('Nenhuma região foi usada anteriormente. Faça uma busca inicial primeiro!');
   //     return;
   //   }
 
-  //   // Remover todos os espaÃ§os antes de dividir o Riot ID
+  //   // Remover todos os espaços antes de dividir o Riot ID
   //   const sanitizedRiotId = riotid.replace(/\s+/g, '');
 
   //   // Separar o nome e a tag, garantindo que ambos existam
   //   const [gameName, tagLine = 'default'] = sanitizedRiotId.split('#');
 
-  //   // Navega para a rota dinÃ¢mica com a Ãºltima regiÃ£o usada
+  //   // Navega para a rota dinâmica com a última região usada
   //   router.push(`/lol/${lastRegion}/${gameName}/${tagLine}`);
   // };
 

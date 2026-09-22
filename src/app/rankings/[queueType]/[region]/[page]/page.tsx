@@ -74,7 +74,7 @@ interface LocalStorageSummonerEntry {
 
 // Must match the server-side TTL (2 days)
 const RANKINGS_CACHE_TTL_MS = 2 * 24 * 60 * 60 * 1000;
-// Summoner names/icons can change â€” refresh daily
+// Summoner names/icons can change — refresh daily
 const SUMMONER_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 const ITEMS_PER_PAGE = 200;
@@ -119,7 +119,7 @@ function readSummonerCache(region: string): Record<string, SummonerInfo> {
       const isValid = Boolean(
         info?.gameName &&
           info.gameName !== "Unknown" &&
-          info.gameName !== "Loadingâ€¦" &&
+          info.gameName !== "Loading…" &&
           info?.tagLine &&
           info.tagLine !== "???",
       );
@@ -279,7 +279,7 @@ export default function RankingsPage({
               return Boolean(
                 info?.gameName &&
                   info.gameName !== "Unknown" &&
-                  info.gameName !== "Loadingâ€¦" &&
+                  info.gameName !== "Loading…" &&
                   info.tagLine &&
                   info.tagLine !== "???",
               );
@@ -308,7 +308,7 @@ export default function RankingsPage({
           return Boolean(
             info?.gameName &&
               info.gameName !== "Unknown" &&
-              info.gameName !== "Loadingâ€¦" &&
+              info.gameName !== "Loading…" &&
               info?.tagLine &&
               info.tagLine !== "???",
           );
@@ -381,7 +381,7 @@ export default function RankingsPage({
       return Boolean(
         info?.gameName &&
           info.gameName !== "Unknown" &&
-          info.gameName !== "Loadingâ€¦" &&
+          info.gameName !== "Loading…" &&
           info?.tagLine &&
           info.tagLine !== "???",
       );
@@ -646,7 +646,7 @@ export default function RankingsPage({
               aria-hidden="true"
             />
             <p className="mt-2 text-sm text-muted-foreground">
-              {isSortingAll ? "Loading all players for sortingâ€¦" : "Loading rankings and summoner namesâ€¦"}
+              {isSortingAll ? "Loading all players for sorting…" : "Loading rankings and summoner names…"}
             </p>
           </div>
         )}
@@ -803,7 +803,7 @@ export default function RankingsPage({
                 {/* Pagination */}
                 <div className="flex items-center justify-between px-2 mt-4">
                   <div className="text-sm text-muted-foreground">
-                    {`Showing ${(currentPage - 1) * ITEMS_PER_PAGE + 1}•${Math.min(
+                    {`Showing ${(currentPage - 1) * ITEMS_PER_PAGE + 1}–${Math.min(
                       currentPage * ITEMS_PER_PAGE,
                       totalEntries,
                     )} of ${totalEntries}`}
@@ -818,7 +818,7 @@ export default function RankingsPage({
                         disabled={currentPage === 1}
                         className="px-3 py-1 text-sm border rounded-md bg-background hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        â€¹
+                        ‹
                       </button>
 
                       {generatePageNumbers(currentPage, totalPages).map(
@@ -849,7 +849,7 @@ export default function RankingsPage({
                         disabled={currentPage >= totalPages}
                         className="px-3 py-1 text-sm border rounded-md bg-background hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        â€º
+                        ›
                       </button>
                     </div>
                   )}
@@ -870,7 +870,7 @@ export default function RankingsPage({
                 rankings?.cache?.isStale ? "text-yellow-500" : "text-green-600"
               }
             >
-              â—
+              ●
             </span>{" "}
             {lastUpdatedLabel}
             {rankings?.cache?.isStale && (
