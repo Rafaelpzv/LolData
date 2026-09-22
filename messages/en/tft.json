@@ -1,1 +1,43 @@
-{}
+{
+  "metaTitle": "{name}#{tag} ({region}) · TFT",
+  "rankedTft": "Ranked TFT",
+  "matchHistory": "Match history",
+  "lastGames": "Last {count, plural, one {# game} other {# games}}",
+  "summary": "Summary of loaded games",
+  "avgPlacement": "Avg. placement",
+  "top4Rate": "Top 4 rate",
+  "firsts": "1st places",
+  "placementLabel": "Placement",
+  "placement": "{n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+  "queue": {
+    "ranked": "Ranked",
+    "normal": "Normal",
+    "hyperRoll": "Hyper Roll",
+    "doubleUp": "Double Up",
+    "other": "TFT"
+  },
+  "set": "Set {set}",
+  "duration": "{minutes}m {seconds}s",
+  "level": "Level <num>{level}</num>",
+  "goldLeft": "<num>{gold}</num> gold left",
+  "eliminated": "<num>{count}</num> eliminated",
+  "damage": "<num>{damage}</num> damage",
+  "traits": "Traits",
+  "augments": "Augments",
+  "units": "Units",
+  "traitStyle": {
+    "inactive": "Inactive",
+    "bronze": "Bronze",
+    "silver": "Silver",
+    "gold": "Gold",
+    "prismatic": "Prismatic"
+  },
+  "traitTitle": "{name}: {style} ({current}/{total})",
+  "stars": "{count, plural, one {# star} other {# stars}}",
+  "items": "{count, plural, =0 {no items} one {# item} other {# items}}",
+  "unitTitle": "{name} ({stars}, {items})",
+  "noMatches": "No TFT games found",
+  "noMatchesHint": "This player has no recent Teamfight Tactics games.",
+  "loadMoreFailed": "Could not load more games.",
+  "loadingProfile": "Loading profile…"
+}

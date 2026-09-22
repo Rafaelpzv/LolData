@@ -49,7 +49,7 @@ export function SummonerSearch({
   const errorId = `${id}-error`;
 
   const [value, setValue] = useState("");
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [results, setResults] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [error, setError] = useState<string | null>(null);
@@ -57,12 +57,11 @@ export function SummonerSearch({
   const rootRef = useRef<HTMLDivElement>(null);
 
   const query = value.trim();
+  // Stale results are hidden as soon as the field is cleared.
+  const suggestions = query ? results : [];
 
   useEffect(() => {
-    if (!query) {
-      setSuggestions([]);
-      return;
-    }
+    if (!query) return;
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       try {
@@ -70,7 +69,7 @@ export function SummonerSearch({
           signal: controller.signal,
         });
         const data = res.ok ? await res.json() : [];
-        setSuggestions(Array.isArray(data) ? data : []);
+        setResults(Array.isArray(data) ? data : []);
         setActive(-1);
       } catch {
         /* aborted or offline: keep the previous list */

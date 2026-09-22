@@ -1,1 +1,52 @@
-{}
+{
+  "title": "Ranking de Elo alto",
+  "metaTitle": {
+    "lol": "Ranking {queue} · {region}",
+    "tft": "Ranking de TFT · {region}"
+  },
+  "description": {
+    "lol": "{region} · {queue}",
+    "tft": "{region} · TFT ranqueado"
+  },
+  "gameLabel": "Jogo",
+  "queueLabel": "Fila ranqueada",
+  "queueShort": {
+    "soloDuo": "Solo/Duo",
+    "flex": "Flex"
+  },
+  "cutoffs": "Corte de PDL",
+  "cutoffLp": "{lp} PDL",
+  "updated": "Atualizado {time}",
+  "stale": "Atualização em breve",
+  "columns": {
+    "position": "#",
+    "positionLabel": "Posição",
+    "player": "Jogador",
+    "tier": "Elo",
+    "lp": "PDL",
+    "wins": "Vitórias",
+    "losses": "Derrotas",
+    "winRate": "Taxa de vitória",
+    "winRateShort": "TV"
+  },
+  "record": "{wins}V {losses}D",
+  "nameUnavailable": "Nome ainda indisponível",
+  "sort": {
+    "byWinRate": "Ordenar por taxa de vitória",
+    "byLp": "Ordenar por PDL",
+    "loadingAll": "Carregando todos os jogadores para ordenar por taxa de vitória…",
+    "sortedByWinRate": "Ordenado por taxa de vitória entre {count, plural, one {# jogador} other {# jogadores}}."
+  },
+  "loading": "Carregando ranking",
+  "error": {
+    "title": "Não foi possível carregar o ranking",
+    "sortTitle": "Não foi possível carregar todos os jogadores para ordenar por taxa de vitória",
+    "description": "A API da Riot pode estar sobrecarregada. Tente novamente em instantes."
+  },
+  "empty": {
+    "title": "Nenhum jogador nesta página",
+    "description": "Este ranking ainda não tem jogadores aqui. Tente outra região ou volte para a primeira página.",
+    "firstPage": "Ir para a primeira página"
+  },
+  "showing": "Mostrando {from}–{to} de {total}"
+}

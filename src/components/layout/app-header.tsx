@@ -33,8 +33,18 @@ export function AppHeader() {
   const region = picked?.route === ctx.region ? picked.region : ctx.region;
 
   const navItems = [
-    { href: `/rankings/soloDuo/${region}/1`, label: t("lolRankings"), active: ctx.section === "lol-rankings" },
-    { href: `/tft/rankings/${region}/1`, label: t("tftRankings"), active: ctx.section === "tft-rankings" },
+    {
+      href: `/rankings/soloDuo/${region}/1`,
+      label: t("lolRankings"),
+      short: t("lolShort"),
+      active: ctx.section === "lol-rankings",
+    },
+    {
+      href: `/tft/rankings/${region}/1`,
+      label: t("tftRankings"),
+      short: t("tftShort"),
+      active: ctx.section === "tft-rankings",
+    },
   ];
 
   return (
@@ -75,7 +85,10 @@ export function AppHeader() {
                 focusRing,
               )}
             >
-              {item.label}
+              <span className="sm:hidden" aria-hidden>
+                {item.short}
+              </span>
+              <span className="sr-only sm:not-sr-only">{item.label}</span>
             </Link>
           ))}
           <LocaleSwitcher className="ml-2" />

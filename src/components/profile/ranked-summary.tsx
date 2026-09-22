@@ -41,7 +41,7 @@ export function RankedSummary({
   const wr = winRate(wins, losses);
 
   return (
-    <Card variant="sunken" padding="md" className={cn("flex items-center gap-4", className)}>
+    <Card padding="md" className={cn("flex items-center gap-4", className)}>
       <div className="flex size-12 shrink-0 items-center justify-center">
         {crest ? (
           <Image src={crest} alt={t("rankedCrestAlt", { tier: tTiers(key!) })} width={48} height={48} />
