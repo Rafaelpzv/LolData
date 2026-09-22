@@ -47,7 +47,7 @@ export function runeIconUrl(iconPath: string | null | undefined): string | null 
 
 export function tftUnitIconUrl(version: string | null, characterId: string | null | undefined): string | null {
   if (!version || !characterId) return null;
-  return `${DDRAGON}/cdn/${version}/tft-champion/${characterId}.png`;
+  return `${DDRAGON}/cdn/${version}/img/tft-champion/${characterId}.png`;
 }
 
 export function ddragonDataUrl(version: string, file: string, locale = "en_US"): string {

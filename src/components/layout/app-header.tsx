@@ -46,9 +46,12 @@ export function AppHeader() {
         {t("skipToContent")}
       </a>
       <div className="container flex flex-wrap items-center gap-x-4 gap-y-3 py-3 md:flex-nowrap">
-        <Link href="/" className={cn("flex shrink-0 items-center gap-2 rounded-md", focusRing)}>
-          <BrandMark />
-        </Link>
+        {/* The home hero already shows the wordmark. */}
+        {!isHome && (
+          <Link href="/" className={cn("flex shrink-0 items-center gap-2 rounded-md", focusRing)}>
+            <BrandMark />
+          </Link>
+        )}
 
         {!isHome && (
           <div className="order-last w-full md:order-none md:max-w-xl md:flex-1">
