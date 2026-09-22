@@ -150,7 +150,7 @@ export function RegionPicker({ value, onChange, appearance = "field", align = "e
             transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
               popoverSurface,
-              "absolute top-full z-50 mt-2 max-h-80 w-64 overflow-y-auto p-1 focus:outline-none",
+              "absolute top-full z-50 mt-2 max-h-80 w-72 overflow-y-auto p-1 focus:outline-none",
               align === "end" ? "right-0" : "left-0",
             )}
           >
