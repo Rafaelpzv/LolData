@@ -1,1 +1,9 @@
-{}
+{
+  "profileIconAlt": "{name} profile icon",
+  "record": "{wins}W {losses}L",
+  "winRateValue": "{value}% WR",
+  "hotStreak": "Hot streak",
+  "unranked": "Unranked",
+  "unrankedHint": "No ranked games this season.",
+  "rankedCrestAlt": "{tier} crest"
+}
