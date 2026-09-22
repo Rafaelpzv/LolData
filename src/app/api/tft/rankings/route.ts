@@ -2,6 +2,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { getSummonerNameByPuuid } from "@/app/actions/summoner";
+import { USE_FIXTURES, fixtureTftRankings } from "@/lib/fixtures";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -573,6 +574,10 @@ export async function GET(req: NextRequest) {
 
     if (!region) {
       return NextResponse.json({ error: "Missing region" }, { status: 400 });
+    }
+
+    if (USE_FIXTURES) {
+      return NextResponse.json(fixtureTftRankings({ region, page, limit }));
     }
 
     if (!RIOT_API_KEY) {

@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { z } from "zod";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+import { supabaseAdmin } from "@/lib/supabase";
+import { USE_FIXTURES, fixtureMatches } from "@/lib/fixtures";
 
 const AMERICAS_API_URL = "https://americas.api.riotgames.com";
 const EUROPE_API_URL = "https://europe.api.riotgames.com";
@@ -218,6 +214,22 @@ export async function GET(request: NextRequest) {
     const championId = searchParams.get("championId") || "";
     const gameName = searchParams.get("gameName") || "";
     const tagLine = searchParams.get("tagLine") || "";
+
+    if (USE_FIXTURES) {
+      return NextResponse.json(
+        fixtureMatches({
+          region: region || "",
+          puuid: puuid || "",
+          start,
+          count,
+          queueId,
+          championId,
+          championName,
+          gameName,
+          tagLine,
+        }),
+      );
+    }
 
     const championKey = (championName || championId).toLowerCase();
     const isFilteringByChampion = !!championKey && championKey !== "all";

@@ -2,6 +2,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { getSummonerNameByPuuid } from "@/app/actions/summoner";
+import { USE_FIXTURES, fixtureRankings } from "@/lib/fixtures";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -1103,6 +1104,10 @@ export async function GET(
           status: 400,
         },
       );
+    }
+
+    if (USE_FIXTURES) {
+      return NextResponse.json(fixtureRankings({ region, queueType, page, limit }));
     }
 
     if (!RIOT_API_KEY) {

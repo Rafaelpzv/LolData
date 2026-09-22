@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "dev:fixtures": "node scripts/dev-fixtures.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.5",

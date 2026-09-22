@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+import { supabaseAdmin } from "@/lib/supabase";
+import { USE_FIXTURES, fixturePlayerStatus } from "@/lib/fixtures";
 
 const L2_TTL_MINUTES = 30;
 
@@ -22,6 +18,10 @@ export async function GET(request: NextRequest) {
         { error: "region and puuid are required" },
         { status: 400 },
       );
+    }
+
+    if (USE_FIXTURES) {
+      return NextResponse.json(fixturePlayerStatus());
     }
 
     const cacheKey = `matches:${region}:${puuid}:all:all`;
