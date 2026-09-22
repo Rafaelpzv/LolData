@@ -1,70 +1,94 @@
 /** @type {import('tailwindcss').Config} */
+
+// Maps a CSS custom property (HSL channels) to a Tailwind color that supports /<alpha> modifiers.
+const token = (name) => `hsl(var(--${name}) / <alpha-value>)`;
+
 module.exports = {
-  darkMode: ["class"],
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     container: {
       center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+      padding: { DEFAULT: "1rem", sm: "1.5rem", lg: "2rem" },
+      screens: { "2xl": "1280px" },
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)"],
-        mono: [
-          "ui-monospace",
-          "SFMono-Regular",
-          "Menlo",
-          "Monaco",
-          "Consolas",
-          "Liberation Mono",
-          "Courier New",
-          "monospace",
-        ],
+        sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "Consolas", "monospace"],
+      },
+      fontSize: {
+        "2xs": ["0.6875rem", { lineHeight: "0.875rem" }],
       },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: {
+          DEFAULT: token("border"),
+          strong: token("border-strong"),
+        },
+        input: token("input"),
+        ring: token("ring"),
+        background: token("background"),
+        foreground: token("foreground"),
+        surface: {
+          DEFAULT: token("surface"),
+          raised: token("surface-raised"),
+          sunken: token("surface-sunken"),
+        },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: token("primary"),
+          foreground: token("primary-foreground"),
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: token("secondary"),
+          foreground: token("secondary-foreground"),
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: token("destructive"),
+          foreground: token("destructive-foreground"),
         },
+        warning: token("warning"),
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: token("muted"),
+          foreground: token("muted-foreground"),
+        },
+        subtle: {
+          foreground: token("subtle-foreground"),
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: token("accent"),
+          foreground: token("accent-foreground"),
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: token("popover"),
+          foreground: token("popover-foreground"),
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: token("card"),
+          foreground: token("card-foreground"),
         },
-        win: {
-          DEFAULT: "#2DEB90",
-          muted: "#1A8F56",
+        win: token("win"),
+        loss: token("loss"),
+        place: {
+          first: token("place-first"),
+          top4: token("place-top4"),
+          bottom: token("place-bottom"),
         },
-        loss: {
-          DEFAULT: "#ff5859",
-          muted: "#8F1A1A",
+        tier: {
+          iron: token("tier-iron"),
+          bronze: token("tier-bronze"),
+          silver: token("tier-silver"),
+          gold: token("tier-gold"),
+          platinum: token("tier-platinum"),
+          emerald: token("tier-emerald"),
+          diamond: token("tier-diamond"),
+          master: token("tier-master"),
+          grandmaster: token("tier-grandmaster"),
+          challenger: token("tier-challenger"),
+        },
+        trait: {
+          bronze: token("trait-bronze"),
+          silver: token("trait-silver"),
+          gold: token("trait-gold"),
+          prismatic: token("trait-prismatic"),
         },
       },
       borderRadius: {
@@ -72,39 +96,24 @@ module.exports = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      transitionTimingFunction: {
+        DEFAULT: "cubic-bezier(0.22, 1, 0.36, 1)",
+        out: "cubic-bezier(0.22, 1, 0.36, 1)",
+      },
+      transitionDuration: {
+        DEFAULT: "150ms",
+        fast: "150ms",
+        base: "200ms",
+        slow: "250ms",
+      },
       keyframes: {
-        "accordion-down": {
-          from: { height: 0 },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
-        },
-        fadeIn: {
-          from: {
-            opacity: 0,
-            transform: "translateY(10px)",
-          },
-          to: {
-            opacity: 1,
-            transform: "translateY(0)",
-          },
-        },
-        slideIn: {
-          from: {
-            transform: "translateX(100%)",
-          },
-          to: {
-            transform: "translateX(0)",
-          },
+        "fade-in": {
+          from: { opacity: "0", transform: "translateY(4px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        fadeIn: "fadeIn 0.3s ease-out forwards",
-        slideIn: "slideIn 0.3s ease-out forwards",
+        "fade-in": "fade-in 200ms cubic-bezier(0.22, 1, 0.36, 1) both",
       },
     },
   },

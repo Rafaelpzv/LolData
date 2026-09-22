@@ -1,0 +1,11 @@
+{
+  "label": "Search player",
+  "placeholder": "Riot ID, e.g. Faker#KR1",
+  "placeholderShort": "Name#TAG",
+  "submit": "Search",
+  "searching": "Searching…",
+  "region": "Region",
+  "suggestions": "Suggestions",
+  "noSuggestions": "No players found",
+  "hint": "Type the full Riot ID with the tag"
+}

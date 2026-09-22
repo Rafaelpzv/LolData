@@ -1,0 +1,6 @@
+{
+  "groups": { "americas": "Américas", "europe": "Europa", "asia": "Ásia", "sea": "Oceania e Sudeste Asiático" },
+  "BR1": "Brasil", "NA1": "América do Norte", "LA1": "América Latina Norte", "LA2": "América Latina Sul",
+  "EUW1": "Europa Ocidental", "EUN1": "Europa Nórdica e Oriental", "TR1": "Turquia", "RU": "Rússia", "ME1": "Oriente Médio",
+  "KR": "Coreia", "JP1": "Japão", "OC1": "Oceania", "SG2": "Singapura", "TW2": "Taiwan, Hong Kong e Macau", "VN2": "Vietnã"
+}

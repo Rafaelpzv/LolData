@@ -1,0 +1,8 @@
+{
+  "invalidRiotId": "Enter a Riot ID with its tag, like Name#TAG.",
+  "generic": "Something went wrong. Try again in a moment.",
+  "playerNotFound": "Player not found",
+  "playerNotFoundHint": "Check the Riot ID and region, then search again.",
+  "loadFailed": "Could not load this page",
+  "loadFailedHint": "The Riot API may be busy. Try again in a moment."
+}

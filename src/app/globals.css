@@ -2,27 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * LolData design tokens. Dark-only product.
+ * Values are HSL channels consumed as hsl(var(--token) / <alpha>) by tailwind.config.js.
+ * Never use raw palette classes (zinc-*, slate-*, red-*...) in components; add a token here instead.
+ */
 @layer base {
     :root {
+        /* Surfaces: page < sunken < surface < raised */
         --background: 240 10% 3.9%;
         --foreground: 0 0% 98%;
-        --card: 240 10% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 240 10% 3.9%;
-        --popover-foreground: 0 0% 98%;
+        --surface: 240 5.9% 10%;
+        --surface-raised: 240 5.5% 12%;
+        --surface-sunken: 240 8% 6.5%;
+
+        /* shadcn aliases, kept so the tailwind names stay familiar */
+        --card: var(--surface);
+        --card-foreground: var(--foreground);
+        --popover: var(--surface-raised);
+        --popover-foreground: var(--foreground);
+
         --primary: 0 0% 98%;
         --primary-foreground: 240 5.9% 10%;
         --secondary: 240 3.7% 15.9%;
         --secondary-foreground: 0 0% 98%;
         --muted: 240 3.7% 15.9%;
         --muted-foreground: 240 5% 64.9%;
+        --subtle-foreground: 240 4% 54%;
         --accent: 240 3.7% 15.9%;
         --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
+
+        /* Lines */
         --border: 240 3.7% 15.9%;
+        --border-strong: 240 5.3% 26.1%;
         --input: 240 3.7% 15.9%;
         --ring: 240 4.9% 83.9%;
+
+        /* Feedback */
+        --destructive: 0 84% 67%;
+        --destructive-foreground: 0 0% 98%;
+        --warning: 38 92% 56%;
+
+        /* Game semantics */
+        --win: 151 83% 55%;
+        --loss: 0 100% 67%;
+        --place-first: var(--win);
+        --place-top4: 213 94% 68%;
+        --place-bottom: var(--loss);
+
+        /* Ranked tiers */
+        --tier-iron: 24 8% 58%;
+        --tier-bronze: 22 45% 56%;
+        --tier-silver: 210 14% 72%;
+        --tier-gold: 43 74% 58%;
+        --tier-platinum: 175 45% 55%;
+        --tier-emerald: 150 60% 48%;
+        --tier-diamond: 220 80% 72%;
+        --tier-master: 270 95% 75%;
+        --tier-grandmaster: 0 91% 71%;
+        --tier-challenger: 50 96% 53%;
+
+        /* TFT trait tiers */
+        --trait-bronze: 25 80% 70%;
+        --trait-silver: 240 5% 75%;
+        --trait-gold: 45 93% 62%;
+        --trait-prismatic: 292 84% 72%;
+
         --radius: 0.5rem;
     }
 }
@@ -34,91 +79,58 @@
 
     html {
         @apply antialiased;
+        color-scheme: dark;
+        scrollbar-color: hsl(var(--border-strong)) transparent;
+        scrollbar-width: thin;
     }
 
     body {
-        @apply min-h-screen overflow-x-hidden bg-background text-foreground;
-        background-image: url("https://lolstatic-a.akamaihd.net/frontpage/apps/prod/preseason-2017/en_US/ff1afb37a0138886dad4826b7d1b75cd0d30c96a/assets/downloads/2017_assassins_wallpaper_1920x1080.jpg");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        font-family: theme("fontFamily.mono");
-        @apply font-mono;
+        @apply min-h-screen overflow-x-hidden bg-background font-sans text-foreground;
+        caret-color: hsl(var(--foreground));
     }
 
+    /* Backdrop: pre-blurred, pre-darkened wallpaper (public/backdrop.webp). */
     body::before {
         content: "";
-        @apply fixed inset-0;
-        background: inherit;
-        filter: blur(5px) brightness(0.3);
+        @apply pointer-events-none fixed inset-0;
         z-index: -1;
+        background: hsl(var(--background)) url("/backdrop.webp") center / cover no-repeat;
     }
 
-    /* Scrollbar customization */
+    ::selection {
+        background: hsl(var(--foreground) / 0.2);
+        color: hsl(var(--foreground));
+    }
+
+    a {
+        text-underline-offset: 3px;
+    }
+
     ::-webkit-scrollbar {
-        @apply w-2;
+        @apply h-2 w-2;
     }
 
     ::-webkit-scrollbar-track {
-        @apply bg-zinc-900/20;
+        @apply bg-transparent;
     }
 
     ::-webkit-scrollbar-thumb {
-        @apply rounded-full bg-zinc-700/50;
+        @apply rounded-full bg-border-strong;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        @apply bg-zinc-600/50;
-    }
-}
-
-@layer components {
-    .container {
-        @apply px-4 mx-auto max-w-7xl sm:px-6 lg:px-8;
-    }
-
-    .search-input {
-        @apply w-full px-4 py-2 transition-all border rounded-md md:w-64 bg-zinc-900/60 border-zinc-800 focus:outline-none focus:ring-2 focus:ring-primary/50;
-    }
-
-    .search-button {
-        @apply px-6 py-2 transition-colors rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed;
-    }
-
-    .region-select {
-        @apply px-4 py-2 transition-all border rounded-md bg-zinc-900/60 border-zinc-800 focus:outline-none focus:ring-2 focus:ring-primary/50;
-    }
-
-    .match-history {
-        @apply space-y-2 animate-fadeIn;
-    }
-
-    .match-item {
-        @apply transition-all duration-200;
-    }
-
-    .match-item:hover {
-        @apply transform scale-[1.01];
+        @apply bg-muted-foreground/60;
     }
 }
 
 @layer utilities {
+    /* Numeric data (KDA, LP, win rate, CS, damage, placement). */
+    .num {
+        @apply font-mono tabular-nums;
+        font-feature-settings: "tnum" 1, "zero" 0;
+    }
+
     .text-balance {
         text-wrap: balance;
     }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-fadeIn {
-    animation: fadeIn 0.3s ease-out forwards;
 }
