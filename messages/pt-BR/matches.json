@@ -1,1 +1,66 @@
-{}
+{
+  "metaDescription": "Estatísticas de League of Legends de {name}: ranqueadas, maestria de campeões e histórico de partidas.",
+  "profileLabel": "Perfil do jogador",
+  "rankedLabel": "Filas ranqueadas",
+  "mastery": {
+    "title": "Maestria de campeões",
+    "level": "Maestria nível {level}",
+    "points": "{points} pts",
+    "empty": "Nenhuma maestria de campeão ainda."
+  },
+  "title": "Histórico de partidas",
+  "summary": "{count, plural, one {Última partida} other {Últimas # partidas}}: <num>{wins}V {losses}D · {winRate}%</num>",
+  "summaryEmpty": "Nenhuma partida carregada",
+  "filters": {
+    "queue": "Filtrar por fila",
+    "champion": "Filtrar por campeão",
+    "championSearch": "Buscar campeão…",
+    "allChampions": "Todos os campeões",
+    "noChampions": "Nenhum campeão encontrado",
+    "champions": "Campeões"
+  },
+  "loadMore": "Carregar mais partidas",
+  "loadMoreFailed": "Não foi possível carregar mais partidas.",
+  "loading": "Carregando partidas…",
+  "empty": "Nenhuma partida encontrada",
+  "emptyHint": "Nenhuma partida recente corresponde a esses filtros.",
+  "emptyHintNoFilters": "Este jogador não tem partidas recentes.",
+  "resetFilters": "Limpar filtros",
+  "duration": "{minutes}m {seconds}s",
+  "kda": "{value} KDA",
+  "perfectKda": "KDA perfeito",
+  "cs": "{cs} CS",
+  "csPerMinute": "{value}/min",
+  "championLevel": "Nível do campeão {level}",
+  "keystone": "Runa principal",
+  "secondaryPath": "Caminho secundário",
+  "summonerSpell": "Feitiço de invocador",
+  "item": "Item {id}",
+  "items": "Itens",
+  "emptySlot": "Espaço vazio",
+  "showDetails": "Mostrar detalhes da partida",
+  "hideDetails": "Ocultar detalhes da partida",
+  "stats": {
+    "damage": "Dano a campeões",
+    "gold": "Ouro obtido",
+    "vision": "Placar de visão",
+    "cs": "CS"
+  },
+  "blueTeam": "Time azul",
+  "redTeam": "Time vermelho",
+  "you": "Você",
+  "winrate": {
+    "title": "Taxa de vitória",
+    "summary": "{games, plural, one {# partida} other {# partidas}} · {days, plural, one {# dia} other {# dias}}",
+    "pending": "+{count} pendentes",
+    "empty": "Nenhuma partida carregada ainda",
+    "chartLabel": "Taxa de vitória diária {days, plural, one {no último dia} other {nos últimos # dias}}",
+    "day": "{date}: {wins}V {losses}D, {winRate}% de vitórias",
+    "above": "Dia com 50% ou mais",
+    "below": "Dia abaixo de 50%",
+    "baseline": "Linha de 50%",
+    "record": "{wins}V {losses}D",
+    "wins": "{count}V",
+    "losses": "{count}D"
+  }
+}

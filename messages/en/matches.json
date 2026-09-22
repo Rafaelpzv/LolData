@@ -1,1 +1,66 @@
-{}
+{
+  "metaDescription": "League of Legends stats for {name}: ranked, champion mastery and match history.",
+  "profileLabel": "Player profile",
+  "rankedLabel": "Ranked queues",
+  "mastery": {
+    "title": "Champion mastery",
+    "level": "Mastery level {level}",
+    "points": "{points} pts",
+    "empty": "No champion mastery yet."
+  },
+  "title": "Match history",
+  "summary": "Last {count, plural, one {# game} other {# games}}: <num>{wins}W {losses}L · {winRate}%</num>",
+  "summaryEmpty": "No games loaded",
+  "filters": {
+    "queue": "Filter by queue",
+    "champion": "Filter by champion",
+    "championSearch": "Search champion…",
+    "allChampions": "All champions",
+    "noChampions": "No champions found",
+    "champions": "Champions"
+  },
+  "loadMore": "Load more games",
+  "loadMoreFailed": "Could not load more matches.",
+  "loading": "Loading matches…",
+  "empty": "No matches found",
+  "emptyHint": "No recent games match these filters.",
+  "emptyHintNoFilters": "This player has no recent games.",
+  "resetFilters": "Reset filters",
+  "duration": "{minutes}m {seconds}s",
+  "kda": "{value} KDA",
+  "perfectKda": "Perfect KDA",
+  "cs": "{cs} CS",
+  "csPerMinute": "{value}/min",
+  "championLevel": "Champion level {level}",
+  "keystone": "Keystone",
+  "secondaryPath": "Secondary path",
+  "summonerSpell": "Summoner spell",
+  "item": "Item {id}",
+  "items": "Items",
+  "emptySlot": "Empty slot",
+  "showDetails": "Show match details",
+  "hideDetails": "Hide match details",
+  "stats": {
+    "damage": "Damage to champions",
+    "gold": "Gold earned",
+    "vision": "Vision score",
+    "cs": "CS"
+  },
+  "blueTeam": "Blue team",
+  "redTeam": "Red team",
+  "you": "You",
+  "winrate": {
+    "title": "Win rate",
+    "summary": "{games, plural, one {# game} other {# games}} · {days, plural, one {# day} other {# days}}",
+    "pending": "+{count} pending",
+    "empty": "No games loaded yet",
+    "chartLabel": "Daily win rate over the last {days, plural, one {# day} other {# days}}",
+    "day": "{date}: {wins}W {losses}L, {winRate}% win rate",
+    "above": "Day at or above 50%",
+    "below": "Day below 50%",
+    "baseline": "50% baseline",
+    "record": "{wins}W {losses}L",
+    "wins": "{count}W",
+    "losses": "{count}L"
+  }
+}

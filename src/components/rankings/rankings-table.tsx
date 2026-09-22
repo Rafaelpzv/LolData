@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowUpDown } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { profileIconUrl, rankedCrestUrl } from "@/lib/cdn";
+import { profileIconUrl } from "@/lib/cdn";
+import { TierCrest } from "@/components/ui/tier-crest";
 import { winRate } from "@/lib/format";
 import { profileHref } from "@/lib/riot-id";
 import { apexTierFor, tierTextClass } from "@/lib/tiers";
@@ -100,7 +100,6 @@ export function RankingsTable({ game, region, rows, names, cutoffs, challengerSe
           {rows.map((row, index) => {
             const info = names?.[row.puuid];
             const tier = apexTierFor(row.leaguePoints, row.position, cutoffs, challengerSeats);
-            const crest = rankedCrestUrl(tier);
             const wr = winRate(row.wins, row.losses);
 
             return (
@@ -134,7 +133,7 @@ export function RankingsTable({ game, region, rows, names, cutoffs, challengerSe
                 </TableCell>
                 <TableCell className={cn(pad, "whitespace-nowrap")}>
                   <span className="flex items-center gap-2">
-                    {crest && <Image src={crest} alt="" width={20} height={20} className="size-5 shrink-0" />}
+                    <TierCrest tier={tier} size={20} />
                     <span className={cn("sr-only text-sm font-medium md:not-sr-only", tierTextClass(tier))}>
                       {tTiers(tier)}
                     </span>

@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { Clock } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { rankedCrestUrl } from "@/lib/cdn";
+import { TierCrest } from "@/components/ui/tier-crest";
 import { tierTextClass } from "@/lib/tiers";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -58,10 +57,9 @@ export function CutoffSummary({ cutoffs, cache, loading }: CutoffSummaryProps) {
           <h2 className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">{t("cutoffs")}</h2>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-3">
             {items.map(({ tier, lp }) => {
-              const crest = rankedCrestUrl(tier);
               return (
                 <li key={tier} className="flex items-center gap-2">
-                  {crest && <Image src={crest} alt="" width={24} height={24} className="size-6 shrink-0" />}
+                  <TierCrest tier={tier} size={24} />
                   <p className="leading-tight">
                     <span className="block text-xs text-muted-foreground">{tTiers(tier)}</span>
                     <span className={cn("num block text-sm font-semibold", tierTextClass(tier))}>

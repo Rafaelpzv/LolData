@@ -10,7 +10,7 @@
   "winRate": "Win rate",
   "winRateShort": "WR",
   "games": "{count, plural, one {# game} other {# games}}",
-  "lp": "{value} LP",
+  "lp": "{value, number} LP",
   "level": "Level {level}",
   "victory": "Victory",
   "defeat": "Defeat",

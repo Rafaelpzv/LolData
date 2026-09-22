@@ -1,8 +1,7 @@
-import Image from "next/image";
 import { Flame } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { rankedCrestUrl } from "@/lib/cdn";
+import { TierCrest } from "@/components/ui/tier-crest";
 import { winRate } from "@/lib/format";
 import { isApexTier, tierTextClass, toTier } from "@/lib/tiers";
 import { Card } from "@/components/ui/card";
@@ -37,14 +36,13 @@ export function RankedSummary({
   const tTiers = useTranslations("tiers");
   const tCommon = useTranslations("common");
   const key = toTier(tier);
-  const crest = rankedCrestUrl(key);
   const wr = winRate(wins, losses);
 
   return (
     <Card padding="md" className={cn("flex items-center gap-4", className)}>
       <div className="flex size-12 shrink-0 items-center justify-center">
-        {crest ? (
-          <Image src={crest} alt={t("rankedCrestAlt", { tier: tTiers(key!) })} width={48} height={48} />
+        {key ? (
+          <TierCrest tier={key} size={48} alt={t("rankedCrestAlt", { tier: tTiers(key) })} />
         ) : (
           <span aria-hidden className="size-10 rounded-full border border-dashed border-border-strong" />
         )}

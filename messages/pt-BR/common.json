@@ -10,7 +10,7 @@
   "winRate": "Taxa de vitória",
   "winRateShort": "TV",
   "games": "{count, plural, one {# partida} other {# partidas}}",
-  "lp": "{value} PDL",
+  "lp": "{value, number} PDL",
   "level": "Nível {level}",
   "victory": "Vitória",
   "defeat": "Derrota",
