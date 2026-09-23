@@ -152,8 +152,8 @@ html.lenis body {
         opacity: var(--glow-o, 0);
         transition: opacity 250ms cubic-bezier(0.22, 1, 0.36, 1);
         background: radial-gradient(
-            320px circle at var(--glow-x, 50%) var(--glow-y, 50%),
-            hsl(var(--foreground) / 0.06),
+            220px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+            hsl(var(--foreground) / 0.03),
             transparent 60%
         );
     }
