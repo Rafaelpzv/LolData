@@ -137,7 +137,7 @@ export function SummonerSearch({
     <div ref={rootRef} role="search" className={cn("relative w-full", className)}>
       <div
         className={cn(
-          "flex w-full items-center gap-2 rounded-full border bg-surface/85 transition-colors duration-fast",
+          "flex w-full items-center gap-2 rounded-full border bg-surface transition-colors duration-fast",
           "focus-within:border-border-strong focus-within:ring-2 focus-within:ring-ring/60",
           error ? "border-destructive/60" : "border-border hover:border-border-strong",
           lg ? "h-14 pl-5 pr-2.5" : "h-11 pl-4 pr-1.5",

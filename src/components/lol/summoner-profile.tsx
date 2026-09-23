@@ -54,7 +54,7 @@ export function SummonerProfile({ gameName, tagLine, region, level, profileIconI
           profileIconId={profileIconId}
           region={region}
         />
-        <div aria-label={t("rankedLabel")} role="group" className="grid gap-3 sm:grid-cols-2 md:w-80 md:shrink-0 md:grid-cols-1">
+        <div aria-label={t("rankedLabel")} role="group" className="grid gap-3 sm:grid-cols-2 md:w-[40rem] md:shrink-0">
           {RANKED_QUEUES.map((q) => {
             const entry = ranked.find((r) => r.queueType === q.apiValue);
             return (

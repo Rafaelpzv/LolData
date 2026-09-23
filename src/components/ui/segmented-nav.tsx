@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { focusRing } from "./button";
 
 /** Shared look for SegmentedNav (links) and SegmentedControl (buttons). */
-export const segmentGroupClass = "inline-flex gap-1 rounded-md border border-border bg-surface-sunken/70 p-1";
+export const segmentGroupClass = "inline-flex gap-1 rounded-md border border-border bg-surface-sunken p-1";
 
 export function segmentItemClass(active: boolean) {
   return cn(

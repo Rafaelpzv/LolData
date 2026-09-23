@@ -30,7 +30,7 @@ export function LocaleSwitcher({ className }: { className?: string }) {
       role="group"
       aria-label={t("language")}
       aria-busy={isPending || undefined}
-      className={cn("inline-flex h-8 items-center rounded-md border border-border bg-surface-sunken/70 p-0.5", className)}
+      className={cn("inline-flex h-8 items-center rounded-md border border-border bg-surface-sunken p-0.5", className)}
     >
       {LOCALES.map((l) => (
         <button

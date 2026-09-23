@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { focusRing } from "./button";
 
 export const fieldBase = cn(
-  "h-10 w-full rounded-md border border-border bg-surface-sunken/80 px-3 text-sm text-foreground",
+  "h-10 w-full rounded-md border border-border bg-surface-sunken px-3 text-sm text-foreground",
   "transition-colors duration-fast hover:border-border-strong",
   "disabled:cursor-not-allowed disabled:opacity-50",
   "aria-[invalid=true]:border-destructive/70",

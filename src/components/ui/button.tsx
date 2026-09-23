@@ -19,7 +19,7 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         /** Neutral surface button. The default for most actions. */
-        default: "border border-border bg-surface/80 text-foreground hover:border-border-strong hover:bg-accent",
+        default: "border border-border bg-surface text-foreground hover:border-border-strong hover:bg-accent",
         /** High-emphasis action. One per view. */
         primary: "bg-primary text-primary-foreground hover:bg-primary/90",
         outline: "border border-border bg-transparent text-foreground hover:border-border-strong hover:bg-accent/60",

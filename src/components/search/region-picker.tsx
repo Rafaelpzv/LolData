@@ -122,7 +122,7 @@ export function RegionPicker({ value, onChange, appearance = "field", align = "e
           "inline-flex items-center gap-2 text-sm font-medium text-foreground transition-colors duration-fast",
           appearance === "pill"
             ? "h-9 rounded-full border border-border bg-accent/60 pl-3 pr-2 hover:border-border-strong hover:bg-accent"
-            : "h-10 rounded-md border border-border bg-surface-sunken/80 pl-3 pr-2.5 hover:border-border-strong",
+            : "h-10 rounded-md border border-border bg-surface-sunken pl-3 pr-2.5 hover:border-border-strong",
           focusRing,
         )}
       >

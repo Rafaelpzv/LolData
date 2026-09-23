@@ -5,15 +5,16 @@ import { cn } from "@/lib/utils";
 export const cardVariants = cva("relative rounded-lg border", {
   variants: {
     variant: {
-      /** Translucent panel over the backdrop. */
-      default: "border-border/70 bg-surface/70",
+      /** Solid panel over the backdrop. */
+      default: "border-border/70 bg-surface",
       /** Clickable panel: border lifts on hover, no shadow. */
       interactive:
-        "border-border/70 bg-surface/70 transition-colors duration-fast hover:border-border-strong hover:bg-surface/85",
-      win: "border-win/20 bg-gradient-to-r from-win/10 to-win/5 transition-colors duration-fast hover:border-win/40",
-      loss: "border-loss/20 bg-gradient-to-r from-loss/10 to-loss/5 transition-colors duration-fast hover:border-loss/40",
+        "border-border/70 bg-surface transition-colors duration-fast hover:border-border-strong hover:bg-surface-raised",
+      /** Result tint drawn over an opaque surface so the backdrop never shows through. */
+      win: "border-win/20 bg-surface bg-gradient-to-r from-win/10 to-win/5 transition-colors duration-fast hover:border-win/40",
+      loss: "border-loss/20 bg-surface bg-gradient-to-r from-loss/10 to-loss/5 transition-colors duration-fast hover:border-loss/40",
       /** Recessed area inside a card (slots, previews). */
-      sunken: "border-border/50 bg-surface-sunken/70",
+      sunken: "border-border/50 bg-surface-sunken",
     },
     padding: {
       none: "",
