@@ -1,0 +1,649 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-23T22:32:58.409Z",
+  "title": "Design System: LolData",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Midnight Zinc",
+        "canonical": "hsl(240 10% 3.9%)",
+        "tonalRamp": [
+          "hsl(240 10% 15%)",
+          "hsl(240 10% 25%)",
+          "hsl(240 10% 35%)",
+          "hsl(240 10% 45%)",
+          "hsl(240 10% 55%)",
+          "hsl(240 10% 70%)",
+          "hsl(240 10% 85%)",
+          "hsl(240 10% 95%)"
+        ]
+      },
+      "foreground": {
+        "role": "primary",
+        "displayName": "Chalk White",
+        "canonical": "hsl(0 0% 98%)",
+        "tonalRamp": [
+          "hsl(0 0% 15%)",
+          "hsl(0 0% 25%)",
+          "hsl(0 0% 35%)",
+          "hsl(0 0% 45%)",
+          "hsl(0 0% 55%)",
+          "hsl(0 0% 70%)",
+          "hsl(0 0% 85%)",
+          "hsl(0 0% 95%)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Slate Panel",
+        "canonical": "hsl(240 5.9% 10%)",
+        "tonalRamp": [
+          "hsl(240 5.9% 15%)",
+          "hsl(240 5.9% 25%)",
+          "hsl(240 5.9% 35%)",
+          "hsl(240 5.9% 45%)",
+          "hsl(240 5.9% 55%)",
+          "hsl(240 5.9% 70%)",
+          "hsl(240 5.9% 85%)",
+          "hsl(240 5.9% 95%)"
+        ]
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Raised Panel",
+        "canonical": "hsl(240 5.5% 12%)",
+        "tonalRamp": [
+          "hsl(240 5.5% 15%)",
+          "hsl(240 5.5% 25%)",
+          "hsl(240 5.5% 35%)",
+          "hsl(240 5.5% 45%)",
+          "hsl(240 5.5% 55%)",
+          "hsl(240 5.5% 70%)",
+          "hsl(240 5.5% 85%)",
+          "hsl(240 5.5% 95%)"
+        ]
+      },
+      "surface-sunken": {
+        "role": "neutral",
+        "displayName": "Recess",
+        "canonical": "hsl(240 8% 6.5%)",
+        "tonalRamp": [
+          "hsl(240 8% 15%)",
+          "hsl(240 8% 25%)",
+          "hsl(240 8% 35%)",
+          "hsl(240 8% 45%)",
+          "hsl(240 8% 55%)",
+          "hsl(240 8% 70%)",
+          "hsl(240 8% 85%)",
+          "hsl(240 8% 95%)"
+        ]
+      },
+      "accent": {
+        "role": "neutral",
+        "displayName": "Accent Fill",
+        "canonical": "hsl(240 3.7% 15.9%)",
+        "tonalRamp": [
+          "hsl(240 3.7% 15%)",
+          "hsl(240 3.7% 25%)",
+          "hsl(240 3.7% 35%)",
+          "hsl(240 3.7% 45%)",
+          "hsl(240 3.7% 55%)",
+          "hsl(240 3.7% 70%)",
+          "hsl(240 3.7% 85%)",
+          "hsl(240 3.7% 95%)"
+        ]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Fog",
+        "canonical": "hsl(240 5% 64.9%)",
+        "tonalRamp": [
+          "hsl(240 5% 15%)",
+          "hsl(240 5% 25%)",
+          "hsl(240 5% 35%)",
+          "hsl(240 5% 45%)",
+          "hsl(240 5% 55%)",
+          "hsl(240 5% 70%)",
+          "hsl(240 5% 85%)",
+          "hsl(240 5% 95%)"
+        ]
+      },
+      "subtle-foreground": {
+        "role": "neutral",
+        "displayName": "Ash",
+        "canonical": "hsl(240 4% 54%)",
+        "tonalRamp": [
+          "hsl(240 4% 15%)",
+          "hsl(240 4% 25%)",
+          "hsl(240 4% 35%)",
+          "hsl(240 4% 45%)",
+          "hsl(240 4% 55%)",
+          "hsl(240 4% 70%)",
+          "hsl(240 4% 85%)",
+          "hsl(240 4% 95%)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "hsl(240 3.7% 15.9%)",
+        "tonalRamp": [
+          "hsl(240 3.7% 15%)",
+          "hsl(240 3.7% 25%)",
+          "hsl(240 3.7% 35%)",
+          "hsl(240 3.7% 45%)",
+          "hsl(240 3.7% 55%)",
+          "hsl(240 3.7% 70%)",
+          "hsl(240 3.7% 85%)",
+          "hsl(240 3.7% 95%)"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Edge",
+        "canonical": "hsl(240 5.3% 26.1%)",
+        "tonalRamp": [
+          "hsl(240 5.3% 15%)",
+          "hsl(240 5.3% 25%)",
+          "hsl(240 5.3% 35%)",
+          "hsl(240 5.3% 45%)",
+          "hsl(240 5.3% 55%)",
+          "hsl(240 5.3% 70%)",
+          "hsl(240 5.3% 85%)",
+          "hsl(240 5.3% 95%)"
+        ]
+      },
+      "ring": {
+        "role": "neutral",
+        "displayName": "Focus Ring",
+        "canonical": "hsl(240 4.9% 83.9%)",
+        "tonalRamp": [
+          "hsl(240 4.9% 15%)",
+          "hsl(240 4.9% 25%)",
+          "hsl(240 4.9% 35%)",
+          "hsl(240 4.9% 45%)",
+          "hsl(240 4.9% 55%)",
+          "hsl(240 4.9% 70%)",
+          "hsl(240 4.9% 85%)",
+          "hsl(240 4.9% 95%)"
+        ]
+      },
+      "destructive": {
+        "role": "tertiary",
+        "displayName": "Error Red",
+        "canonical": "hsl(0 84% 67%)",
+        "tonalRamp": [
+          "hsl(0 84% 15%)",
+          "hsl(0 84% 25%)",
+          "hsl(0 84% 35%)",
+          "hsl(0 84% 45%)",
+          "hsl(0 84% 55%)",
+          "hsl(0 84% 70%)",
+          "hsl(0 84% 85%)",
+          "hsl(0 84% 95%)"
+        ]
+      },
+      "warning": {
+        "role": "tertiary",
+        "displayName": "Streak Amber",
+        "canonical": "hsl(38 92% 56%)",
+        "tonalRamp": [
+          "hsl(38 92% 15%)",
+          "hsl(38 92% 25%)",
+          "hsl(38 92% 35%)",
+          "hsl(38 92% 45%)",
+          "hsl(38 92% 55%)",
+          "hsl(38 92% 70%)",
+          "hsl(38 92% 85%)",
+          "hsl(38 92% 95%)"
+        ]
+      },
+      "win": {
+        "role": "secondary",
+        "displayName": "Victory Green",
+        "canonical": "hsl(151 83% 55%)",
+        "tonalRamp": [
+          "hsl(151 83% 15%)",
+          "hsl(151 83% 25%)",
+          "hsl(151 83% 35%)",
+          "hsl(151 83% 45%)",
+          "hsl(151 83% 55%)",
+          "hsl(151 83% 70%)",
+          "hsl(151 83% 85%)",
+          "hsl(151 83% 95%)"
+        ]
+      },
+      "loss": {
+        "role": "secondary",
+        "displayName": "Defeat Red",
+        "canonical": "hsl(0 100% 67%)",
+        "tonalRamp": [
+          "hsl(0 100% 15%)",
+          "hsl(0 100% 25%)",
+          "hsl(0 100% 35%)",
+          "hsl(0 100% 45%)",
+          "hsl(0 100% 55%)",
+          "hsl(0 100% 70%)",
+          "hsl(0 100% 85%)",
+          "hsl(0 100% 95%)"
+        ]
+      },
+      "place-top4": {
+        "role": "secondary",
+        "displayName": "Top Four Blue",
+        "canonical": "hsl(213 94% 68%)",
+        "tonalRamp": [
+          "hsl(213 94% 15%)",
+          "hsl(213 94% 25%)",
+          "hsl(213 94% 35%)",
+          "hsl(213 94% 45%)",
+          "hsl(213 94% 55%)",
+          "hsl(213 94% 70%)",
+          "hsl(213 94% 85%)",
+          "hsl(213 94% 95%)"
+        ]
+      },
+      "tier-iron": {
+        "role": "tertiary",
+        "displayName": "Tier Iron",
+        "canonical": "hsl(24 8% 58%)",
+        "tonalRamp": [
+          "hsl(24 8% 15%)",
+          "hsl(24 8% 25%)",
+          "hsl(24 8% 35%)",
+          "hsl(24 8% 45%)",
+          "hsl(24 8% 55%)",
+          "hsl(24 8% 70%)",
+          "hsl(24 8% 85%)",
+          "hsl(24 8% 95%)"
+        ]
+      },
+      "tier-bronze": {
+        "role": "tertiary",
+        "displayName": "Tier Bronze",
+        "canonical": "hsl(22 45% 56%)",
+        "tonalRamp": [
+          "hsl(22 45% 15%)",
+          "hsl(22 45% 25%)",
+          "hsl(22 45% 35%)",
+          "hsl(22 45% 45%)",
+          "hsl(22 45% 55%)",
+          "hsl(22 45% 70%)",
+          "hsl(22 45% 85%)",
+          "hsl(22 45% 95%)"
+        ]
+      },
+      "tier-silver": {
+        "role": "tertiary",
+        "displayName": "Tier Silver",
+        "canonical": "hsl(210 14% 72%)",
+        "tonalRamp": [
+          "hsl(210 14% 15%)",
+          "hsl(210 14% 25%)",
+          "hsl(210 14% 35%)",
+          "hsl(210 14% 45%)",
+          "hsl(210 14% 55%)",
+          "hsl(210 14% 70%)",
+          "hsl(210 14% 85%)",
+          "hsl(210 14% 95%)"
+        ]
+      },
+      "tier-gold": {
+        "role": "tertiary",
+        "displayName": "Tier Gold",
+        "canonical": "hsl(43 74% 58%)",
+        "tonalRamp": [
+          "hsl(43 74% 15%)",
+          "hsl(43 74% 25%)",
+          "hsl(43 74% 35%)",
+          "hsl(43 74% 45%)",
+          "hsl(43 74% 55%)",
+          "hsl(43 74% 70%)",
+          "hsl(43 74% 85%)",
+          "hsl(43 74% 95%)"
+        ]
+      },
+      "tier-platinum": {
+        "role": "tertiary",
+        "displayName": "Tier Platinum",
+        "canonical": "hsl(175 45% 55%)",
+        "tonalRamp": [
+          "hsl(175 45% 15%)",
+          "hsl(175 45% 25%)",
+          "hsl(175 45% 35%)",
+          "hsl(175 45% 45%)",
+          "hsl(175 45% 55%)",
+          "hsl(175 45% 70%)",
+          "hsl(175 45% 85%)",
+          "hsl(175 45% 95%)"
+        ]
+      },
+      "tier-emerald": {
+        "role": "tertiary",
+        "displayName": "Tier Emerald",
+        "canonical": "hsl(150 60% 48%)",
+        "tonalRamp": [
+          "hsl(150 60% 15%)",
+          "hsl(150 60% 25%)",
+          "hsl(150 60% 35%)",
+          "hsl(150 60% 45%)",
+          "hsl(150 60% 55%)",
+          "hsl(150 60% 70%)",
+          "hsl(150 60% 85%)",
+          "hsl(150 60% 95%)"
+        ]
+      },
+      "tier-diamond": {
+        "role": "tertiary",
+        "displayName": "Tier Diamond",
+        "canonical": "hsl(220 80% 72%)",
+        "tonalRamp": [
+          "hsl(220 80% 15%)",
+          "hsl(220 80% 25%)",
+          "hsl(220 80% 35%)",
+          "hsl(220 80% 45%)",
+          "hsl(220 80% 55%)",
+          "hsl(220 80% 70%)",
+          "hsl(220 80% 85%)",
+          "hsl(220 80% 95%)"
+        ]
+      },
+      "tier-master": {
+        "role": "tertiary",
+        "displayName": "Tier Master",
+        "canonical": "hsl(270 95% 75%)",
+        "tonalRamp": [
+          "hsl(270 95% 15%)",
+          "hsl(270 95% 25%)",
+          "hsl(270 95% 35%)",
+          "hsl(270 95% 45%)",
+          "hsl(270 95% 55%)",
+          "hsl(270 95% 70%)",
+          "hsl(270 95% 85%)",
+          "hsl(270 95% 95%)"
+        ]
+      },
+      "tier-grandmaster": {
+        "role": "tertiary",
+        "displayName": "Tier Grandmaster",
+        "canonical": "hsl(0 91% 71%)",
+        "tonalRamp": [
+          "hsl(0 91% 15%)",
+          "hsl(0 91% 25%)",
+          "hsl(0 91% 35%)",
+          "hsl(0 91% 45%)",
+          "hsl(0 91% 55%)",
+          "hsl(0 91% 70%)",
+          "hsl(0 91% 85%)",
+          "hsl(0 91% 95%)"
+        ]
+      },
+      "tier-challenger": {
+        "role": "tertiary",
+        "displayName": "Tier Challenger",
+        "canonical": "hsl(50 96% 53%)",
+        "tonalRamp": [
+          "hsl(50 96% 15%)",
+          "hsl(50 96% 25%)",
+          "hsl(50 96% 35%)",
+          "hsl(50 96% 45%)",
+          "hsl(50 96% 55%)",
+          "hsl(50 96% 70%)",
+          "hsl(50 96% 85%)",
+          "hsl(50 96% 95%)"
+        ]
+      },
+      "trait-bronze": {
+        "role": "tertiary",
+        "displayName": "Trait Bronze",
+        "canonical": "hsl(25 80% 70%)",
+        "tonalRamp": [
+          "hsl(25 80% 15%)",
+          "hsl(25 80% 25%)",
+          "hsl(25 80% 35%)",
+          "hsl(25 80% 45%)",
+          "hsl(25 80% 55%)",
+          "hsl(25 80% 70%)",
+          "hsl(25 80% 85%)",
+          "hsl(25 80% 95%)"
+        ]
+      },
+      "trait-silver": {
+        "role": "tertiary",
+        "displayName": "Trait Silver",
+        "canonical": "hsl(240 5% 75%)",
+        "tonalRamp": [
+          "hsl(240 5% 15%)",
+          "hsl(240 5% 25%)",
+          "hsl(240 5% 35%)",
+          "hsl(240 5% 45%)",
+          "hsl(240 5% 55%)",
+          "hsl(240 5% 70%)",
+          "hsl(240 5% 85%)",
+          "hsl(240 5% 95%)"
+        ]
+      },
+      "trait-gold": {
+        "role": "tertiary",
+        "displayName": "Trait Gold",
+        "canonical": "hsl(45 93% 62%)",
+        "tonalRamp": [
+          "hsl(45 93% 15%)",
+          "hsl(45 93% 25%)",
+          "hsl(45 93% 35%)",
+          "hsl(45 93% 45%)",
+          "hsl(45 93% 55%)",
+          "hsl(45 93% 70%)",
+          "hsl(45 93% 85%)",
+          "hsl(45 93% 95%)"
+        ]
+      },
+      "trait-prismatic": {
+        "role": "tertiary",
+        "displayName": "Trait Prismatic",
+        "canonical": "hsl(292 84% 72%)",
+        "tonalRamp": [
+          "hsl(292 84% 15%)",
+          "hsl(292 84% 25%)",
+          "hsl(292 84% 35%)",
+          "hsl(292 84% 45%)",
+          "hsl(292 84% 55%)",
+          "hsl(292 84% 70%)",
+          "hsl(292 84% 85%)",
+          "hsl(292 84% 95%)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Home hero wordmark only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles (h1)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings (h2)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default interface text and table cells."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase stat labels, table headers, group labels; 11px floor."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Every number, via the .num utility (tabular)."
+      }
+    },
+    "shadows": [
+      {
+        "name": "float",
+        "value": "0 10px 15px -3px rgb(0 0 0 / .4), 0 4px 6px -4px rgb(0 0 0 / .4)",
+        "purpose": "Menus, listboxes, region picker and search suggestions only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Default easing for all state transitions."
+      },
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Hover, press, popover open/close."
+      },
+      {
+        "name": "duration-base",
+        "value": "200ms",
+        "purpose": "Content entrance (4px fade-in)."
+      },
+      {
+        "name": "duration-slow",
+        "value": "250ms",
+        "purpose": "Upper bound; nothing slower ships."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "container",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "Neutral action; the default for most buttons.",
+      "html": "<button class=\"ds-btn\">Load more</button>",
+      "css": ".ds-btn{height:40px;padding:0 16px;border-radius:6px;border:1px solid hsl(var(--border));background:hsl(var(--surface) / .8);color:hsl(var(--foreground));font:500 14px/1 Inter, system-ui, sans-serif;transition:background-color .15s cubic-bezier(.22,1,.36,1),border-color .15s cubic-bezier(.22,1,.36,1);cursor:pointer}.ds-btn:hover{background:hsl(var(--accent));border-color:hsl(var(--border-strong))}.ds-btn:focus-visible{outline: 2px solid hsl(var(--ring)); outline-offset: 2px;}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Inverted high-emphasis action, one per view.",
+      "html": "<button class=\"ds-btn-primary\">Back to home</button>",
+      "css": ".ds-btn-primary{height:40px;padding:0 16px;border-radius:6px;border:0;background:hsl(var(--foreground));color:hsl(var(--surface));font:500 14px/1 Inter, system-ui, sans-serif;transition:opacity .15s;cursor:pointer}.ds-btn-primary:hover{opacity:.9}.ds-btn-primary:focus-visible{outline: 2px solid hsl(var(--ring)); outline-offset: 2px;}"
+    },
+    {
+      "name": "Search Pill",
+      "kind": "input",
+      "refersTo": "search-pill",
+      "description": "Riot ID combobox with region picker; the product's front door.",
+      "html": "<label class=\"ds-search\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input placeholder=\"Riot ID, e.g. Faker#KR1\"/><span class=\"ds-search-region\">BR</span></label>",
+      "css": ".ds-search{display:flex;align-items:center;gap:8px;height:44px;padding:0 6px 0 16px;border-radius:9999px;border:1px solid hsl(var(--border));background:hsl(var(--surface) / .85);color:hsl(var(--muted-foreground));transition:border-color .15s}.ds-search:hover{border-color:hsl(var(--border-strong))}.ds-search:focus-within{border-color:hsl(var(--border-strong));box-shadow:0 0 0 2px hsl(var(--ring) / .6)}.ds-search input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:hsl(var(--foreground));font:400 14px Inter, system-ui, sans-serif}.ds-search input::placeholder{color:hsl(var(--subtle-foreground))}.ds-search-region{height:36px;padding:0 12px;display:inline-flex;align-items:center;border-radius:9999px;border:1px solid hsl(var(--border));background:hsl(var(--accent) / .6);color:hsl(var(--foreground));font:600 12px 'Geist Mono', ui-monospace, monospace}"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Translucent panel over the backdrop; never nested.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-card-label\">Ranked Solo/Duo</p><p class=\"ds-card-value\"><span class=\"ds-tier\">Challenger</span> 1,432 LP</p></div>",
+      "css": ".ds-card{padding:16px;border-radius:8px;border:1px solid hsl(var(--border) / .7);background:hsl(var(--surface) / .7);transition:border-color .15s}.ds-card:hover{border-color:hsl(var(--border-strong))}.ds-card-label{margin:0 0 4px;font:500 11px/1.3 Inter, system-ui, sans-serif;letter-spacing:.025em;text-transform:uppercase;color:hsl(var(--muted-foreground))}.ds-card-value{margin:0;font:600 14px 'Geist Mono', ui-monospace, monospace;color:hsl(var(--foreground))}.ds-tier{font-family:Inter, system-ui, sans-serif;color:hsl(var(--tier-challenger))}"
+    },
+    {
+      "name": "Result Badges",
+      "kind": "chip",
+      "refersTo": "badge-win",
+      "description": "Win/loss badges; color always paired with text.",
+      "html": "<span class=\"ds-badge ds-badge-win\">Victory</span> <span class=\"ds-badge ds-badge-loss\">Defeat</span>",
+      "css": ".ds-badge{display:inline-flex;align-items:center;padding:4px 6px;border-radius:4px;font:500 11px/1 Inter, system-ui, sans-serif}.ds-badge-win{background:hsl(var(--win) / .15);color:hsl(var(--win))}.ds-badge-loss{background:hsl(var(--loss) / .15);color:hsl(var(--loss))}"
+    },
+    {
+      "name": "Segmented Nav",
+      "kind": "nav",
+      "refersTo": "segment-active",
+      "description": "Queue and game switches; the active segment is filled with accent.",
+      "html": "<nav class=\"ds-seg\"><a class=\"ds-seg-item is-active\" aria-current=\"page\" href=\"#\">Solo/Duo</a><a class=\"ds-seg-item\" href=\"#\">Flex</a></nav>",
+      "css": ".ds-seg{display:inline-flex;gap:4px;padding:4px;border-radius:6px;border:1px solid hsl(var(--border));background:hsl(var(--surface-sunken) / .7)}.ds-seg-item{height:32px;padding:0 12px;display:inline-flex;align-items:center;border-radius:4px;color:hsl(var(--muted-foreground));font:400 14px Inter, system-ui, sans-serif;text-decoration:none;transition:background-color .15s,color .15s}.ds-seg-item:hover{background:hsl(var(--accent) / .5);color:hsl(var(--foreground))}.ds-seg-item.is-active{background:hsl(var(--accent));color:hsl(var(--foreground));font-weight:500}.ds-seg-item:focus-visible{outline: 2px solid hsl(var(--ring)); outline-offset: 2px;}"
+    },
+    {
+      "name": "Stat",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Uppercase label over a tabular numeric value.",
+      "html": "<div class=\"ds-stat\"><span>Win rate</span><strong>56.4%</strong></div>",
+      "css": ".ds-stat{display:flex;flex-direction:column;gap:4px}.ds-stat span{font:500 11px/1.3 Inter, system-ui, sans-serif;letter-spacing:.025em;text-transform:uppercase;color:hsl(var(--muted-foreground))}.ds-stat strong{font:600 20px/1.25 'Geist Mono', ui-monospace, monospace;font-variant-numeric:tabular-nums;color:hsl(var(--win))}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Scouting Report",
+    "overview": "LolData reads like a scout's dossier on a player: dense, factual, numbers first. The page is a dark, quiet sheet laid over a blurred, darkened League wallpaper, and the only things that light up are the facts a player cares about: win or loss, rank tier, placement. The interface stays out of the way so the data carries the weight; the game's identity shows up in the details (tier colors, crests, champion art), not in chrome.\n\nThis is an operate-mode product. Players arrive with a Riot ID, scan a profile or a leaderboard, and leave. Familiar controls, consistent affordances and fast scanning beat expression every time. Density is a feature: tables and match cards pack information, spaced on a 4px grid so it still breathes.\n\nComponents are precise and understated: flat surfaces, a hairline border that brightens on hover, no shadows at rest, no scaling on hover. The one signature shape is the rounded search pill, the product's front door.",
+    "keyCharacteristics": [
+      "Dark-only, translucent surfaces over a pre-blurred backdrop (`public/backdrop.webp`)",
+      "Neutral zinc UI; color reserved for game meaning (win/loss, tiers, placements, trait tiers)",
+      "Inter for interface text, Geist Mono tabular numerals for every number",
+      "Flat by default; shadows only on floating layers",
+      "One component vocabulary for LoL and TFT, fully localized (EN and PT-BR)"
+    ],
+    "rules": [
+      {
+        "name": "The Earned Color Rule",
+        "body": "Color means something in the game or it doesn't appear. No decorative gradients, no brand tints on inactive states; a screen with no results or tiers is grayscale.",
+        "section": "colors"
+      },
+      {
+        "name": "The Never Alone Rule",
+        "body": "Win, loss, placement and trait tier are never communicated by color alone: a label, count or icon always travels with it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "If it is a number, it is `.num`. Numbers are formatted by the locale (`1,432` / `1.432`) through next-intl.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fixed Scale Rule",
+        "body": "Fixed rem sizes only (Tailwind scale plus `2xs`). No fluid type and no `text-[Npx]`.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-At-Rest Rule",
+        "body": "Resting surfaces never cast shadows, and cards never lift or scale on hover. Hover changes border and fill, plus a faint cursor-following light (`data-glow`, 3% foreground, 220px); only images inside rows may scale (1.05).",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Layer Rule",
+        "body": "Never nest a card inside a card. A section holding cards has no card wrapper; inside a card, structure comes from dividers and spacing.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do build every screen from `src/components/ui` primitives and `src/lib` helpers (`cdn`, `regions`, `tiers`, `queues`, `format`, `riot-id`).",
+      "Do use tokens only (`bg-surface/70`, `text-muted-foreground`, `text-win`, `text-tier-gold`); add a token to `globals.css` before inventing a color.",
+      "Do render every number with `.num` and format it with next-intl.",
+      "Do translate every visible string and `aria-label` in both `messages/en` and `messages/pt-BR`.",
+      "Do animate with the shared motion system: tokens in `src/lib/motion.ts` (150–250ms states, 450ms reveals, springs for indicators) and primitives in `src/components/motion` (`Reveal`, `Stagger`, `AnimatedNumber`, `Collapse`, `ActivePill`, `FlipText`, `Tip`). Everything turns off under `prefers-reduced-motion`.",
+      "Do give every interactive element a real `<button>`/`<Link>` with a visible focus ring."
+    ],
+    "donts": [
+      "Don't use raw palette classes (zinc-, slate-, gray-, red-…), hex colors, or `text-[Npx]` in components.",
+      "Don't use neon/RGB \"gamer\" styling: no glow, no colored gradients or light effects as decoration.",
+      "Don't nest cards, scale or shadow cards on hover, add shadows to resting surfaces, or write one-off keyframes/durations outside the motion tokens.",
+      "Don't use unicode glyphs or emoji as icons (←, ⟳, ▾, 🔥); use lucide-react.",
+      "Don't convey win/loss, placement or tier by color alone.",
+      "Don't render page-level headers, back links or footers; the app shell owns them."
+    ]
+  }
+}

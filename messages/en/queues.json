@@ -1,0 +1,5 @@
+{
+  "label": "Queue",
+  "all": "All queues", "soloDuo": "Ranked Solo/Duo", "flex": "Ranked Flex", "aram": "ARAM",
+  "normal": "Normal", "quickplay": "Quickplay", "arena": "Arena", "other": "Other"
+}

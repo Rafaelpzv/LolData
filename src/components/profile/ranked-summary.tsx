@@ -1,0 +1,91 @@
+import { Flame } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
+import { TierCrest } from "@/components/ui/tier-crest";
+import { winRate } from "@/lib/format";
+import { isApexTier, tierTextClass, toTier } from "@/lib/tiers";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { AnimatedNumber } from "@/components/motion/animated-number";
+
+interface RankedSummaryProps {
+  /** Queue name, already translated ("Ranked Solo/Duo", "Ranked TFT"). */
+  queueLabel: string;
+  /** Riot tier ("GOLD", "Challenger") or null when unranked. */
+  tier: string | null | undefined;
+  /** Division ("I".."IV"); ignored for apex tiers. */
+  division?: string | null;
+  leaguePoints?: number | null;
+  wins?: number | null;
+  losses?: number | null;
+  hotStreak?: boolean;
+  className?: string;
+}
+
+/** One ranked queue: crest, tier + division, LP, record and win rate. */
+export function RankedSummary({
+  queueLabel,
+  tier,
+  division,
+  leaguePoints,
+  wins,
+  losses,
+  hotStreak,
+  className,
+}: RankedSummaryProps) {
+  const t = useTranslations("profile");
+  const tTiers = useTranslations("tiers");
+  const tCommon = useTranslations("common");
+  const key = toTier(tier);
+  const wr = winRate(wins, losses);
+
+  return (
+    <Card padding="md" className={cn("flex items-center gap-4", className)}>
+      <div className="flex size-12 shrink-0 items-center justify-center">
+        {key ? (
+          <TierCrest tier={key} size={48} alt={t("rankedCrestAlt", { tier: tTiers(key) })} />
+        ) : (
+          <span aria-hidden className="size-10 rounded-full border border-dashed border-border-strong" />
+        )}
+      </div>
+      <div className="min-w-0 flex-1 space-y-1">
+        <p className="text-2xs font-medium uppercase tracking-wide text-muted-foreground">{queueLabel}</p>
+        {key ? (
+          <>
+            <p className="flex flex-wrap items-baseline gap-x-2">
+              <span className={cn("font-semibold", tierTextClass(key))}>
+                {tTiers(key)}
+                {division && !isApexTier(key) ? ` ${division}` : ""}
+              </span>
+              {leaguePoints != null && (
+                <AnimatedNumber value={leaguePoints} suffix={` ${tCommon("lpUnit")}`} className="text-sm text-foreground" />
+              )}
+              {hotStreak && (
+                <Badge variant="warning" className="motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:fade-in-0 motion-safe:duration-slow">
+                  <Flame aria-hidden className="size-3" />
+                  <span className="sr-only sm:not-sr-only">{t("hotStreak")}</span>
+                </Badge>
+              )}
+            </p>
+            <p className="num text-xs text-muted-foreground">
+              {t("record", { wins: wins ?? 0, losses: losses ?? 0 })}
+              {wr != null && (
+                <>
+                  {" · "}
+                  <AnimatedNumber
+                    value={wr}
+                    decimals={1}
+                    suffix={`% ${tCommon("winRateUnit")}`}
+                    className={wr >= 50 ? "text-win" : "text-loss"}
+                  />
+                </>
+              )}
+            </p>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground">{t("unrankedHint")}</p>
+        )}
+      </div>
+    </Card>
+  );
+}

@@ -1,0 +1,6 @@
+{
+  "metaDescription": "Estatísticas de jogadores, progresso ranqueado e histórico de partidas de League of Legends e Teamfight Tactics.",
+  "tagline": "Estatísticas de jogadores, progresso ranqueado e histórico de partidas.",
+  "mode": "Jogo",
+  "viewRankings": "Ver rankings de {game}"
+}

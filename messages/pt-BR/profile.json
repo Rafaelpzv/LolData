@@ -1,0 +1,9 @@
+{
+  "profileIconAlt": "Ícone de perfil de {name}",
+  "record": "{wins}V {losses}D",
+  "winRateValue": "{value}% TV",
+  "hotStreak": "Sequência de vitórias",
+  "unranked": "Sem ranque",
+  "unrankedHint": "Nenhuma partida ranqueada nesta temporada.",
+  "rankedCrestAlt": "Emblema {tier}"
+}

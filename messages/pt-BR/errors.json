@@ -1,0 +1,11 @@
+{
+  "invalidRiotId": "Digite um Riot ID com a tag, como Nome#TAG.",
+  "generic": "Algo deu errado. Tente novamente em instantes.",
+  "playerNotFound": "Jogador não encontrado",
+  "playerNotFoundHint": "Confira o Riot ID e a região e busque de novo.",
+  "loadFailed": "Não foi possível carregar esta página",
+  "loadFailedHint": "A API da Riot pode estar ocupada. Tente novamente em instantes.",
+  "pageNotFound": "Página não encontrada",
+  "pageNotFoundHint": "O link pode estar quebrado ou a página pode ter mudado de lugar.",
+  "backHome": "Voltar ao início"
+}

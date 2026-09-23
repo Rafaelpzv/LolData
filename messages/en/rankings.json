@@ -1,0 +1,67 @@
+{
+  "title": "High Elo rankings",
+  "metaTitle": {
+    "lol": "{queue} rankings · {region}",
+    "tft": "TFT rankings · {region}"
+  },
+  "description": {
+    "lol": "{region} · {queue}",
+    "tft": "{region} · Ranked TFT"
+  },
+  "gameLabel": "Game",
+  "queueLabel": "Ranked queue",
+  "queueShort": {
+    "soloDuo": "Solo/Duo",
+    "flex": "Flex"
+  },
+  "cutoffs": "LP cutoffs",
+  "lpUnit": "LP",
+  "updated": "Updated {time}",
+  "stale": "Refreshing soon",
+  "columns": {
+    "position": "#",
+    "positionLabel": "Position",
+    "player": "Player",
+    "tier": "Tier",
+    "lp": "LP",
+    "wins": "Wins",
+    "losses": "Losses",
+    "winRate": "Win rate",
+    "winRateShort": "WR"
+  },
+  "record": "{wins}W {losses}L",
+  "nameUnavailable": "Name not available yet",
+  "sort": {
+    "label": "Sort",
+    "ladder": "Ladder order",
+    "column": {
+      "lp": "LP",
+      "wins": "Wins",
+      "losses": "Losses",
+      "winrate": "Win rate"
+    },
+    "action": {
+      "desc": "Sort by {column}, highest first",
+      "asc": "Sort by {column}, lowest first",
+      "reset": "Back to ladder order"
+    },
+    "option": {
+      "desc": "{column}: highest first",
+      "asc": "{column}: lowest first"
+    },
+    "loadingAll": "Loading every player to sort the leaderboard…",
+    "sortedBy": "Sorted by {column} ({dir, select, asc {lowest first} other {highest first}}) across {count, plural, one {# player} other {# players}}."
+  },
+  "loading": "Loading rankings",
+  "error": {
+    "title": "Could not load the rankings",
+    "sortTitle": "Could not load every player to sort the leaderboard",
+    "description": "The Riot API may be busy. Try again in a moment."
+  },
+  "empty": {
+    "title": "No players on this page",
+    "description": "This leaderboard has no entries here yet. Try another region or go back to the first page.",
+    "firstPage": "Go to the first page"
+  },
+  "showing": "Showing {from}–{to} of {total}"
+}
