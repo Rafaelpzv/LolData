@@ -24,5 +24,7 @@
   "previous": "Previous",
   "next": "Next",
   "page": "Page {page}",
-  "perfect": "Perfect"
+  "perfect": "Perfect",
+  "lpUnit": "LP",
+  "winRateUnit": "WR"
 }

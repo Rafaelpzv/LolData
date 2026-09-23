@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div aria-hidden className={cn("rounded-md bg-muted/60 motion-safe:animate-pulse", className)} {...props} />;
+  return <div aria-hidden className={cn("shimmer rounded-md bg-muted/60", className)} {...props} />;
 }
 
 interface SkeletonListProps {

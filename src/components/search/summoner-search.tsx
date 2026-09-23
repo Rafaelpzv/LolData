@@ -197,6 +197,7 @@ export function SummonerSearch({
           <motion.ul
             id={listId}
             role="listbox"
+            data-lenis-prevent
             aria-label={t("suggestions")}
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}

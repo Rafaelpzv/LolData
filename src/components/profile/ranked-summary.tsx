@@ -6,6 +6,7 @@ import { winRate } from "@/lib/format";
 import { isApexTier, tierTextClass, toTier } from "@/lib/tiers";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AnimatedNumber } from "@/components/motion/animated-number";
 
 interface RankedSummaryProps {
   /** Queue name, already translated ("Ranked Solo/Duo", "Ranked TFT"). */
@@ -56,9 +57,11 @@ export function RankedSummary({
                 {tTiers(key)}
                 {division && !isApexTier(key) ? ` ${division}` : ""}
               </span>
-              {leaguePoints != null && <span className="num text-sm text-foreground">{tCommon("lp", { value: leaguePoints })}</span>}
+              {leaguePoints != null && (
+                <AnimatedNumber value={leaguePoints} suffix={` ${tCommon("lpUnit")}`} className="text-sm text-foreground" />
+              )}
               {hotStreak && (
-                <Badge variant="warning" title={t("hotStreak")}>
+                <Badge variant="warning" className="motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:fade-in-0 motion-safe:duration-slow">
                   <Flame aria-hidden className="size-3" />
                   <span className="sr-only sm:not-sr-only">{t("hotStreak")}</span>
                 </Badge>
@@ -69,9 +72,12 @@ export function RankedSummary({
               {wr != null && (
                 <>
                   {" · "}
-                  <span className={wr >= 50 ? "text-win" : "text-loss"}>
-                    {t("winRateValue", { value: wr.toFixed(1) })}
-                  </span>
+                  <AnimatedNumber
+                    value={wr}
+                    decimals={1}
+                    suffix={`% ${tCommon("winRateUnit")}`}
+                    className={wr >= 50 ? "text-win" : "text-loss"}
+                  />
                 </>
               )}
             </p>

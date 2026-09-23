@@ -10,7 +10,7 @@ export const focusRing =
 export const buttonVariants = cva(
   cn(
     "inline-flex shrink-0 select-none items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium",
-    "transition-colors duration-fast",
+    "transition-[color,background-color,border-color,transform] duration-fast active:scale-[0.97]",
     "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
     "[&_svg]:size-4 [&_svg]:shrink-0",
     focusRing,

@@ -4,6 +4,11 @@ import { useEffect } from "react";
 import { MotionConfig } from "motion/react";
 import { TIME_ZONE_COOKIE } from "@/i18n/config";
 import { setTimeZone } from "@/i18n/actions";
+import { SPRING } from "@/lib/motion";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { ClickSpark } from "@/components/motion/click-spark";
+import { PointerGlow } from "@/components/motion/pointer-glow";
 
 /**
  * Stores the browser time zone in a cookie so server-rendered dates match the viewer's clock.
@@ -23,9 +28,14 @@ function TimeZoneSync() {
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <MotionConfig reducedMotion="user">
-      <TimeZoneSync />
-      {children}
+    <MotionConfig reducedMotion="user" transition={SPRING.snappy}>
+      <TooltipProvider delayDuration={150} skipDelayDuration={300}>
+        <TimeZoneSync />
+        <SmoothScroll />
+        <PointerGlow />
+        <ClickSpark />
+        {children}
+      </TooltipProvider>
     </MotionConfig>
   );
 }

@@ -24,5 +24,7 @@
   "previous": "Anterior",
   "next": "Próxima",
   "page": "Página {page}",
-  "perfect": "Perfeito"
+  "perfect": "Perfeito",
+  "lpUnit": "PDL",
+  "winRateUnit": "TV"
 }

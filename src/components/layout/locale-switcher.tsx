@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { LOCALES, type Locale } from "@/i18n/config";
 import { setLocale } from "@/i18n/actions";
 import { focusRing } from "@/components/ui/button";
+import { ActivePill } from "@/components/motion/active-pill";
 
 const SHORT: Record<Locale, string> = { en: "EN", "pt-BR": "PT" };
 const NAME: Record<Locale, string> = { en: "English", "pt-BR": "Português (Brasil)" };
@@ -41,11 +42,12 @@ export function LocaleSwitcher({ className }: { className?: string }) {
           aria-label={NAME[l]}
           onClick={() => change(l)}
           className={cn(
-            "h-full rounded-sm px-2 text-2xs font-medium transition-colors duration-fast",
-            l === locale ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
+            "relative isolate h-full rounded-sm px-2 text-2xs font-medium transition-colors duration-fast",
+            l === locale ? "text-foreground" : "text-muted-foreground hover:text-foreground",
             focusRing,
           )}
         >
+          {l === locale && <ActivePill layoutId="locale-pill" />}
           {SHORT[l]}
         </button>
       ))}

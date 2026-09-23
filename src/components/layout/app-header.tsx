@@ -11,6 +11,7 @@ import { focusRing } from "@/components/ui/button";
 import { SummonerSearch } from "@/components/search/summoner-search";
 import { LocaleSwitcher } from "./locale-switcher";
 import { BrandMark } from "./brand-mark";
+import { ActivePill } from "@/components/motion/active-pill";
 
 /** Reads game + region from the current route so header search and nav stay in context. */
 function routeContext(pathname: string): { game: Game; region: string; section: "lol-rankings" | "tft-rankings" | null } {
@@ -80,11 +81,12 @@ export function AppHeader() {
               href={item.href}
               aria-current={item.active ? "page" : undefined}
               className={cn(
-                "inline-flex h-8 items-center whitespace-nowrap rounded-md px-2.5 text-sm transition-colors duration-fast",
-                item.active ? "bg-accent text-foreground" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                "relative isolate inline-flex h-8 items-center whitespace-nowrap rounded-md px-2.5 text-sm transition-colors duration-fast",
+                item.active ? "text-foreground" : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
                 focusRing,
               )}
             >
+              {item.active && <ActivePill layoutId="header-nav" className="rounded-md" />}
               <span className="sm:hidden" aria-hidden>
                 {item.short}
               </span>

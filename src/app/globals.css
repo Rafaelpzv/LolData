@@ -123,6 +123,83 @@
     }
 }
 
+/* ---- Motion ------------------------------------------------------------ */
+
+/* Lenis smooth scroll (components/motion/smooth-scroll.tsx). */
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+@layer components {
+    /* Cursor-following light on [data-glow] surfaces (components/motion/pointer-glow.tsx). */
+    [data-glow] {
+        isolation: isolate;
+    }
+    [data-glow]::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        pointer-events: none;
+        opacity: var(--glow-o, 0);
+        transition: opacity 250ms cubic-bezier(0.22, 1, 0.36, 1);
+        background: radial-gradient(
+            320px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+            hsl(var(--foreground) / 0.06),
+            transparent 60%
+        );
+    }
+
+    /* Skeleton shimmer. */
+    .shimmer {
+        background-image: linear-gradient(
+            100deg,
+            transparent 20%,
+            hsl(var(--foreground) / 0.05) 50%,
+            transparent 80%
+        );
+        background-size: 200% 100%;
+        background-repeat: no-repeat;
+        animation: shimmer 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    }
+
+    /* FlipText (components/motion/flip-text.tsx). */
+    .flip-char {
+        transform-style: preserve-3d;
+        backface-visibility: hidden;
+        animation: flip var(--flip-duration, 6s) cubic-bezier(0.65, 0, 0.35, 1) var(--flip-delay, 0s)
+            var(--flip-iteration, infinite) both;
+    }
+}
+
+@keyframes shimmer {
+    from { background-position: 150% 0; }
+    to { background-position: -50% 0; }
+}
+
+@keyframes flip {
+    0% { transform: rotateX(0deg); }
+    12%, 100% { transform: rotateX(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shimmer,
+    .flip-char {
+        animation: none;
+    }
+    [data-glow]::before {
+        display: none;
+    }
+}
+
 @layer utilities {
     /* Numeric data (KDA, LP, win rate, CS, damage, placement). */
     .num {

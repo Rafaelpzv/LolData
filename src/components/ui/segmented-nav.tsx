@@ -1,5 +1,9 @@
+"use client";
+
+import { useId } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ActivePill } from "@/components/motion/active-pill";
 import { focusRing } from "./button";
 
 /** Shared look for SegmentedNav (links) and SegmentedControl (buttons). */
@@ -7,8 +11,8 @@ export const segmentGroupClass = "inline-flex gap-1 rounded-md border border-bor
 
 export function segmentItemClass(active: boolean) {
   return cn(
-    "inline-flex h-8 items-center gap-2 whitespace-nowrap rounded-sm px-3 text-sm transition-colors duration-fast [&_svg]:size-4",
-    active ? "bg-accent font-medium text-foreground" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+    "relative isolate inline-flex h-8 items-center gap-2 whitespace-nowrap rounded-sm px-3 text-sm transition-colors duration-fast [&_svg]:size-4",
+    active ? "font-medium text-foreground" : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
     focusRing,
   );
 }
@@ -25,8 +29,9 @@ interface SegmentedNavProps {
   className?: string;
 }
 
-/** Row of mutually exclusive links (queue filters). Scrolls horizontally on small screens. */
+/** Row of mutually exclusive links (queue filters). The active background slides between items. */
 export function SegmentedNav({ items, label, className }: SegmentedNavProps) {
+  const id = useId();
   return (
     <nav aria-label={label} className={cn("max-w-full overflow-x-auto", className)}>
       <ul className={segmentGroupClass}>
@@ -38,6 +43,7 @@ export function SegmentedNav({ items, label, className }: SegmentedNavProps) {
               scroll={false}
               className={segmentItemClass(item.active)}
             >
+              {item.active && <ActivePill layoutId={`seg-${id}`} />}
               {item.label}
             </Link>
           </li>

@@ -28,14 +28,19 @@ export const cardVariants = cva("relative rounded-lg border", {
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {
   as?: "div" | "section" | "article" | "li" | "aside";
+  /** Cursor-following light. On by default for every variant except sunken. */
+  glow?: boolean;
 }
 
+const GLOW_VARIANTS = new Set(["default", "interactive", "win", "loss"]);
+
 export const Card = React.forwardRef<HTMLElement, CardProps>(
-  ({ className, variant, padding, as = "div", ...props }, ref) => {
+  ({ className, variant, padding, glow, as = "div", ...props }, ref) => {
     const Comp = as as "div";
     return (
       <Comp
         ref={ref as React.Ref<HTMLDivElement>}
+        data-glow={(glow ?? GLOW_VARIANTS.has(variant ?? "default")) || undefined}
         className={cn(cardVariants({ variant, padding }), className)}
         {...props}
       />

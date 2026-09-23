@@ -140,6 +140,7 @@ export function RegionPicker({ value, onChange, appearance = "field", align = "e
             ref={listRef}
             id={listId}
             role="listbox"
+            data-lenis-prevent
             tabIndex={-1}
             aria-label={tSearch("region")}
             aria-activedescendant={`${id}-${active}`}
