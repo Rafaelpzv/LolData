@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase";
-import { USE_FIXTURES, fixturePlayerStatus } from "@/lib/fixtures";
 
 const L2_TTL_MINUTES = 30;
 
@@ -18,10 +17,6 @@ export async function GET(request: NextRequest) {
         { error: "region and puuid are required" },
         { status: 400 },
       );
-    }
-
-    if (USE_FIXTURES) {
-      return NextResponse.json(fixturePlayerStatus());
     }
 
     const cacheKey = `matches:${region}:${puuid}:all:all`;

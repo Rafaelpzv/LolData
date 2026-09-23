@@ -1,13 +1,6 @@
 "use server";
 
 import axios from "axios";
-import {
-  USE_FIXTURES,
-  fixtureTftLeagueByPuuid,
-  fixtureTftMatchById,
-  fixtureTftMatchIds,
-  fixtureTftSummonerByRiotId,
-} from "@/lib/fixtures";
 
 const API_KEY = process.env.RIOT_TFT_API_KEY || process.env.RIOT_API_KEY;
 const AMERICAS_URL = "https://americas.api.riotgames.com";
@@ -109,8 +102,6 @@ export async function getTftSummonerByRiotId(
   gameName: string,
   tagLine: string,
 ): Promise<TftSummonerProfile | null> {
-  if (USE_FIXTURES) return fixtureTftSummonerByRiotId(region, gameName, tagLine);
-
   const safeGameName = normalizeRiotSegment(gameName);
   const safeTagLine = normalizeRiotSegment(tagLine);
 
@@ -159,7 +150,6 @@ export async function getTftLeagueByPuuid(
   region: string,
   puuid: string,
 ): Promise<TftLeagueEntry[]> {
-  if (USE_FIXTURES) return fixtureTftLeagueByPuuid(region, puuid);
   if (!puuid) return [];
 
   try {
@@ -189,7 +179,6 @@ export async function getTftMatchIds(
   puuid: string,
   count = 20,
 ): Promise<string[]> {
-  if (USE_FIXTURES) return fixtureTftMatchIds(region, puuid, count);
   if (!puuid) return [];
 
   try {
@@ -214,7 +203,6 @@ export async function getTftMatchById(
   region: string,
   matchId: string,
 ): Promise<any> {
-  if (USE_FIXTURES) return fixtureTftMatchById(region, matchId);
   return safeAxios<any>({
     method: "get",
     url: `${getContinentalBaseUrl(region)}/tft/match/v1/matches/${matchId}`,

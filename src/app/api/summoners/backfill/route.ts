@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase";
-import { USE_FIXTURES, fixtureBackfill } from "@/lib/fixtures";
 
 const BATCH_SIZE = 100;
 
@@ -58,10 +57,6 @@ function extractSummonerRows(matches: any[]): any[] {
  * Uso: GET /api/summoners/backfill  (paginas por cursor; idempotente)
  */
 export async function GET(request: NextRequest) {
-  if (USE_FIXTURES) {
-    return NextResponse.json(fixtureBackfill());
-  }
-
   try {
     const processAll =
       (request.nextUrl.searchParams.get("all") || "").toLowerCase() === "true";

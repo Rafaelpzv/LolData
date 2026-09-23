@@ -1,4 +1,4 @@
-// Win rate over a time period: shared by /api/summoner/winrate and its fixtures.
+// Win rate over a time period: period maths and bucketing for /api/summoner/winrate.
 
 export const WINRATE_PERIODS = ["today", "week", "month", "3months", "year"] as const;
 export type WinratePeriod = (typeof WINRATE_PERIODS)[number];

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { USE_FIXTURES, fixtureWinrate } from "@/lib/fixtures";
 import {
   fetchInBatches,
   getMatchDetailsBatch,
@@ -43,10 +42,6 @@ export async function GET(request: NextRequest) {
 
     if (!region || puuid.length < 20 || !isWinratePeriod(period) || (queueId && !/^\d+$/.test(queueId))) {
       return NextResponse.json({ error: "Invalid request parameters" }, { status: 400 });
-    }
-
-    if (USE_FIXTURES) {
-      return NextResponse.json(fixtureWinrate(puuid, period, queueId), { headers: CACHE_HEADERS });
     }
 
     const { RIOT_API_KEY } = process.env;

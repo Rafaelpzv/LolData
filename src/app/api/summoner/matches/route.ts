@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase";
-import { USE_FIXTURES, fixtureMatches } from "@/lib/fixtures";
 import {
   fetchInBatches,
   getMatchDetailsBatch,
@@ -95,22 +94,6 @@ export async function GET(request: NextRequest) {
     const championId = searchParams.get("championId") || "";
     const gameName = searchParams.get("gameName") || "";
     const tagLine = searchParams.get("tagLine") || "";
-
-    if (USE_FIXTURES) {
-      return NextResponse.json(
-        fixtureMatches({
-          region: region || "",
-          puuid: puuid || "",
-          start,
-          count,
-          queueId,
-          championId,
-          championName,
-          gameName,
-          tagLine,
-        }),
-      );
-    }
 
     const championKey = (championName || championId).toLowerCase();
     const isFilteringByChampion = !!championKey && championKey !== "all";

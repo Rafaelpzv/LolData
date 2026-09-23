@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase";
-import { USE_FIXTURES, fixtureAutocomplete } from "@/lib/fixtures";
 
 const MAX_RESULTS = 8;
 
@@ -11,10 +10,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl;
     const raw = (searchParams.get("q") || "").trim().toLowerCase();
-
-    if (USE_FIXTURES) {
-      return NextResponse.json(fixtureAutocomplete(raw));
-    }
 
     if (!raw) {
       return NextResponse.json([]);

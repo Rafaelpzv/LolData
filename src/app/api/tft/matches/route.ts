@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { z } from "zod";
 import { supabaseAdmin } from "@/lib/supabase";
-import { USE_FIXTURES, fixtureTftMatches } from "@/lib/fixtures";
 
 const AMERICAS_API_URL = "https://americas.api.riotgames.com";
 const EUROPE_API_URL = "https://europe.api.riotgames.com";
@@ -105,12 +104,6 @@ export async function GET(request: NextRequest) {
     const puuid = searchParams.get("puuid");
     const start = Number(searchParams.get("start") || "0");
     const count = Number(searchParams.get("count") || "20");
-
-    if (USE_FIXTURES) {
-      return NextResponse.json(
-        fixtureTftMatches({ region: region || "", puuid: puuid || "", start, count }),
-      );
-    }
 
     const validatedData = matchesSchema.parse({
       region,

@@ -1,15 +1,6 @@
 "use server";
 
 import axios from "axios";
-import {
-  USE_FIXTURES,
-  fixtureChampionMasteries,
-  fixtureMatchHistory,
-  fixtureQueueTypes,
-  fixtureRankedByPuuid,
-  fixtureSummonerByRiotId,
-  fixtureSummonerNameByPuuid,
-} from "@/lib/fixtures";
 
 const API_KEY = process.env.RIOT_API_KEY;
 const BASE_URL = "https://americas.api.riotgames.com";
@@ -72,7 +63,6 @@ export async function getSummonerNameByPuuid(
   region: string,
   puuid: string,
 ): Promise<Summoner | null> {
-  if (USE_FIXTURES) return fixtureSummonerNameByPuuid(region, puuid);
   if (!puuid) return null;
 
   try {
@@ -158,8 +148,6 @@ export async function getSummonerByRiotId(
   gameName: string,
   tagLine: string,
 ) {
-  if (USE_FIXTURES) return fixtureSummonerByRiotId(region, gameName, tagLine);
-
   const safeGameName = normalizeRiotSegment(gameName);
   const safeTagLine = normalizeRiotSegment(tagLine);
 
@@ -208,7 +196,6 @@ export async function getSummonerByRiotId(
 // Funções locais (permanecem com região local)
 // ================================================================
 export async function getChampionMasteries(region: string, puuid: string) {
-  if (USE_FIXTURES) return fixtureChampionMasteries(region, puuid);
   try {
     return await safeAxios({
       method: "get",
@@ -221,7 +208,6 @@ export async function getChampionMasteries(region: string, puuid: string) {
 }
 
 export async function getMatchHistory(region: string, puuid: string) {
-  if (USE_FIXTURES) return fixtureMatchHistory(region, puuid);
   try {
     let apiUrl = BASE_URL;
     if (["euw1", "eun1", "ru", "tr1", "me1"].includes(region))
@@ -261,8 +247,6 @@ export async function getMatchHistoryByQueue(
   puuid: string,
   queueId: string,
 ) {
-  if (USE_FIXTURES) return fixtureMatchHistory(region, puuid, queueId);
-
   try {
     let apiUrl = BASE_URL;
     if (["euw1", "eun1", "ru", "tr1", "me1"].includes(region))
@@ -292,7 +276,6 @@ export async function getMatchHistoryByQueue(
 }
 
 export async function getQueueTypes() {
-  if (USE_FIXTURES) return fixtureQueueTypes();
   try {
     return await safeAxios({
       method: "get",
@@ -304,7 +287,6 @@ export async function getQueueTypes() {
 }
 
 export async function getRankedByPuuid(region: string, puuid: string) {
-  if (USE_FIXTURES) return fixtureRankedByPuuid(region, puuid);
   if (!puuid) throw new Error("Summoner PUUID not provided");
 
   const data = await safeAxios<any[]>({
