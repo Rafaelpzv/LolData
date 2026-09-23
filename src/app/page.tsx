@@ -38,7 +38,7 @@ export default function Home() {
         </div>
 
         <div className="space-y-4">
-          <StaggerItem className="relative z-20">
+          <StaggerItem>
             <SummonerSearch game={game} region={region} onRegionChange={setRegion} size="lg" autoFocus />
           </StaggerItem>
 

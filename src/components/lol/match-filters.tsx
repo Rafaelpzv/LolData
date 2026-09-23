@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { DURATION, EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { championIconUrl } from "@/lib/cdn";
@@ -15,9 +15,8 @@ import { normalizeRegion } from "@/lib/regions";
 import { buttonVariants } from "@/components/ui/button";
 import { IconFrame } from "@/components/ui/icon-frame";
 import { fieldBase } from "@/components/ui/input";
-import { listOptionClass, popoverSurface } from "@/components/ui/popover-surface";
+import { Floating, FloatingAnchor, FloatingContent, listOptionClass } from "@/components/ui/popover-surface";
 import { SegmentedNav } from "@/components/ui/segmented-nav";
-import { useClickOutside } from "./use-click-outside";
 
 interface MatchFilterBase {
   region: string;
@@ -103,8 +102,6 @@ function ChampionFilter({
     setQuery("");
     if (restoreFocus) triggerRef.current?.focus();
   }, []);
-  const closeOnOutside = useCallback(() => close(), [close]);
-  useClickOutside(rootRef, closeOnOutside, open);
 
   const openList = () => {
     setActive(Math.max(0, options.findIndex((o) => o.id === championId)));
@@ -144,7 +141,9 @@ function ChampionFilter({
   const currentName = championId ? (championName(championId) ?? championId) : t("allChampions");
 
   return (
+    <Floating open={open} onOpenChange={(o) => (o ? openList() : close())}>
     <div ref={rootRef} className="relative w-full sm:w-64">
+      <FloatingAnchor asChild>
       <button
         ref={triggerRef}
         type="button"
@@ -164,16 +163,19 @@ function ChampionFilter({
           className={cn("text-muted-foreground transition-transform duration-fast", open && "rotate-180")}
         />
       </button>
+      </FloatingAnchor>
 
-      <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96, y: -4 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.96, y: -4, transition: { duration: DURATION.fast } }}
-          transition={{ duration: DURATION.fast, ease: EASE_OUT }}
-          className={cn(popoverSurface, "absolute right-0 top-full z-40 mt-2 w-full origin-top-right p-1 sm:w-72")}
-        >
+      <FloatingContent
+        align="end"
+        className="max-h-none w-[max(var(--radix-popover-trigger-width),18rem)] overflow-visible"
+        onInteractOutside={(e) => {
+          if (rootRef.current?.contains(e.target as Node)) e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+          close(true);
+        }}
+      >
           <div className="relative p-1">
             <Search aria-hidden className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -201,7 +203,7 @@ function ChampionFilter({
             role="listbox"
             aria-label={t("champions")}
             data-lenis-prevent
-            className="mt-1 max-h-72 overflow-y-auto"
+            className="mt-1 max-h-[min(18rem,calc(var(--radix-popover-content-available-height)-3.5rem))] overflow-y-auto overscroll-contain"
           >
             {options.length === 0 ? (
               <li role="presentation" className="px-3 py-2 text-sm text-muted-foreground">
@@ -239,9 +241,8 @@ function ChampionFilter({
               ))
             )}
           </ul>
-        </motion.div>
-      )}
-      </AnimatePresence>
+      </FloatingContent>
     </div>
+    </Floating>
   );
 }

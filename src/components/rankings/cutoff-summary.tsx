@@ -84,7 +84,7 @@ export function CutoffSummary({ cutoffs, cache, loading }: CutoffSummaryProps) {
       {updatedAt && (
         <p className="flex items-center gap-2 text-xs text-muted-foreground sm:ml-auto">
           <Clock aria-hidden className="size-3.5 shrink-0" />
-          {t("updated", { time: format.relativeTime(updatedAt, now) })}
+          {t("updated", { time: format.relativeTime(updatedAt > now ? now : updatedAt, now) })}
           {cache?.isStale && <Badge variant="warning">{t("stale")}</Badge>}
         </p>
       )}

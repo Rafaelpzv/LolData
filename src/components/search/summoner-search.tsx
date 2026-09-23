@@ -2,14 +2,13 @@
 
 import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "motion/react";
 import { CornerDownLeft, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { normalizeRegion, regionShort } from "@/lib/regions";
 import { type Game, parseRiotId, profileHref } from "@/lib/riot-id";
 import { Spinner } from "@/components/ui/spinner";
-import { listOptionClass, popoverSurface } from "@/components/ui/popover-surface";
+import { Floating, FloatingAnchor, FloatingContent, listOptionClass } from "@/components/ui/popover-surface";
 import { RegionFlag } from "./region-flag";
 import { RegionPicker } from "./region-picker";
 
@@ -81,15 +80,6 @@ export function SummonerSearch({
     };
   }, [query]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onPointer = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("pointerdown", onPointer);
-    return () => document.removeEventListener("pointerdown", onPointer);
-  }, [open]);
-
   const go = (riotId: string, targetRegion: string) => {
     const parsed = parseRiotId(riotId);
     if (!parsed.ok) {
@@ -134,7 +124,9 @@ export function SummonerSearch({
   const lg = size === "lg";
 
   return (
+    <Floating open={showList} onOpenChange={(o) => !o && setOpen(false)}>
     <div ref={rootRef} role="search" className={cn("relative w-full", className)}>
+      <FloatingAnchor asChild>
       <div
         className={cn(
           "flex w-full items-center gap-2 rounded-full border bg-surface transition-colors duration-fast",
@@ -185,6 +177,7 @@ export function SummonerSearch({
         )}
         <RegionPicker value={region} onChange={onRegionChange} appearance="pill" />
       </div>
+      </FloatingAnchor>
 
       {error && (
         <p id={errorId} role="alert" className="mt-2 px-5 text-sm text-destructive">
@@ -192,19 +185,15 @@ export function SummonerSearch({
         </p>
       )}
 
-      <AnimatePresence>
-        {showList && (
-          <motion.ul
-            id={listId}
-            role="listbox"
-            data-lenis-prevent
-            aria-label={t("suggestions")}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className={cn(popoverSurface, "absolute inset-x-0 top-full z-40 mt-2 max-h-80 overflow-y-auto p-1")}
-          >
+      <FloatingContent
+        matchAnchorWidth
+        align="start"
+        onInteractOutside={(e) => {
+          // Clicks in the input/pill keep the list open; everything else closes it.
+          if (rootRef.current?.contains(e.target as Node)) e.preventDefault();
+        }}
+      >
+          <ul id={listId} role="listbox" aria-label={t("suggestions")}>
             {suggestions.map((s, i) => (
               <li
                 key={`${s.region}:${s.gameName}#${s.tagLine}`}
@@ -224,9 +213,9 @@ export function SummonerSearch({
                 <span className="num text-xs text-muted-foreground">{regionShort(s.region)}</span>
               </li>
             ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
+          </ul>
+      </FloatingContent>
     </div>
+    </Floating>
   );
 }
