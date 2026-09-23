@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
 import { Check, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { REGIONS, REGION_GROUPS, getRegion } from "@/lib/regions";
 import { focusRing } from "@/components/ui/button";
-import { listOptionClass, popoverSurface } from "@/components/ui/popover-surface";
+import { Floating, FloatingAnchor, FloatingContent, listOptionClass } from "@/components/ui/popover-surface";
 import { RegionFlag } from "./region-flag";
 
 interface RegionPickerProps {
@@ -29,20 +28,10 @@ export function RegionPicker({ value, onChange, appearance = "field", align = "e
 
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(current.code);
-  const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
   const ordered = useMemo(() => REGION_GROUPS.flatMap((g) => REGIONS.filter((r) => r.group === g)), []);
-
-  useEffect(() => {
-    if (!open) return;
-    const onPointer = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("pointerdown", onPointer);
-    return () => document.removeEventListener("pointerdown", onPointer);
-  }, [open]);
 
   useEffect(() => {
     if (open) {
@@ -103,7 +92,8 @@ export function RegionPicker({ value, onChange, appearance = "field", align = "e
   };
 
   return (
-    <div ref={rootRef} className={cn("relative", className)}>
+    <Floating open={open} onOpenChange={setOpen}>
+      <FloatingAnchor asChild>
       <button
         ref={buttonRef}
         type="button"
@@ -124,6 +114,7 @@ export function RegionPicker({ value, onChange, appearance = "field", align = "e
             ? "h-9 rounded-full border border-border bg-accent/60 pl-3 pr-2 hover:border-border-strong hover:bg-accent"
             : "h-10 rounded-md border border-border bg-surface-sunken pl-3 pr-2.5 hover:border-border-strong",
           focusRing,
+          className,
         )}
       >
         <RegionFlag region={current.code} />
@@ -133,27 +124,26 @@ export function RegionPicker({ value, onChange, appearance = "field", align = "e
           className={cn("size-4 text-muted-foreground transition-transform duration-fast", open && "rotate-180")}
         />
       </button>
+      </FloatingAnchor>
 
-      <AnimatePresence>
-        {open && (
-          <motion.ul
+      <FloatingContent
+        align={align}
+        className="w-80 max-w-[calc(100vw-1.5rem)]"
+        onOpenAutoFocus={() => listRef.current?.focus()}
+        onCloseAutoFocus={(e) => {
+          e.preventDefault();
+          buttonRef.current?.focus();
+        }}
+      >
+          <ul
             ref={listRef}
             id={listId}
             role="listbox"
-            data-lenis-prevent
             tabIndex={-1}
             aria-label={tSearch("region")}
             aria-activedescendant={`${id}-${active}`}
             onKeyDown={onListKeyDown}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className={cn(
-              popoverSurface,
-              "absolute top-full z-50 mt-2 max-h-80 w-72 overflow-y-auto p-1 focus:outline-none",
-              align === "end" ? "right-0" : "left-0",
-            )}
+            className="focus:outline-none"
           >
             {REGION_GROUPS.map((group) => (
               <li key={group} role="presentation">
@@ -186,9 +176,8 @@ export function RegionPicker({ value, onChange, appearance = "field", align = "e
                 </ul>
               </li>
             ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
-    </div>
+          </ul>
+      </FloatingContent>
+    </Floating>
   );
 }
