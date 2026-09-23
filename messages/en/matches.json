@@ -5,7 +5,7 @@
   "mastery": {
     "title": "Champion mastery",
     "level": "Mastery level {level}",
-    "points": "{points} pts",
+    "points": "<n>{points}</n> pts",
     "empty": "No champion mastery yet."
   },
   "title": "Match history",
@@ -27,10 +27,10 @@
   "emptyHintNoFilters": "This player has no recent games.",
   "resetFilters": "Reset filters",
   "duration": "{minutes}m {seconds}s",
-  "kda": "{value} KDA",
+  "kda": "<n>{value}</n> KDA",
   "perfectKda": "Perfect KDA",
-  "cs": "{cs} CS",
-  "csPerMinute": "{value}/min",
+  "cs": "<n>{cs}</n> CS",
+  "csPerMinute": "<n>{value}</n>/min",
   "championLevel": "Champion level {level}",
   "keystone": "Keystone",
   "secondaryPath": "Secondary path",

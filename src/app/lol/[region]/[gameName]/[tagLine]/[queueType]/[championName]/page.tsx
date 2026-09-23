@@ -12,6 +12,7 @@ import { queueIdFromSlug } from "@/lib/queues";
 import { regionShort } from "@/lib/regions";
 import { decodeParamOnce } from "@/lib/riot-id";
 import { PageShell } from "@/components/layout/page-shell";
+import { Reveal } from "@/components/motion/reveal";
 import { MatchFilters } from "@/components/lol/match-filters";
 import { MatchHistory } from "@/components/lol/match-history";
 import { MatchStatsText } from "@/components/lol/match-stats-text";
@@ -125,7 +126,7 @@ export default async function SummonerPage({ params }: SummonerPageProps) {
         masteries={((masteries ?? []) as ChampionMastery[]).slice(0, TOP_MASTERIES)}
       />
 
-      <section aria-labelledby="match-history-title" className="space-y-4">
+      <Reveal as="section" delay={0.1} aria-labelledby="match-history-title" className="space-y-4">
         <div className="space-y-1">
           <h2 id="match-history-title" className="text-lg font-semibold tracking-tight text-foreground">
             {t("title")}
@@ -149,7 +150,7 @@ export default async function SummonerPage({ params }: SummonerPageProps) {
           gameName={gameName}
           tagLine={tagLine}
         />
-      </section>
+      </Reveal>
     </PageShell>
   );
 }

@@ -1,8 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { motion, type HTMLMotionProps } from "motion/react";
+import { motion, type HTMLMotionProps, type Variants } from "motion/react";
 import { riseVariants, staggerVariants } from "@/lib/motion";
+
+// A variant's own transition overrides the `transition` prop, so the delay has to live inside it.
+const withDelay = (delay: number): Variants => {
+  const visible = riseVariants.visible as { transition?: object };
+  return { ...riseVariants, visible: { ...visible, transition: { ...visible.transition, delay } } };
+};
 
 type Tag = "div" | "section" | "ul" | "ol" | "li" | "article" | "header" | "tbody";
 
@@ -20,8 +26,7 @@ export function Reveal({ as = "div", immediate, delay = 0, children, ...props }:
     <Comp
       initial="hidden"
       {...(immediate ? { animate: "visible" } : { whileInView: "visible", viewport: { once: true, amount: 0.15 } })}
-      variants={riseVariants}
-      transition={{ delay }}
+      variants={delay ? withDelay(delay) : riseVariants}
       {...props}
     >
       {children}

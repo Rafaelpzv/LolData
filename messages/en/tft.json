@@ -32,7 +32,7 @@
     "gold": "Gold",
     "prismatic": "Prismatic"
   },
-  "traitTitle": "{name}: {style} ({current}/{total})",
+  "traitTitle": "{name}: {style} ({current}/{total}), {units, plural, one {# unit} other {# units}}",
   "stars": "{count, plural, one {# star} other {# stars}}",
   "items": "{count, plural, =0 {no items} one {# item} other {# items}}",
   "unitTitle": "{name} ({stars}, {items})",

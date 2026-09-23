@@ -1,4 +1,4 @@
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { championIconUrl } from "@/lib/cdn";
 import { championName } from "@/lib/champions";
 import { RANKED_QUEUES } from "@/lib/queues";
@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card";
 import { IconFrame } from "@/components/ui/icon-frame";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { RankedSummary } from "@/components/profile/ranked-summary";
+import { AnimatedNumber } from "@/components/motion/animated-number";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 
 /** league-v4 entry (subset). */
 export interface RankedEntry {
@@ -43,7 +45,9 @@ export function SummonerProfile({ gameName, tagLine, region, level, profileIconI
 
   return (
     <>
-      <section
+      <Reveal
+        as="section"
+        immediate
         aria-label={t("profileLabel")}
         className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
       >
@@ -71,7 +75,7 @@ export function SummonerProfile({ gameName, tagLine, region, level, profileIconI
             );
           })}
         </div>
-      </section>
+      </Reveal>
 
       <MasteryList masteries={masteries} />
     </>
@@ -80,28 +84,28 @@ export function SummonerProfile({ gameName, tagLine, region, level, profileIconI
 
 function MasteryList({ masteries }: { masteries: ChampionMastery[] }) {
   const t = useTranslations("matches.mastery");
-  const format = useFormatter();
   const titleId = "champion-mastery-title";
 
   return (
-    <section aria-labelledby={titleId} className="space-y-3">
+    <Reveal as="section" delay={0.05} aria-labelledby={titleId} className="space-y-3">
       <h2 id={titleId} className="text-lg font-semibold tracking-tight text-foreground">
         {t("title")}
       </h2>
       {masteries.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("empty")}</p>
       ) : (
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+        <Stagger as="ul" stagger={0.05} delay={0.1} className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
           {masteries.map((m) => {
             const name = championName(m.championId) ?? String(m.championId);
             return (
-              <li key={m.championId}>
-                <Card variant="sunken" padding="sm" className="flex h-full flex-col items-center gap-3 text-center sm:flex-row sm:text-left">
+              <StaggerItem as="li" key={m.championId}>
+                <Card variant="sunken" padding="sm" className="group/mastery flex h-full flex-col items-center gap-3 text-center sm:flex-row sm:text-left">
                   <IconFrame
                     src={championIconUrl(m.championId)}
                     alt={name}
                     size="lg"
                     shape="rounded"
+                    imageClassName="transition-transform duration-fast group-hover/mastery:scale-105"
                     badge={
                       <Badge variant="solid" className="num">
                         <span className="sr-only">{t("level", { level: m.championLevel })}</span>
@@ -112,15 +116,15 @@ function MasteryList({ masteries }: { masteries: ChampionMastery[] }) {
                   <div className="w-full min-w-0 sm:w-auto">
                     <p className="truncate text-sm font-medium text-foreground">{name}</p>
                     <p className="num text-xs text-muted-foreground">
-                      {t("points", { points: format.number(m.championPoints) })}
+                      {t.rich("points", { points: m.championPoints, n: () => <AnimatedNumber value={m.championPoints} /> })}
                     </p>
                   </div>
                 </Card>
-              </li>
+              </StaggerItem>
             );
           })}
-        </ul>
+        </Stagger>
       )}
-    </section>
+    </Reveal>
   );
 }

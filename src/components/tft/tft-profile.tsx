@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { RankedSummary } from "@/components/profile/ranked-summary";
+import { Reveal } from "@/components/motion/reveal";
 
 export interface TftRankEntry {
   queueType?: string;
@@ -27,7 +28,7 @@ export function TftProfile({ gameName, tagLine, level, profileIconId, region, ra
   const t = useTranslations("tft");
 
   return (
-    <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+    <Reveal className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
       <ProfileHeader
         gameName={gameName}
         tagLine={tagLine}
@@ -45,6 +46,6 @@ export function TftProfile({ gameName, tagLine, level, profileIconId, region, ra
         hotStreak={ranked?.hotStreak}
         className="md:w-80 md:shrink-0"
       />
-    </div>
+    </Reveal>
   );
 }

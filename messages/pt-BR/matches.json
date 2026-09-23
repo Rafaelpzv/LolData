@@ -5,7 +5,7 @@
   "mastery": {
     "title": "Maestria de campeões",
     "level": "Maestria nível {level}",
-    "points": "{points} pts",
+    "points": "<n>{points}</n> pts",
     "empty": "Nenhuma maestria de campeão ainda."
   },
   "title": "Histórico de partidas",
@@ -27,10 +27,10 @@
   "emptyHintNoFilters": "Este jogador não tem partidas recentes.",
   "resetFilters": "Limpar filtros",
   "duration": "{minutes}m {seconds}s",
-  "kda": "{value} KDA",
+  "kda": "<n>{value}</n> KDA",
   "perfectKda": "KDA perfeito",
-  "cs": "{cs} CS",
-  "csPerMinute": "{value}/min",
+  "cs": "<n>{cs}</n> CS",
+  "csPerMinute": "<n>{value}</n>/min",
   "championLevel": "Nível do campeão {level}",
   "keystone": "Runa principal",
   "secondaryPath": "Caminho secundário",

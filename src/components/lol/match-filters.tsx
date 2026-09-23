@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { AnimatePresence, motion } from "motion/react";
+import { DURATION, EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { championIconUrl } from "@/lib/cdn";
 import { CHAMPIONS, championName } from "@/lib/champions";
@@ -59,6 +61,9 @@ export function MatchFilters({ queueId, championId, ...base }: MatchFiltersProps
     </div>
   );
 }
+
+/** Options past this index appear together with the last cascading one. */
+const OPTION_CASCADE = 16;
 
 interface ChampionOption {
   id: string | null;
@@ -160,12 +165,14 @@ function ChampionFilter({
         />
       </button>
 
+      <AnimatePresence>
       {open && (
-        <div
-          className={cn(
-            popoverSurface,
-            "absolute right-0 top-full z-40 mt-2 w-full p-1 motion-safe:animate-fade-in sm:w-72",
-          )}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96, y: -4 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.96, y: -4, transition: { duration: DURATION.fast } }}
+          transition={{ duration: DURATION.fast, ease: EASE_OUT }}
+          className={cn(popoverSurface, "absolute right-0 top-full z-40 mt-2 w-full origin-top-right p-1 sm:w-72")}
         >
           <div className="relative p-1">
             <Search aria-hidden className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -189,14 +196,26 @@ function ChampionFilter({
               className={cn(fieldBase, "h-9 pl-9 placeholder:text-subtle-foreground")}
             />
           </div>
-          <ul id={listId} role="listbox" aria-label={t("champions")} className="mt-1 max-h-72 overflow-y-auto">
+          <ul
+            id={listId}
+            role="listbox"
+            aria-label={t("champions")}
+            data-lenis-prevent
+            className="mt-1 max-h-72 overflow-y-auto"
+          >
             {options.length === 0 ? (
               <li role="presentation" className="px-3 py-2 text-sm text-muted-foreground">
                 {t("noChampions")}
               </li>
             ) : (
               options.map((option, i) => (
-                <li key={option.id ?? "all"} role="presentation">
+                <motion.li
+                  key={option.id ?? "all"}
+                  role="presentation"
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: DURATION.fast, ease: EASE_OUT, delay: Math.min(i, OPTION_CASCADE) * 0.012 }}
+                >
                   <Link
                     id={`${id}-opt-${i}`}
                     role="option"
@@ -216,12 +235,13 @@ function ChampionFilter({
                     )}
                     <span className="truncate">{option.name}</span>
                   </Link>
-                </li>
+                </motion.li>
               ))
             )}
           </ul>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }

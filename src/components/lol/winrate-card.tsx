@@ -2,11 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
+import { AnimatePresence, motion } from "motion/react";
+import { DURATION, EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { winRate } from "@/lib/format";
 import { focusRing } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PopoverSurface } from "@/components/ui/popover-surface";
+import { AnimatedNumber } from "@/components/motion/animated-number";
 
 interface WinrateCardProps {
   /** Riot match objects (LoL match-v5 or TFT match-v1). */
@@ -77,6 +80,7 @@ export function WinrateCard({ matches, puuid, mode, title, pendingMatchesToday =
   }
 
   const tone = overall >= 50 ? "win" : "loss";
+  const overallRounded = Math.round(overall * 10) / 10;
   const points = days.map((d, i) => {
     const pct = winRate(d.wins, d.losses) ?? 0;
     const x = days.length === 1 ? 50 : (i / (days.length - 1)) * 100;
@@ -106,7 +110,7 @@ export function WinrateCard({ matches, puuid, mode, title, pendingMatchesToday =
         </div>
         <div className="text-right">
           <p className={cn("num text-3xl font-semibold leading-none", tone === "win" ? "text-win" : "text-loss")}>
-            {format.number(overall / 100, { style: "percent", maximumFractionDigits: 1 })}
+            <AnimatedNumber value={overallRounded} decimals={Number.isInteger(overallRounded) ? 0 : 1} suffix="%" />
           </p>
           <p className="num mt-1 text-xs text-muted-foreground">{t("record", { wins, losses })}</p>
         </div>
@@ -121,9 +125,24 @@ export function WinrateCard({ matches, puuid, mode, title, pendingMatchesToday =
             preserveAspectRatio="none"
             className={cn("absolute inset-0 size-full overflow-visible", tone === "win" ? "text-win" : "text-loss")}
           >
-            {area && <path d={area} fill="currentColor" fillOpacity={0.12} />}
+            {area && (
+              <motion.path
+                key={`area-${area}`}
+                d={area}
+                fill="currentColor"
+                initial={{ fillOpacity: 0 }}
+                whileInView={{ fillOpacity: 0.12 }}
+                viewport={{ once: true }}
+                transition={{ duration: DURATION.count, ease: EASE_OUT, delay: DURATION.fast }}
+              />
+            )}
             {points.length > 1 && (
-              <path
+              <motion.path
+                key={`line-${line}`}
+                initial={{ pathLength: 0 }}
+                whileInView={{ pathLength: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: DURATION.count, ease: EASE_OUT }}
                 d={line}
                 fill="none"
                 stroke="currentColor"
@@ -152,23 +171,39 @@ export function WinrateCard({ matches, puuid, mode, title, pendingMatchesToday =
                 )}
                 style={{ left: `${p.x}%`, top: `${p.y}%` }}
               >
-                <span
-                  className={cn(
-                    "block rounded-full transition-transform duration-fast",
-                    above ? "size-2 bg-win" : "size-2.5 border-2 border-loss bg-surface-sunken",
-                    active === i && "scale-150",
-                  )}
-                />
+                <motion.span
+                  initial={{ opacity: 0, scale: 0 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: DURATION.base, ease: EASE_OUT, delay: 0.2 + (i / Math.max(1, points.length)) * DURATION.count }}
+                  className="block"
+                >
+                  <span
+                    className={cn(
+                      "block rounded-full transition-transform duration-fast",
+                      above ? "size-2 bg-win" : "size-2.5 border-2 border-loss bg-surface-sunken",
+                      active === i && "scale-150",
+                    )}
+                  />
+                </motion.span>
               </button>
             );
           })}
 
+          <AnimatePresence>
           {current && (
             <div
+              key={current.key}
               aria-hidden
               className={cn("pointer-events-none absolute z-10 -translate-y-full pb-3", edgeAlign(current.x))}
               style={{ left: `${current.x}%`, top: `${current.y}%` }}
             >
+              <motion.div
+                initial={{ opacity: 0, y: 4, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, transition: { duration: DURATION.fast } }}
+                transition={{ duration: DURATION.fast, ease: EASE_OUT }}
+              >
               <PopoverSurface className="whitespace-nowrap px-3 py-2 text-xs">
                 <p className="mb-1 font-medium text-foreground">{current.label}</p>
                 <p className="num text-muted-foreground">
@@ -180,8 +215,10 @@ export function WinrateCard({ matches, puuid, mode, title, pendingMatchesToday =
                   </span>
                 </p>
               </PopoverSurface>
+              </motion.div>
             </div>
           )}
+          </AnimatePresence>
         </div>
 
         {points.length > 1 && (

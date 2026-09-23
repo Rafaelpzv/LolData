@@ -2,14 +2,19 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Gamepad2 } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Stat } from "@/components/ui/stat";
+import { AnimatedNumber } from "@/components/motion/animated-number";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { TftMatchRow } from "./tft-match-row";
 import type { TftMatch } from "./types";
+
+/** Only the first rows cascade in; the rest render plainly to keep long lists smooth. */
+const STAGGERED_ROWS = 20;
 
 interface TftMatchListProps {
   matches: TftMatch[];
@@ -23,8 +28,9 @@ interface TftMatchListProps {
 export function TftMatchList({ matches, puuid, region, ddragonVersion, now }: TftMatchListProps) {
   const t = useTranslations("tft");
   const tCommon = useTranslations("common");
-  const format = useFormatter();
 
+  // Rows not in the server payload were appended by "load more" and rise in on mount.
+  const initialIds = useMemo(() => new Set(matches.map((m) => m.metadata.match_id)), [matches]);
   const [loadedMatches, setLoadedMatches] = useState<TftMatch[]>(matches);
   const [start, setStart] = useState(matches.length);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -123,7 +129,7 @@ export function TftMatchList({ matches, puuid, region, ddragonVersion, now }: Tf
   }, [rows]);
 
   return (
-    <section aria-labelledby="tft-match-history" className="space-y-4">
+    <Reveal as="section" delay={0.05} aria-labelledby="tft-match-history" className="space-y-4">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 id="tft-match-history" className="text-lg font-semibold tracking-tight text-foreground">
           {t("matchHistory")}
@@ -134,17 +140,14 @@ export function TftMatchList({ matches, puuid, region, ddragonVersion, now }: Tf
       </div>
 
       {summary && (
-        <div role="group" aria-label={t("summary")} className="grid grid-cols-3 gap-2 sm:gap-3">
-          <SummaryStat
-            label={t("avgPlacement")}
-            value={format.number(summary.average, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-          />
+        <Stagger role="group" aria-label={t("summary")} stagger={0.05} className="grid grid-cols-3 gap-2 sm:gap-3">
+          <SummaryStat label={t("avgPlacement")} value={<AnimatedNumber value={summary.average} decimals={1} />} />
           <SummaryStat
             label={t("top4Rate")}
-            value={format.number(summary.top4Rate, { style: "percent", maximumFractionDigits: 0 })}
+            value={<AnimatedNumber value={Math.round(summary.top4Rate * 100)} suffix="%" />}
           />
-          <SummaryStat label={t("firsts")} value={format.number(summary.firsts)} />
-        </div>
+          <SummaryStat label={t("firsts")} value={<AnimatedNumber value={summary.firsts} />} />
+        </Stagger>
       )}
 
       {rows.length === 0 ? (
@@ -152,17 +155,17 @@ export function TftMatchList({ matches, puuid, region, ddragonVersion, now }: Tf
           <EmptyState icon={Gamepad2} title={t("noMatches")} description={t("noMatchesHint")} />
         </Card>
       ) : (
-        <ul className="space-y-2">
-          {rows.map(({ match, participant }) => (
-            <TftMatchRow
-              key={match.metadata.match_id}
-              match={match}
-              participant={participant}
-              ddragonVersion={ddragonVersion}
-              now={now}
-            />
-          ))}
-        </ul>
+        <Stagger as="ul" stagger={0.04} className="space-y-2">
+          {rows.map(({ match, participant }, i) => {
+            const row = (
+              <TftMatchRow match={match} participant={participant} ddragonVersion={ddragonVersion} now={now} />
+            );
+            const key = match.metadata.match_id;
+            if (i < STAGGERED_ROWS) return <StaggerItem as="li" key={key}>{row}</StaggerItem>;
+            if (!initialIds.has(key)) return <Reveal as="li" immediate key={key}>{row}</Reveal>;
+            return <li key={key}>{row}</li>;
+          })}
+        </Stagger>
       )}
 
       {loadError && (
@@ -188,14 +191,16 @@ export function TftMatchList({ matches, puuid, region, ddragonVersion, now }: Tf
           </Button>
         </div>
       )}
-    </section>
+    </Reveal>
   );
 }
 
-function SummaryStat({ label, value }: { label: string; value: string }) {
+function SummaryStat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <Card padding="md">
-      <Stat label={label} value={value} size="lg" />
-    </Card>
+    <StaggerItem>
+      <Card padding="md">
+        <Stat label={label} value={value} size="lg" />
+      </Card>
+    </StaggerItem>
   );
 }

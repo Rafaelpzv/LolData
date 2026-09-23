@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { SearchX } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { AnimatePresence, motion } from "motion/react";
+import { DURATION, EASE_OUT, SPRING, riseVariants, staggerVariants } from "@/lib/motion";
 import { MATCH_QUEUES } from "@/lib/queues";
 import { profileHref } from "@/lib/riot-id";
 import { Alert } from "@/components/ui/alert";
@@ -16,6 +18,14 @@ import { MATCH_STATS_EVENT, type MatchStatsDetail } from "./match-stats-text";
 import type { LolMatch, QueueType } from "./types";
 import { useDdragon } from "./use-ddragon";
 import { WinrateCard } from "./winrate-card";
+
+/** Only the first cards cascade in; the rest render plainly so long lists stay smooth. */
+const CASCADE_LIMIT = 20;
+
+const matchItemVariants = {
+  ...riseVariants,
+  exit: { opacity: 0, y: -8, transition: { duration: DURATION.fast, ease: EASE_OUT } },
+};
 
 interface MatchHistoryProps {
   initialMatches: LolMatch[];
@@ -185,24 +195,39 @@ export function MatchHistory({
     <div className="space-y-4">
       <WinrateCard matches={matches} puuid={puuid} mode="lol" />
 
-      <ol className="space-y-2">
-        {matches.map((match, i) => {
-          const participant = match.info?.participants?.find((p) => p.puuid === puuid);
-          if (!participant) return null;
-          return (
-            <li key={match.metadata.matchId}>
-              <MatchCard
-                match={match}
-                participant={participant}
-                queueLabel={queueLabel(match)}
-                region={region}
-                ddragon={ddragon}
-                className={i >= initialCount ? "motion-safe:animate-fade-in" : undefined}
-              />
-            </li>
-          );
-        })}
-      </ol>
+      <motion.ol
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.05 }}
+        variants={staggerVariants(0.04)}
+        className="space-y-2"
+      >
+        <AnimatePresence mode="popLayout">
+          {matches.map((match, i) => {
+            const participant = match.info?.participants?.find((p) => p.puuid === puuid);
+            if (!participant) return null;
+            // Cards from "load more" (index >= initialCount) rise in as they mount.
+            const animated = i < CASCADE_LIMIT || i >= initialCount;
+            return (
+              <motion.li
+                key={match.metadata.matchId}
+                layout="position"
+                transition={{ layout: SPRING.soft }}
+                variants={animated ? matchItemVariants : undefined}
+                exit="exit"
+              >
+                <MatchCard
+                  match={match}
+                  participant={participant}
+                  queueLabel={queueLabel(match)}
+                  region={region}
+                  ddragon={ddragon}
+                />
+              </motion.li>
+            );
+          })}
+        </AnimatePresence>
+      </motion.ol>
 
       {loadingMore && <MatchListSkeleton count={2} label={t("loading")} />}
 

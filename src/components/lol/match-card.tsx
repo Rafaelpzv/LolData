@@ -12,7 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { IconFrame } from "@/components/ui/icon-frame";
 import { Stat } from "@/components/ui/stat";
+import { AnimatedNumber } from "@/components/motion/animated-number";
+import { Collapse } from "@/components/motion/collapse";
+import { Stagger } from "@/components/motion/reveal";
 import { ParticipantRow } from "./participant-row";
+import { TipIcon, iconHover } from "./tip-icon";
 import { matchTimestamp, participantItems, type LolMatch, type LolParticipant } from "./types";
 import { itemIcon, type DdragonData } from "./use-ddragon";
 
@@ -180,15 +184,16 @@ export function MatchCard({ match, participant: p, queueLabel, region, ddragon, 
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3 sm:gap-x-6">
           <div className="flex items-center gap-1.5">
+            <TipIcon label={champion} focusable>
             <IconFrame
               src={championIconUrl(p.championId)}
               alt={champion}
               size="lg"
               shape="rounded"
+              imageClassName={iconHover}
               badge={
                 p.champLevel != null && (
                   <span
-                    title={t("championLevel", { level: p.champLevel })}
                     className="num rounded-full border border-border-strong bg-background px-1.5 py-0.5 text-2xs font-medium text-foreground"
                   >
                     <span className="sr-only">{t("championLevel", { level: p.champLevel })}</span>
@@ -197,57 +202,67 @@ export function MatchCard({ match, participant: p, queueLabel, region, ddragon, 
                 )
               }
             />
+            </TipIcon>
             <span className="flex flex-col gap-1">
               {spells.map((spell, i) => (
-                <IconFrame
-                  key={i}
-                  src={spell?.icon}
-                  alt={spell?.name ?? t("summonerSpell")}
-                  title={spell?.name}
-                  size="sm"
-                  shape="square"
-                />
+                <TipIcon key={i} label={spell?.name} focusable>
+                  <IconFrame
+                    src={spell?.icon}
+                    alt={spell?.name ?? t("summonerSpell")}
+                    size="sm"
+                    shape="square"
+                    imageClassName={iconHover}
+                  />
+                </TipIcon>
               ))}
             </span>
             <span className="flex flex-col items-center gap-1">
-              <IconFrame
-                src={keystone?.icon}
-                alt={keystone?.name ?? t("keystone")}
-                title={keystone?.name}
-                size="sm"
-                shape="circle"
-                className="bg-background"
-              />
-              <IconFrame
-                src={secondary?.icon}
-                alt={secondary?.name ?? t("secondaryPath")}
-                title={secondary?.name}
-                size="xs"
-                shape="circle"
-                className="bg-background p-0.5"
-              />
+              <TipIcon label={keystone?.name} focusable className="rounded-full">
+                <IconFrame
+                  src={keystone?.icon}
+                  alt={keystone?.name ?? t("keystone")}
+                  size="sm"
+                  shape="circle"
+                  className="bg-background"
+                  imageClassName={iconHover}
+                />
+              </TipIcon>
+              <TipIcon label={secondary?.name} focusable className="rounded-full">
+                <IconFrame
+                  src={secondary?.icon}
+                  alt={secondary?.name ?? t("secondaryPath")}
+                  size="xs"
+                  shape="circle"
+                  className="bg-background p-0.5"
+                  imageClassName={iconHover}
+                />
+              </TipIcon>
             </span>
           </div>
 
           <div className="min-w-28 space-y-0.5">
             <p className="truncate text-sm font-medium text-foreground">{champion}</p>
             <p className="num text-base font-semibold text-foreground">
-              {p.kills}
+              <AnimatedNumber value={p.kills} />
               <span className="text-muted-foreground"> / </span>
-              <span className="text-loss">{p.deaths}</span>
+              <AnimatedNumber value={p.deaths} className="text-loss" />
               <span className="text-muted-foreground"> / </span>
-              {p.assists}
+              <AnimatedNumber value={p.assists} />
             </p>
             <p className="num text-xs text-muted-foreground">
-              {kda == null ? t("perfectKda") : t("kda", { value: format.number(kda, { maximumFractionDigits: 2, minimumFractionDigits: 2 }) })}
+              {kda == null
+                ? t("perfectKda")
+                : t.rich("kda", { value: kda, n: () => <AnimatedNumber value={kda} decimals={2} /> })}
             </p>
           </div>
 
           <div className="space-y-0.5">
-            <p className="num text-sm text-foreground">{t("cs", { cs })}</p>
+            <p className="num text-sm text-foreground">
+              {t.rich("cs", { cs, n: () => <AnimatedNumber value={cs} /> })}
+            </p>
             {csMin != null && (
               <p className="num text-xs text-muted-foreground">
-                {t("csPerMinute", { value: format.number(csMin, { maximumFractionDigits: 1, minimumFractionDigits: 1 }) })}
+                {t.rich("csPerMinute", { value: csMin, n: () => <AnimatedNumber value={csMin} decimals={1} /> })}
               </p>
             )}
           </div>
@@ -255,28 +270,29 @@ export function MatchCard({ match, participant: p, queueLabel, region, ddragon, 
           <ul aria-label={t("items")} className="flex gap-1 lg:ml-auto">
             {participantItems(p).map((id, i) => (
               <li key={i}>
-                <IconFrame
-                  src={itemIcon(ddragon, id)}
-                  alt={id ? (ddragon.items.get(id) ?? t("item", { id })) : ""}
-                  title={id ? (ddragon.items.get(id) ?? undefined) : t("emptySlot")}
-                  size="md"
-                  shape="rounded"
-                  className="size-8 md:size-10"
-                />
+                <TipIcon label={id ? ddragon.items.get(id) : undefined} focusable>
+                  <IconFrame
+                    src={itemIcon(ddragon, id)}
+                    alt={id ? (ddragon.items.get(id) ?? t("item", { id })) : ""}
+                    size="md"
+                    shape="rounded"
+                    className="size-8 md:size-10"
+                    imageClassName={iconHover}
+                  />
+                </TipIcon>
               </li>
             ))}
           </ul>
         </div>
       </div>
 
-      <div id={detailsId} hidden={!expanded}>
-        {expanded && (
-          <div className="space-y-4 border-t border-border/50 p-3 motion-safe:animate-fade-in sm:p-4">
+      <Collapse open={expanded} id={detailsId}>
+          <div className="space-y-4 border-t border-border/50 p-3 sm:p-4">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <Stat label={t("stats.damage")} value={format.number(p.totalDamageDealtToChampions)} />
-              <Stat label={t("stats.gold")} value={format.number(p.goldEarned)} />
-              <Stat label={t("stats.vision")} value={format.number(p.visionScore)} />
-              <Stat label={t("stats.cs")} value={format.number(cs)} />
+              <Stat label={t("stats.damage")} value={<AnimatedNumber value={p.totalDamageDealtToChampions} />} />
+              <Stat label={t("stats.gold")} value={<AnimatedNumber value={p.goldEarned} />} />
+              <Stat label={t("stats.vision")} value={<AnimatedNumber value={p.visionScore} />} />
+              <Stat label={t("stats.cs")} value={<AnimatedNumber value={cs} />} />
             </div>
 
             <div className="grid gap-4 lg:grid-cols-2">
@@ -292,7 +308,7 @@ export function MatchCard({ match, participant: p, queueLabel, region, ddragon, 
                         {teamWin ? tCommon("victory") : tCommon("defeat")}
                       </span>
                     </h4>
-                    <ul>
+                    <Stagger as="ul" immediate stagger={0.03} delay={team.id === 200 ? 0.08 : 0}>
                       {members.map((member, i) => (
                         <ParticipantRow
                           key={member.puuid || i}
@@ -302,14 +318,13 @@ export function MatchCard({ match, participant: p, queueLabel, region, ddragon, 
                           isOwner={member.puuid === p.puuid}
                         />
                       ))}
-                    </ul>
+                    </Stagger>
                   </section>
                 );
               })}
             </div>
           </div>
-        )}
-      </div>
+      </Collapse>
     </Card>
   );
 }
