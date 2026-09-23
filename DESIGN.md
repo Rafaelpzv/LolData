@@ -261,6 +261,7 @@ The front door. A full-radius pill (44px in the header, 56px on the home hero) c
 - **Table:** uppercase 11px headers, 1px row dividers, subtle accent hover, numeric cells right-aligned in `.num`.
 - **Stat:** an uppercase label over a `.num` value (sm/md/lg/xl), toned default/muted/win/loss.
 - **IconFrame:** the frame for all game art (profile icons, champions, items, runes, units): 20/32/40/64/96px, square/rounded/circle, recessed placeholder, bottom badge slot. **TierCrest:** fixed-box ranked crests.
+- **Floating layers:** every menu, listbox and suggestion list uses `Floating` / `FloatingContent` (Radix Popover): rendered in a portal above all sections, anchored to its trigger, flipped and shifted to stay inside the viewport, capped to the available height. Never position a dropdown with `absolute` inside a section.
 - **Feedback:** `Skeleton`/`SkeletonList` shaped like the content, `EmptyState` (icon, title, hint, action), and `Alert` (destructive/warning/info).
 
 ### Motion
