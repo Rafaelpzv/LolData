@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-22T18:24:53.022Z",
+  "generatedAt": "2026-09-23T22:32:58.409Z",
   "title": "Design System: LolData",
   "extensions": {
     "colorMeta": {
@@ -620,7 +620,7 @@
       },
       {
         "name": "The Flat-At-Rest Rule",
-        "body": "Resting surfaces never cast shadows, and hover never lifts or scales. Hover changes border and fill only.",
+        "body": "Resting surfaces never cast shadows, and cards never lift or scale on hover. Hover changes border and fill, plus a faint cursor-following light (`data-glow`, 3% foreground, 220px); only images inside rows may scale (1.05).",
         "section": "elevation"
       },
       {
@@ -634,13 +634,13 @@
       "Do use tokens only (`bg-surface/70`, `text-muted-foreground`, `text-win`, `text-tier-gold`); add a token to `globals.css` before inventing a color.",
       "Do render every number with `.num` and format it with next-intl.",
       "Do translate every visible string and `aria-label` in both `messages/en` and `messages/pt-BR`.",
-      "Do keep motion to 150–250ms (`duration-fast`/`base`/`slow`), ease-out, for state changes only; `MotionConfig reducedMotion=\"user\"` is global.",
+      "Do animate with the shared motion system: tokens in `src/lib/motion.ts` (150–250ms states, 450ms reveals, springs for indicators) and primitives in `src/components/motion` (`Reveal`, `Stagger`, `AnimatedNumber`, `Collapse`, `ActivePill`, `FlipText`, `Tip`). Everything turns off under `prefers-reduced-motion`.",
       "Do give every interactive element a real `<button>`/`<Link>` with a visible focus ring."
     ],
     "donts": [
       "Don't use raw palette classes (zinc-, slate-, gray-, red-…), hex colors, or `text-[Npx]` in components.",
       "Don't use neon/RGB \"gamer\" styling: no glow, no colored gradients or light effects as decoration.",
-      "Don't nest cards, add hover scale or shadow, or add shadows to resting surfaces.",
+      "Don't nest cards, scale or shadow cards on hover, add shadows to resting surfaces, or write one-off keyframes/durations outside the motion tokens.",
       "Don't use unicode glyphs or emoji as icons (←, ⟳, ▾, 🔥); use lucide-react.",
       "Don't convey win/loss, placement or tier by color alone.",
       "Don't render page-level headers, back links or footers; the app shell owns them."

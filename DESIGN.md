@@ -216,7 +216,7 @@ Flat by default. Depth comes from tone (sunken < page < surface < raised) and ha
 - **Float** (`shadow-lg shadow-black/40`): menus, listboxes, the region picker and search suggestions. Nothing else casts a shadow.
 
 ### Named Rules
-**The Flat-At-Rest Rule.** Resting surfaces never cast shadows, and hover never lifts or scales. Hover changes border and fill only.
+**The Flat-At-Rest Rule.** Resting surfaces never cast shadows, and cards never lift or scale on hover. Hover changes border and fill, plus a faint cursor-following light (`data-glow`, 3% foreground, 220px); only images inside rows may scale (1.05).
 
 **The One Layer Rule.** Never nest a card inside a card. A section holding cards has no card wrapper; inside a card, structure comes from dividers and spacing.
 
@@ -263,6 +263,9 @@ The front door. A full-radius pill (44px in the header, 56px on the home hero) c
 - **IconFrame:** the frame for all game art (profile icons, champions, items, runes, units): 20/32/40/64/96px, square/rounded/circle, recessed placeholder, bottom badge slot. **TierCrest:** fixed-box ranked crests.
 - **Feedback:** `Skeleton`/`SkeletonList` shaped like the content, `EmptyState` (icon, title, hint, action), and `Alert` (destructive/warning/info).
 
+### Motion
+Motion is part of the system, not decoration per screen. Pages fade and rise in (`app/template.tsx`); sections `Reveal` in sequence; lists cascade (`Stagger`, first ~20 items); numbers count up (`AnimatedNumber`); selections slide (`ActivePill` shared `layoutId`); disclosures animate height (`Collapse`); charts draw in. Global touches from ObsidianUI (adapted): Lenis smooth scroll, click sparks, the flip-text wordmark and Radix tooltips. Scrollable popovers carry `data-lenis-prevent`.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -270,13 +273,13 @@ The front door. A full-radius pill (44px in the header, 56px on the home hero) c
 - **Do** use tokens only (`bg-surface/70`, `text-muted-foreground`, `text-win`, `text-tier-gold`); add a token to `globals.css` before inventing a color.
 - **Do** render every number with `.num` and format it with next-intl.
 - **Do** translate every visible string and `aria-label` in both `messages/en` and `messages/pt-BR`.
-- **Do** keep motion to 150–250ms (`duration-fast`/`base`/`slow`), ease-out, for state changes only; `MotionConfig reducedMotion="user"` is global.
+- **Do** animate with the shared motion system: tokens in `src/lib/motion.ts` (150–250ms states, 450ms reveals, springs for indicators) and primitives in `src/components/motion` (`Reveal`, `Stagger`, `AnimatedNumber`, `Collapse`, `ActivePill`, `FlipText`, `Tip`). Everything turns off under `prefers-reduced-motion`.
 - **Do** give every interactive element a real `<button>`/`<Link>` with a visible focus ring.
 
 ### Don't:
 - **Don't** use raw palette classes (zinc-, slate-, gray-, red-…), hex colors, or `text-[Npx]` in components.
 - **Don't** use neon/RGB "gamer" styling: no glow, no colored gradients or light effects as decoration.
-- **Don't** nest cards, add hover scale or shadow, or add shadows to resting surfaces.
+- **Don't** nest cards, scale or shadow cards on hover, add shadows to resting surfaces, or write one-off keyframes/durations outside the motion tokens.
 - **Don't** use unicode glyphs or emoji as icons (←, ⟳, ▾, 🔥); use lucide-react.
 - **Don't** convey win/loss, placement or tier by color alone.
 - **Don't** render page-level headers, back links or footers; the app shell owns them.
