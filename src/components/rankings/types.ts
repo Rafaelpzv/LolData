@@ -69,3 +69,28 @@ export function isNameReady(info: SummonerInfo | null | undefined): info is Summ
 export function allNamesReady(entries: LeagueEntry[], names: Record<string, SummonerInfo> | undefined): boolean {
   return entries.every((entry) => isNameReady(names?.[entry.puuid]));
 }
+
+export const SORT_KEYS = ["lp", "wins", "losses", "winrate"] as const;
+export type SortKey = (typeof SORT_KEYS)[number];
+export type SortDir = "asc" | "desc";
+
+/** Active table sort. `null` means the default ladder order. */
+export type RankingsSort = { key: SortKey; dir: SortDir } | null;
+
+/** Reads `?sort=wins&dir=asc`; unknown values fall back to the ladder order. */
+export function parseSort(sort: unknown, dir: unknown): RankingsSort {
+  const key = typeof sort === "string" ? sort.toLowerCase() : "";
+  if (!(SORT_KEYS as readonly string[]).includes(key)) return null;
+  return { key: key as SortKey, dir: dir === "asc" ? "asc" : "desc" };
+}
+
+/** Query string for a sort, including the leading "?" (empty for the ladder order). */
+export function sortQuery(sort: RankingsSort): string {
+  return sort ? `?sort=${sort.key}&dir=${sort.dir}` : "";
+}
+
+/** Header click cycle: off -> desc -> asc -> off. */
+export function nextSort(current: RankingsSort, key: SortKey): RankingsSort {
+  if (current?.key !== key) return { key, dir: "desc" };
+  return current.dir === "desc" ? { key, dir: "asc" } : null;
+}

@@ -6,6 +6,7 @@ import { RankingsView } from "@/components/rankings/rankings-view";
 
 interface RankingsPageProps {
   params: Promise<{ queueType: string; region: string; page: string }>;
+  searchParams: Promise<{ sort?: string | string[]; dir?: string | string[] }>;
 }
 
 export async function generateMetadata({ params }: RankingsPageProps): Promise<Metadata> {
@@ -15,9 +16,17 @@ export async function generateMetadata({ params }: RankingsPageProps): Promise<M
   return { title: t("metaTitle.lol", { queue: t(`queueShort.${queue.slug}`), region: regionShort(region) }) };
 }
 
-export default async function RankingsPage({ params }: RankingsPageProps) {
+export default async function RankingsPage({ params, searchParams }: RankingsPageProps) {
   const { queueType, region, page } = await params;
+  const { sort, dir } = await searchParams;
   return (
-    <RankingsView game="lol" queueSlug={queueType} region={region} page={Math.max(1, Number.parseInt(page, 10) || 1)} />
+    <RankingsView game="lol" queueSlug={queueType} region={region} page={Math.max(1, Number.parseInt(page, 10) || 1)}
+      sortParam={first(sort)}
+      dirParam={first(dir)}
+    />
   );
+}
+
+function first(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
 }

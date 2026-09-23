@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { winRate } from "@/lib/format";
 import { useRankingsCache } from "./use-rankings-cache";
-import { ITEMS_PER_PAGE, allNamesReady, type Game, type RankedRow, type RankingData } from "./types";
+import { ITEMS_PER_PAGE, allNamesReady, type Game, type RankedRow, type RankingData, type RankingsSort, type SortDir, type SortKey } from "./types";
 
 interface GameConfig {
   /** API query without `page`/`limit`. */
@@ -36,9 +36,33 @@ interface UseRankingsOptions {
   /** API queue value (RANKED_SOLO_5x5...). Ignored for TFT. */
   queueType: string;
   page: number;
+  sort: RankingsSort;
 }
 
 export type RankingsError = "page" | "all";
+
+function sortValue(row: RankedRow, key: SortKey): number | null {
+  if (key === "lp") return row.leaguePoints;
+  if (key === "wins") return row.wins;
+  if (key === "losses") return row.losses;
+  return winRate(row.wins, row.losses);
+}
+
+/** Players without games sort last either way; ties fall back to LP (desc), then ladder position. */
+function compareRows(key: SortKey, dir: SortDir) {
+  const sign = dir === "asc" ? 1 : -1;
+  return (a: RankedRow, b: RankedRow) => {
+    const va = sortValue(a, key);
+    const vb = sortValue(b, key);
+    if (va == null || vb == null) {
+      if (va != null) return -1;
+      if (vb != null) return 1;
+    } else if (va !== vb) {
+      return (va - vb) * sign;
+    }
+    return b.leaguePoints - a.leaguePoints || a.position - b.position;
+  };
+}
 
 function withPositions(entries: RankingData["entries"], offset: number): RankedRow[] {
   return entries.map((entry, i) => ({ ...entry, position: offset + i + 1 }));
@@ -46,9 +70,9 @@ function withPositions(entries: RankingData["entries"], offset: number): RankedR
 
 /**
  * Loads one leaderboard page (localStorage first, then the API) and, on demand, every page so the
- * table can be sorted by win rate.
+ * table can be sorted by any column across the whole leaderboard.
  */
-export function useRankings({ game, region, queueType, page }: UseRankingsOptions) {
+export function useRankings({ game, region, queueType, page, sort }: UseRankingsOptions) {
   const config = GAME_CONFIG[game];
   const query = config.query(region, queueType);
   const cache = useRankingsCache({
@@ -61,16 +85,13 @@ export function useRankings({ game, region, queueType, page }: UseRankingsOption
   const [allData, setAllData] = useState<RankingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSortingAll, setIsSortingAll] = useState(false);
-  const [sortByWinRate, setSortByWinRate] = useState(false);
   const [error, setError] = useState<RankingsError | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
+  const [allReloadToken, setAllReloadToken] = useState(0);
 
   // A different leaderboard invalidates the full load used for sorting.
-  const queryRef = useRef(query);
   useEffect(() => {
-    queryRef.current = query;
     setAllData(null);
-    setSortByWinRate(false);
   }, [query]);
 
   useEffect(() => {
@@ -142,53 +163,48 @@ export function useRankings({ game, region, queueType, page }: UseRankingsOption
     };
   }, [cache, query]);
 
-  const toggleWinRateSort = useCallback(async () => {
-    if (sortByWinRate) {
-      setSortByWinRate(false);
-      return;
-    }
-    const needsFullLoad = (pageData?.pagination?.totalPages ?? 1) > 1 && !allData;
-    if (needsFullLoad) {
-      const startedFor = query;
-      setIsSortingAll(true);
-      setError(null);
-      try {
-        const all = await fetchAll();
-        // The user switched region/queue while pages were loading: drop the stale result.
-        if (queryRef.current !== startedFor) return;
-        setAllData(all);
-      } catch (err) {
-        if (queryRef.current !== startedFor) return;
+  // Any sort orders the whole leaderboard, so every page is loaded once per leaderboard.
+  const needsFullLoad = sort != null && !allData && (pageData?.pagination?.totalPages ?? 1) > 1;
+  useEffect(() => {
+    if (!needsFullLoad) return;
+    let cancelled = false;
+    setIsSortingAll(true);
+    setError(null);
+    fetchAll()
+      .then((all) => {
+        if (!cancelled) setAllData(all);
+      })
+      .catch((err) => {
+        if (cancelled) return;
         console.error("[useRankings] Error loading all pages:", err);
         setError("all");
-        return;
-      } finally {
-        setIsSortingAll(false);
-      }
-    }
-    setSortByWinRate(true);
-  }, [sortByWinRate, pageData, allData, fetchAll, query]);
+      })
+      .finally(() => {
+        if (!cancelled) setIsSortingAll(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [needsFullLoad, fetchAll, allReloadToken]);
 
   const retry = useCallback(() => {
-    if (error === "all") void toggleWinRateSort();
+    if (error === "all") setAllReloadToken((n) => n + 1);
     else setReloadToken((n) => n + 1);
-  }, [error, toggleWinRateSort]);
+  }, [error]);
 
-  // Win-rate sort reads the full leaderboard when it was loaded, otherwise just this page.
-  const source = sortByWinRate && allData ? allData : pageData;
+  // Sorting reads the full leaderboard once it is loaded, otherwise just this page.
+  const source = sort && allData ? allData : pageData;
 
   const rows = useMemo<RankedRow[]>(() => {
     if (!source) return [];
     const isFull = source === allData;
     const ranked = withPositions(source.entries ?? [], isFull ? 0 : (page - 1) * ITEMS_PER_PAGE);
-    if (!sortByWinRate) return ranked;
-    const sorted = [...ranked].sort(
-      (a, b) => (winRate(b.wins, b.losses) ?? -1) - (winRate(a.wins, a.losses) ?? -1),
-    );
+    if (!sort) return ranked;
+    const sorted = [...ranked].sort(compareRows(sort.key, sort.dir));
     if (!isFull) return sorted;
     const start = (page - 1) * ITEMS_PER_PAGE;
     return sorted.slice(start, start + ITEMS_PER_PAGE);
-  }, [source, allData, sortByWinRate, page]);
+  }, [source, allData, sort, page]);
 
   return {
     /** Cutoffs, names, cache metadata and pagination for what is on screen. */
@@ -197,11 +213,9 @@ export function useRankings({ game, region, queueType, page }: UseRankingsOption
     totalEntries: source?.pagination?.totalEntries ?? source?.entries?.length ?? 0,
     totalPages: source?.pagination?.totalPages ?? 0,
     // Pages of the sorted full leaderboard are sliced locally: no page load to wait for.
-    isLoading: isLoading && !(sortByWinRate && allData),
-    isSortingAll,
-    sortByWinRate,
+    isLoading: isLoading && !(sort && allData),
+    isSortingAll: isSortingAll || (needsFullLoad && error !== "all"),
     error,
     retry,
-    toggleWinRateSort,
   };
 }

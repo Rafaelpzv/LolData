@@ -5,6 +5,7 @@ import { RankingsView } from "@/components/rankings/rankings-view";
 
 interface TftRankingsPageProps {
   params: Promise<{ region: string; page: string }>;
+  searchParams: Promise<{ sort?: string | string[]; dir?: string | string[] }>;
 }
 
 export async function generateMetadata({ params }: TftRankingsPageProps): Promise<Metadata> {
@@ -13,7 +14,15 @@ export async function generateMetadata({ params }: TftRankingsPageProps): Promis
   return { title: t("metaTitle.tft", { region: regionShort(region) }) };
 }
 
-export default async function TftRankingsPage({ params }: TftRankingsPageProps) {
+export default async function TftRankingsPage({ params, searchParams }: TftRankingsPageProps) {
   const { region, page } = await params;
-  return <RankingsView game="tft" region={region} page={Math.max(1, Number.parseInt(page, 10) || 1)} />;
+  const { sort, dir } = await searchParams;
+  return <RankingsView game="tft" region={region} page={Math.max(1, Number.parseInt(page, 10) || 1)}
+      sortParam={first(sort)}
+      dirParam={first(dir)}
+    />;
+}
+
+function first(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
 }

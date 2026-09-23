@@ -1,7 +1,9 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
-import { ArrowDown, ArrowUpDown } from "lucide-react";
+import { motion } from "motion/react";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { profileIconUrl } from "@/lib/cdn";
@@ -9,22 +11,30 @@ import { TierCrest } from "@/components/ui/tier-crest";
 import { winRate } from "@/lib/format";
 import { profileHref } from "@/lib/riot-id";
 import { apexTierFor, tierTextClass } from "@/lib/tiers";
+import { SPRING, riseVariants } from "@/lib/motion";
 import { focusRing } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { IconFrame } from "@/components/ui/icon-frame";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { isNameReady, type Game, type RankedRow, type RankingData, type SummonerInfo } from "./types";
+import { Table, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tip } from "@/components/ui/tooltip";
+import { Stagger } from "@/components/motion/reveal";
+import {
+  isNameReady,
+  nextSort,
+  type Game,
+  type RankedRow,
+  type RankingData,
+  type RankingsSort,
+  type SortKey,
+  type SummonerInfo,
+} from "./types";
 
 // Tighter gutters on phones so five columns fit without horizontal scroll.
 const pad = "px-2 sm:px-3";
-
-interface WinRateSort {
-  active: boolean;
-  loading: boolean;
-  onToggle: () => void;
-}
+/** Only the first rows cascade in; the rest render plainly to keep long pages smooth. */
+const CASCADE_ROWS = 25;
 
 interface RankingsTableProps {
   game: Game;
@@ -34,14 +44,27 @@ interface RankingsTableProps {
   cutoffs: RankingData["cutoffs"];
   /** Challenger seats used when the API sends no LP cutoffs. */
   challengerSeats: number;
-  /** LoL only: win-rate column toggles a sort over the whole leaderboard. */
-  winRateSort?: WinRateSort;
+  sort: RankingsSort;
+  /** True while every page is loading for the active sort. */
+  sorting: boolean;
+  onSort: (key: SortKey) => void;
 }
 
-export function RankingsTable({ game, region, rows, names, cutoffs, challengerSeats, winRateSort }: RankingsTableProps) {
+export function RankingsTable({
+  game,
+  region,
+  rows,
+  names,
+  cutoffs,
+  challengerSeats,
+  sort,
+  sorting,
+  onSort,
+}: RankingsTableProps) {
   const t = useTranslations("rankings");
   const tTiers = useTranslations("tiers");
   const format = useFormatter();
+  const headProps = { sort, sorting, onSort };
 
   return (
     <Card className="overflow-hidden">
@@ -54,56 +77,27 @@ export function RankingsTable({ game, region, rows, names, cutoffs, challengerSe
             </TableHead>
             <TableHead className={pad}>{t("columns.player")}</TableHead>
             <TableHead className={pad}>{t("columns.tier")}</TableHead>
-            <TableHead numeric className={pad}>
-              {t("columns.lp")}
-            </TableHead>
-            <TableHead numeric className={cn(pad, "hidden sm:table-cell")}>
-              {t("columns.wins")}
-            </TableHead>
-            <TableHead numeric className={cn(pad, "hidden sm:table-cell")}>
-              {t("columns.losses")}
-            </TableHead>
-            <TableHead
-              numeric
-              className={pad}
-              aria-sort={winRateSort ? (winRateSort.active ? "descending" : "none") : undefined}
-            >
-              {winRateSort ? (
-                <button
-                  type="button"
-                  onClick={winRateSort.onToggle}
-                  disabled={winRateSort.loading}
-                  aria-busy={winRateSort.loading || undefined}
-                  title={winRateSort.active ? t("sort.byLp") : t("sort.byWinRate")}
-                  className={cn(
-                    "-mr-1 inline-flex items-center gap-1 rounded-sm px-1 py-0.5 uppercase tracking-wide transition-colors duration-fast hover:text-foreground disabled:opacity-60",
-                    winRateSort.active && "text-foreground",
-                    focusRing,
-                  )}
-                >
-                  <WinRateLabel />
-                  {winRateSort.loading ? (
-                    <Spinner className="size-3.5" />
-                  ) : winRateSort.active ? (
-                    <ArrowDown aria-hidden className="size-3.5" />
-                  ) : (
-                    <ArrowUpDown aria-hidden className="size-3.5" />
-                  )}
-                </button>
-              ) : (
-                <WinRateLabel />
-              )}
-            </TableHead>
+            <SortHead column="lp" label={t("columns.lp")} {...headProps} />
+            <SortHead column="wins" label={t("columns.wins")} className="hidden sm:table-cell" {...headProps} />
+            <SortHead column="losses" label={t("columns.losses")} className="hidden sm:table-cell" {...headProps} />
+            <SortHead column="winrate" label={<WinRateLabel />} {...headProps} />
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <Stagger as="tbody" immediate stagger={0.03} className="[&_tr:last-child]:border-0">
           {rows.map((row, index) => {
             const info = names?.[row.puuid];
             const tier = apexTierFor(row.leaguePoints, row.position, cutoffs, challengerSeats);
             const wr = winRate(row.wins, row.losses);
+            const tierName = tTiers(tier);
 
             return (
-              <TableRow key={row.puuid}>
+              <motion.tr
+                key={row.puuid}
+                layout="position"
+                transition={SPRING.soft}
+                variants={index < CASCADE_ROWS ? riseVariants : undefined}
+                className="group border-b border-border/50 transition-colors duration-fast hover:bg-accent/30"
+              >
                 <TableCell className={cn(pad, "num text-muted-foreground")}>{format.number(row.position)}</TableCell>
                 <TableCell className={cn(pad, "w-full max-w-0")}>
                   <div className="flex min-w-0 items-center gap-2 sm:gap-3">
@@ -114,6 +108,7 @@ export function RankingsTable({ game, region, rows, names, cutoffs, challengerSe
                       shape="circle"
                       priority={index < 5}
                       unoptimized
+                      imageClassName="transition-transform duration-fast group-hover:scale-105"
                     />
                     {isNameReady(info) ? (
                       <Link
@@ -133,9 +128,13 @@ export function RankingsTable({ game, region, rows, names, cutoffs, challengerSe
                 </TableCell>
                 <TableCell className={cn(pad, "whitespace-nowrap")}>
                   <span className="flex items-center gap-2">
-                    <TierCrest tier={tier} size={20} />
-                    <span className={cn("sr-only text-sm font-medium md:not-sr-only", tierTextClass(tier))}>
-                      {tTiers(tier)}
+                    <Tip label={tierName}>
+                      <span tabIndex={0} role="img" aria-label={tierName} className={cn("inline-flex rounded-full", focusRing)}>
+                        <TierCrest tier={tier} size={20} />
+                      </span>
+                    </Tip>
+                    <span aria-hidden className={cn("hidden text-sm font-medium md:inline", tierTextClass(tier))}>
+                      {tierName}
                     </span>
                   </span>
                 </TableCell>
@@ -158,12 +157,61 @@ export function RankingsTable({ game, region, rows, names, cutoffs, challengerSe
                     {t("record", { wins: row.wins, losses: row.losses })}
                   </span>
                 </TableCell>
-              </TableRow>
+              </motion.tr>
             );
           })}
-        </TableBody>
+        </Stagger>
       </Table>
     </Card>
+  );
+}
+
+interface SortHeadProps {
+  column: SortKey;
+  label: React.ReactNode;
+  sort: RankingsSort;
+  sorting: boolean;
+  onSort: (key: SortKey) => void;
+  className?: string;
+}
+
+/** Numeric column header whose button cycles descending, ascending, then back to the ladder order. */
+function SortHead({ column, label, sort, sorting, onSort, className }: SortHeadProps) {
+  const t = useTranslations("rankings");
+  const dir = sort?.key === column ? sort.dir : null;
+  const Icon = dir === "desc" ? ArrowDown : dir === "asc" ? ArrowUp : ArrowUpDown;
+  const next = nextSort(sort, column);
+  const action = next
+    ? t(next.dir === "desc" ? "sort.action.desc" : "sort.action.asc", { column: t(`sort.column.${column}`) })
+    : t("sort.action.reset");
+
+  return (
+    <TableHead
+      numeric
+      className={cn(pad, className)}
+      aria-sort={dir === "desc" ? "descending" : dir === "asc" ? "ascending" : "none"}
+    >
+      <Tip label={action}>
+        <button
+          type="button"
+          onClick={() => onSort(column)}
+          aria-busy={(dir != null && sorting) || undefined}
+          className={cn(
+            "-mr-1 inline-flex items-center gap-1 rounded-sm px-1 py-0.5 uppercase tracking-wide transition-colors duration-fast hover:text-foreground",
+            dir && "text-foreground",
+            focusRing,
+          )}
+        >
+          {label}
+          <span className="sr-only">{`, ${action}`}</span>
+          {dir && sorting ? (
+            <Spinner className="size-3.5" />
+          ) : (
+            <Icon aria-hidden className={cn("size-3.5", !dir && "opacity-60")} />
+          )}
+        </button>
+      </Tip>
+    </TableHead>
   );
 }
 
@@ -172,9 +220,10 @@ function WinRateLabel() {
   return (
     <>
       <span className="hidden sm:inline">{t("columns.winRate")}</span>
-      <abbr title={t("columns.winRate")} className="no-underline sm:hidden">
+      <span aria-hidden className="sm:hidden">
         {t("columns.winRateShort")}
-      </abbr>
+      </span>
+      <span className="sr-only sm:hidden">{t("columns.winRate")}</span>
     </>
   );
 }

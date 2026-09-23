@@ -15,7 +15,7 @@
     "flex": "Flex"
   },
   "cutoffs": "LP cutoffs",
-  "cutoffLp": "{lp} LP",
+  "lpUnit": "LP",
   "updated": "Updated {time}",
   "stale": "Refreshing soon",
   "columns": {
@@ -32,15 +32,30 @@
   "record": "{wins}W {losses}L",
   "nameUnavailable": "Name not available yet",
   "sort": {
-    "byWinRate": "Sort by win rate",
-    "byLp": "Sort by LP",
-    "loadingAll": "Loading every player to sort by win rate…",
-    "sortedByWinRate": "Sorted by win rate across {count, plural, one {# player} other {# players}}."
+    "label": "Sort",
+    "ladder": "Ladder order",
+    "column": {
+      "lp": "LP",
+      "wins": "Wins",
+      "losses": "Losses",
+      "winrate": "Win rate"
+    },
+    "action": {
+      "desc": "Sort by {column}, highest first",
+      "asc": "Sort by {column}, lowest first",
+      "reset": "Back to ladder order"
+    },
+    "option": {
+      "desc": "{column}: highest first",
+      "asc": "{column}: lowest first"
+    },
+    "loadingAll": "Loading every player to sort the leaderboard…",
+    "sortedBy": "Sorted by {column} ({dir, select, asc {lowest first} other {highest first}}) across {count, plural, one {# player} other {# players}}."
   },
   "loading": "Loading rankings",
   "error": {
     "title": "Could not load the rankings",
-    "sortTitle": "Could not load every player to sort by win rate",
+    "sortTitle": "Could not load every player to sort the leaderboard",
     "description": "The Riot API may be busy. Try again in a moment."
   },
   "empty": {

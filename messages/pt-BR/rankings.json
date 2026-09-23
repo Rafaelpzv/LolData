@@ -15,7 +15,7 @@
     "flex": "Flex"
   },
   "cutoffs": "Corte de PDL",
-  "cutoffLp": "{lp} PDL",
+  "lpUnit": "PDL",
   "updated": "Atualizado {time}",
   "stale": "Atualização em breve",
   "columns": {
@@ -32,15 +32,30 @@
   "record": "{wins}V {losses}D",
   "nameUnavailable": "Nome ainda indisponível",
   "sort": {
-    "byWinRate": "Ordenar por taxa de vitória",
-    "byLp": "Ordenar por PDL",
-    "loadingAll": "Carregando todos os jogadores para ordenar por taxa de vitória…",
-    "sortedByWinRate": "Ordenado por taxa de vitória entre {count, plural, one {# jogador} other {# jogadores}}."
+    "label": "Ordenar",
+    "ladder": "Ordem do ranking",
+    "column": {
+      "lp": "PDL",
+      "wins": "Vitórias",
+      "losses": "Derrotas",
+      "winrate": "Taxa de vitória"
+    },
+    "action": {
+      "desc": "Ordenar por {column}, maior primeiro",
+      "asc": "Ordenar por {column}, menor primeiro",
+      "reset": "Voltar à ordem do ranking"
+    },
+    "option": {
+      "desc": "{column}: maior primeiro",
+      "asc": "{column}: menor primeiro"
+    },
+    "loadingAll": "Carregando todos os jogadores para ordenar o ranking…",
+    "sortedBy": "Ordenado por {column} ({dir, select, asc {menor primeiro} other {maior primeiro}}) entre {count, plural, one {# jogador} other {# jogadores}}."
   },
   "loading": "Carregando ranking",
   "error": {
     "title": "Não foi possível carregar o ranking",
-    "sortTitle": "Não foi possível carregar todos os jogadores para ordenar por taxa de vitória",
+    "sortTitle": "Não foi possível carregar todos os jogadores para ordenar o ranking",
     "description": "A API da Riot pode estar sobrecarregada. Tente novamente em instantes."
   },
   "empty": {

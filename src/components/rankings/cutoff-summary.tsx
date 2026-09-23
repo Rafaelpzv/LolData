@@ -8,6 +8,9 @@ import { tierTextClass } from "@/lib/tiers";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tip } from "@/components/ui/tooltip";
+import { focusRing } from "@/components/ui/button";
+import { AnimatedNumber } from "@/components/motion/animated-number";
 import type { RankingData } from "./types";
 
 interface CutoffSummaryProps {
@@ -59,12 +62,18 @@ export function CutoffSummary({ cutoffs, cache, loading }: CutoffSummaryProps) {
             {items.map(({ tier, lp }) => {
               return (
                 <li key={tier} className="flex items-center gap-2">
-                  <TierCrest tier={tier} size={24} />
+                  <Tip label={tTiers(tier)}>
+                    <span tabIndex={0} role="img" aria-label={tTiers(tier)} className={cn("inline-flex rounded-full", focusRing)}>
+                      <TierCrest tier={tier} size={24} />
+                    </span>
+                  </Tip>
                   <p className="leading-tight">
                     <span className="block text-xs text-muted-foreground">{tTiers(tier)}</span>
-                    <span className={cn("num block text-sm font-semibold", tierTextClass(tier))}>
-                      {t("cutoffLp", { lp: format.number(lp) })}
-                    </span>
+                    <AnimatedNumber
+                      value={lp}
+                      suffix={` ${t("lpUnit")}`}
+                      className={cn("block text-sm font-semibold", tierTextClass(tier))}
+                    />
                   </p>
                 </li>
               );
