@@ -51,16 +51,37 @@
   "you": "Você",
   "winrate": {
     "title": "Taxa de vitória",
-    "summary": "{games, plural, one {# partida} other {# partidas}} · {days, plural, one {# dia} other {# dias}}",
-    "pending": "+{count} pendentes",
-    "empty": "Nenhuma partida carregada ainda",
-    "chartLabel": "Taxa de vitória diária {days, plural, one {no último dia} other {nos últimos # dias}}",
-    "day": "{date}: {wins}V {losses}D, {winRate}% de vitórias",
-    "above": "Dia com 50% ou mais",
-    "below": "Dia abaixo de 50%",
-    "baseline": "Linha de 50%",
+    "periodLabel": "Período",
+    "periods": {
+      "today": "Últimas 24 horas",
+      "week": "Últimos 7 dias",
+      "month": "Últimos 30 dias",
+      "3months": "Últimos 3 meses",
+      "year": "Último ano"
+    },
+    "periodsShort": {
+      "today": "Hoje",
+      "week": "Semana",
+      "month": "Mês",
+      "3months": "3 meses",
+      "year": "Ano"
+    },
     "record": "{wins}V {losses}D",
-    "wins": "{count}V",
-    "losses": "{count}D"
+    "games": "{count, plural, one {# partida} other {# partidas}}",
+    "sampled": "Com base {count, plural, one {na última partida} other {nas últimas # partidas}} do período",
+    "empty": "Nenhuma partida neste período",
+    "emptyHint": "Tente um período maior ou outra fila.",
+    "error": "Não foi possível carregar a taxa de vitória.",
+    "retry": "Tentar de novo",
+    "loading": "Carregando taxa de vitória",
+    "chartLabel": "Vitórias, derrotas e taxa de vitória acumulada ao longo do tempo",
+    "bucket": "{date}: {wins}V {losses}D, {winRate}",
+    "noGames": "sem partidas",
+    "wins": "Vitórias",
+    "losses": "Derrotas",
+    "cumulative": "Taxa de vitória acumulada",
+    "baseline": "Linha de 50%",
+    "date": "Data",
+    "winRate": "Taxa de vitória"
   }
 }

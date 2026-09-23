@@ -193,7 +193,7 @@ export function MatchHistory({
 
   return (
     <div className="space-y-4">
-      <WinrateCard matches={matches} puuid={puuid} mode="lol" />
+      <WinrateCard region={region} puuid={puuid} queueId={queueId} />
 
       <motion.ol
         initial="hidden"

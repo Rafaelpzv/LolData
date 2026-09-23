@@ -30,3 +30,4 @@ export {
   fixtureTftSummonerByRiotId,
 } from "./tft";
 export { fixtureAutocomplete, fixtureBackfill, fixturePlayerStatus } from "./search";
+export { fixtureWinrate } from "./winrate";
