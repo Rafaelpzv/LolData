@@ -92,8 +92,10 @@
     "winsCount": "{count} V",
     "lossesCount": "{count} D"
   },
-  "partialError": {
-    "title": "Alguns dados não carregaram",
-    "description": "A API da Riot está ocupada agora. O que carregou aparece abaixo."
-  }
+  "sectionError": {
+    "ranked": "Não foi possível carregar a ranqueada",
+    "masteries": "Não foi possível carregar as maestrias",
+    "matches": "Não foi possível carregar o histórico de partidas"
+  },
+  "loadingMatches": "Carregando partidas"
 }

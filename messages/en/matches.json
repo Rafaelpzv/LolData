@@ -92,8 +92,10 @@
     "winsCount": "{count} W",
     "lossesCount": "{count} L"
   },
-  "partialError": {
-    "title": "Some data could not be loaded",
-    "description": "The Riot API is busy right now. What loaded is shown below."
-  }
+  "sectionError": {
+    "ranked": "Ranked data could not be loaded",
+    "masteries": "Champion mastery could not be loaded",
+    "matches": "Match history could not be loaded"
+  },
+  "loadingMatches": "Loading matches"
 }
