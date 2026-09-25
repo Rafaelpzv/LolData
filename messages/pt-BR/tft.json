@@ -39,5 +39,9 @@
   "noMatches": "Nenhuma partida de TFT encontrada",
   "noMatchesHint": "Este jogador não tem partidas recentes de Teamfight Tactics.",
   "loadMoreFailed": "Não foi possível carregar mais partidas.",
-  "loadingProfile": "Carregando perfil…"
+  "loadingProfile": "Carregando perfil…",
+  "sectionError": {
+    "ranked": "Não foi possível carregar a ranqueada de TFT",
+    "matches": "Não foi possível carregar o histórico de TFT"
+  }
 }

@@ -19,14 +19,12 @@ interface TftProfileProps {
   level: number | null | undefined;
   profileIconId: number | null | undefined;
   region: string;
-  /** RANKED_TFT entry, or null when the player has no ranked games. */
-  ranked: TftRankEntry | null;
+  /** Ranked area, rendered on the right (streams in on its own; see TftRankedCard). */
+  children?: React.ReactNode;
 }
 
 /** Identity + Ranked TFT standing. */
-export function TftProfile({ gameName, tagLine, level, profileIconId, region, ranked }: TftProfileProps) {
-  const t = useTranslations("tft");
-
+export function TftProfile({ gameName, tagLine, level, profileIconId, region, children }: TftProfileProps) {
   return (
     <Reveal className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
       <ProfileHeader
@@ -36,16 +34,23 @@ export function TftProfile({ gameName, tagLine, level, profileIconId, region, ra
         profileIconId={profileIconId}
         region={region}
       />
-      <RankedSummary
-        queueLabel={t("rankedTft")}
-        tier={ranked?.tier}
-        division={ranked?.rank}
-        leaguePoints={ranked?.leaguePoints}
-        wins={ranked?.wins}
-        losses={ranked?.losses}
-        hotStreak={ranked?.hotStreak}
-        className="md:w-80 md:shrink-0"
-      />
+      <div className="md:w-80 md:shrink-0">{children}</div>
     </Reveal>
+  );
+}
+
+/** Ranked TFT standing; `ranked` is the RANKED_TFT entry or null when unranked. */
+export function TftRankedCard({ ranked }: { ranked: TftRankEntry | null }) {
+  const t = useTranslations("tft");
+  return (
+    <RankedSummary
+      queueLabel={t("rankedTft")}
+      tier={ranked?.tier}
+      division={ranked?.rank}
+      leaguePoints={ranked?.leaguePoints}
+      wins={ranked?.wins}
+      losses={ranked?.losses}
+      hotStreak={ranked?.hotStreak}
+    />
   );
 }
