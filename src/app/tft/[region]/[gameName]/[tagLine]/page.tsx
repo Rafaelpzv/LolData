@@ -33,11 +33,21 @@ async function loadTftPageData(region: string, gameName: string, tagLine: string
   const summoner = await findSummoner(region, gameName, tagLine);
   if (!summoner) return null;
 
-  const [leagueEntries, matchIds, ddragonVersion] = await Promise.all([
+  // Only the summoner lookup is fatal; ranked, match ids and the ddragon version degrade to empty
+  // so a Riot 429 on one call does not replace the whole profile with the error page.
+  const [leagueRes, idsRes, versionRes] = await Promise.allSettled([
     getTftLeagueByPuuid(region, summoner.puuid),
     getTftMatchIds(region, summoner.puuid, 20),
     getDdragonVersion(),
   ]);
+  const settled = <T,>(r: PromiseSettledResult<T>, fallback: T, label: string): T => {
+    if (r.status === "fulfilled") return r.value ?? fallback;
+    console.error(`[tft profile] ${label} failed:`, r.reason);
+    return fallback;
+  };
+  const leagueEntries = settled(leagueRes, [], "league");
+  const matchIds = settled(idsRes, [] as string[], "match ids");
+  const ddragonVersion = settled(versionRes, null, "ddragon version");
 
   const matches = await fetchMatchesInBatches(region, matchIds);
 

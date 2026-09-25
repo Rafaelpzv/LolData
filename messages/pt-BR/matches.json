@@ -74,14 +74,26 @@
     "error": "Não foi possível carregar a taxa de vitória.",
     "retry": "Tentar de novo",
     "loading": "Carregando taxa de vitória",
-    "chartLabel": "Vitórias, derrotas e taxa de vitória acumulada ao longo do tempo",
+    "chartLabel": "Taxa de vitória por período com partidas",
     "bucket": "{date}: {wins}V {losses}D, {winRate}",
     "noGames": "sem partidas",
-    "wins": "Vitórias",
-    "losses": "Derrotas",
-    "cumulative": "Taxa de vitória acumulada",
     "baseline": "Linha de 50%",
     "date": "Data",
-    "winRate": "Taxa de vitória"
+    "winRate": "Taxa de vitória",
+    "span": "{games, plural, one {# jogo} other {# jogos}} · {buckets, plural, one {# {unit}} other {# {unit}s}}",
+    "units": {
+      "hour": "hora",
+      "day": "dia",
+      "week": "semana"
+    },
+    "above": "Taxa de vitória ≥ 50%",
+    "below": "Taxa de vitória < 50%",
+    "dividers": "Divisões por {unit}",
+    "winsCount": "{count} V",
+    "lossesCount": "{count} D"
+  },
+  "partialError": {
+    "title": "Alguns dados não carregaram",
+    "description": "A API da Riot está ocupada agora. O que carregou aparece abaixo."
   }
 }

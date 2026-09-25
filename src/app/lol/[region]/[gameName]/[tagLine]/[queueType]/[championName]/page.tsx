@@ -16,6 +16,7 @@ import { Reveal } from "@/components/motion/reveal";
 import { MatchFilters } from "@/components/lol/match-filters";
 import { MatchHistory } from "@/components/lol/match-history";
 import { MatchStatsText } from "@/components/lol/match-stats-text";
+import { PartialDataAlert } from "@/components/lol/partial-data-alert";
 import {
   SummonerProfile,
   type ChampionMastery,
@@ -58,6 +59,22 @@ export async function generateMetadata({ params }: SummonerPageProps): Promise<M
   };
 }
 
+function settledValue<T>(result: PromiseSettledResult<T>, fallback: T, label: string): T {
+  if (result.status === "fulfilled") return result.value ?? fallback;
+  console.error(`[lol profile] ${label} failed:`, result.reason);
+  return fallback;
+}
+
+async function loadMatches(url: string): Promise<LolMatch[]> {
+  const res = await fetch(url, { cache: "no-store" });
+  const contentType = res.headers.get("content-type");
+  if (!res.ok || !contentType?.includes("application/json")) {
+    throw new Error(`Match API error: ${res.status} ${(await res.text()).slice(0, 200)}`);
+  }
+  const json = await res.json();
+  return json.data || [];
+}
+
 export default async function SummonerPage({ params }: SummonerPageProps) {
   const raw = await params;
   // The raw route region (e.g. "br1") is what the actions and match API cache keys expect.
@@ -83,22 +100,20 @@ export default async function SummonerPage({ params }: SummonerPageProps) {
     matchParams.set("championId", championId);
   }
 
-  const [queueTypes, masteries, rankedData, matchesRes] = await Promise.all([
+  // Only the summoner lookup is fatal. Every other source degrades on its own (Riot 429s, cold
+  // cache, a slow self-fetch) so one failing call never takes the whole profile down.
+  const [queueTypesRes, masteriesRes, rankedRes, matchesRes] = await Promise.allSettled([
     getQueueTypes(),
     getChampionMasteries(region, summoner.puuid),
     getRankedByPuuid(region, summoner.puuid),
-    fetch(`${baseUrl}/api/summoner/matches?${matchParams.toString()}`, { cache: "no-store" }),
+    loadMatches(`${baseUrl}/api/summoner/matches?${matchParams.toString()}`),
   ]);
 
-  const contentType = matchesRes.headers.get("content-type");
-  if (!matchesRes.ok || !contentType?.includes("application/json")) {
-    const text = await matchesRes.text();
-    console.error("Match API error:", matchesRes.status, text);
-    throw new Error(`Match API error: ${matchesRes.status}`);
-  }
-
-  const matchesJson = await matchesRes.json();
-  let matches: LolMatch[] = matchesJson.data || [];
+  const queueTypes = settledValue(queueTypesRes, [], "queue types");
+  const masteries = settledValue(masteriesRes, [], "masteries");
+  const rankedData = settledValue(rankedRes, [], "ranked");
+  let matches: LolMatch[] = settledValue(matchesRes, [], "matches");
+  const partialFailure = [masteriesRes, rankedRes, matchesRes].some((r) => r.status === "rejected");
 
   // Safety net in case the API returned games on other champions.
   if (championId) {
@@ -116,6 +131,7 @@ export default async function SummonerPage({ params }: SummonerPageProps) {
 
   return (
     <PageShell>
+      {partialFailure && <PartialDataAlert />}
       <SummonerProfile
         gameName={gameName}
         tagLine={tagLine}
