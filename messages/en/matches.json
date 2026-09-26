@@ -74,14 +74,28 @@
     "error": "Couldn't load the win rate.",
     "retry": "Retry",
     "loading": "Loading win rate",
-    "chartLabel": "Wins, losses and cumulative win rate over time",
+    "chartLabel": "Win rate per period with games",
     "bucket": "{date}: {wins}W {losses}L, {winRate}",
     "noGames": "no games",
-    "wins": "Wins",
-    "losses": "Losses",
-    "cumulative": "Cumulative win rate",
     "baseline": "50% baseline",
     "date": "Date",
-    "winRate": "Win rate"
-  }
+    "winRate": "Win rate",
+    "span": "{games, plural, one {# game} other {# games}} · {buckets, plural, one {# {unit}} other {# {unit}s}}",
+    "units": {
+      "hour": "hour",
+      "day": "day",
+      "week": "week"
+    },
+    "above": "Win rate ≥ 50%",
+    "below": "Win rate < 50%",
+    "dividers": "Divisions per {unit}",
+    "winsCount": "{count} W",
+    "lossesCount": "{count} L"
+  },
+  "sectionError": {
+    "ranked": "Ranked data could not be loaded",
+    "masteries": "Champion mastery could not be loaded",
+    "matches": "Match history could not be loaded"
+  },
+  "loadingMatches": "Loading matches"
 }

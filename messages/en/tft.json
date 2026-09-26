@@ -39,5 +39,9 @@
   "noMatches": "No TFT games found",
   "noMatchesHint": "This player has no recent Teamfight Tactics games.",
   "loadMoreFailed": "Could not load more games.",
-  "loadingProfile": "Loading profile…"
+  "loadingProfile": "Loading profile…",
+  "sectionError": {
+    "ranked": "Ranked TFT could not be loaded",
+    "matches": "TFT match history could not be loaded"
+  }
 }
