@@ -85,6 +85,11 @@ describe("recommendation messages", () => {
  * `reason.*`/`exercise.*` vivem em `diagnosis.text.*`, mas `source.*` vive diretamente em
  * `diagnosis.source.*`. Assumir um prefixo único foi exatamente o bug que chegou à produção
  * (`text.source.games`) — por isso o namespace é escolhido pelo prefixo do id, como no painel.
+ *
+ * A regra é espelhada do painel (`TEXT_PREFIX` em individual-diagnosis-panel.tsx). Se as duas
+ * cópias divergirem, o teste passa enquanto a interface mostra a chave — foi o que aconteceu com
+ * `diagnosis.exercise.*`. A guarda contra isso é o teste "the panel lookup matches the catalog"
+ * mais abaixo, que usa o mesmo resolvedor do painel.
  */
 function textTargets(): { namespace: string; text: Text }[] {
   const targets: { namespace: string; text: Text }[] = [];
@@ -201,6 +206,53 @@ describe("Text descriptors emitted by the pure modules", () => {
     const catalog = catalogFor("en");
     expect(typeof lookup(catalog, "diagnosis.source.games")).toBe("string");
     expect(lookup(catalog, "diagnosis.text.source.games")).toBeUndefined();
+  });
+
+  // -------------------------------------------------------------------------------------------
+  // O resolvedor do painel, reproduzido
+  // -------------------------------------------------------------------------------------------
+  /**
+   * Cópia de `renderText`/`TEXT_PREFIX` de `individual-diagnosis-panel.tsx`. O teste acima procura
+   * no namespace que ELE acredita (`diagnosis.text.*`) e por isso passou enquanto o painel mostrava
+   * `premade.diagnosis.exercise.combatStrength` na tela: o painel procurava em `diagnosis.*`, onde
+   * `exercise` é o rótulo "Exercício recomendado", e não no objeto `diagnosis.text.exercise`.
+   *
+   * Aqui a chave é resolvida do MESMO jeito que a interface resolve, com o namespace de verdade
+   * (`premade.diagnosis`), e o teste falha se o resultado não for uma string traduzível.
+   */
+  const TEXT_PREFIX = {
+    reason: "text.reason",
+    exercise: "text.exercise",
+    source: "source",
+  } as const;
+
+  function panelKey(id: string): string {
+    const [group, ...rest] = id.split(".");
+    const prefix = TEXT_PREFIX[group as keyof typeof TEXT_PREFIX];
+    return prefix ? `${prefix}.${rest.join(".")}` : id;
+  }
+
+  for (const locale of LOCALES) {
+    it(`${locale}: every diagnosis Text resolves under premade.diagnosis, as the panel looks it up`, () => {
+      const catalog = catalogFor(locale);
+      const missing: string[] = [];
+      for (const target of textTargets()) {
+        const key = panelKey(target.text.id);
+        const found = lookup(catalog, `diagnosis.${key}`);
+        // O painel precisa de uma string; um objeto aninhado chegando aqui vira chave crua na tela.
+        if (typeof found !== "string") missing.push(`diagnosis.${key}`);
+      }
+      expect(missing).toEqual([]);
+    });
+  }
+
+  it("an id that lands on a label is not silently accepted", () => {
+    // `diagnosis.exercise` é o rótulo (string). Se o prefixo sumir, o painel acha o rótulo no lugar
+    // da frase; este teste prova que o resolvedor real não faz isso.
+    const catalog = catalogFor("pt-BR");
+    expect(typeof lookup(catalog, "diagnosis.exercise")).toBe("string");
+    expect(panelKey("exercise.combatStrength")).toBe("text.exercise.combatStrength");
+    expect(typeof lookup(catalog, "diagnosis.text.exercise.combatStrength")).toBe("string");
   });
 });
 

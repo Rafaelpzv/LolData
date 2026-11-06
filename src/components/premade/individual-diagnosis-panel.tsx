@@ -87,19 +87,38 @@ function evidenceLabel(label: string): `evidence.${EvidenceLabel}` {
  * Um texto que o módulo puro entrega como chave + valores, traduzido aqui. O módulo não conhece o
  * idioma do leitor, então ele nunca devolve a frase pronta.
  *
- * O `id` JÁ é o caminho completo dentro de `premade.diagnosis` (`text.reason.*`, `source.*`), e não
- * um trecho a ser completado: prefixar `text.` em tudo transformava `source.games` em
- * `text.source.games`, que não existe, e o painel mostrava a chave em vez da frase.
+ * Os ids vêm SEM o prefixo do namespace, e existem dois lugares em `premade.diagnosis`:
+ *
+ * - `reason.*` e `exercise.*` são frases escritas para o módulo puro, e ficam agrupadas em
+ *   `diagnosis.text.*` junto com todo o resto do texto emitido por ele;
+ * - `source.*` fica direto em `diagnosis.source.*`.
+ *
+ * O prefixo não pode ser único: pôr `text.` em tudo transformava `source.games` em
+ * `text.source.games` (não existe) e o painel mostrava a chave; não pôr nada devolvia
+ * `diagnosis.exercise.combatStrength`, onde só existe o rótulo `exercise` (a string "Exercício
+ * recomendado"), e o painel mostrava a chave de novo. A tabela fixa abaixo deixa os dois casos
+ * visíveis para o compilador em vez de depender de string montada em tempo de execução.
  */
+const TEXT_PREFIX = {
+  reason: "text.reason",
+  exercise: "text.exercise",
+  source: "source",
+} as const;
+
 function renderText(translate: TextTranslator, entry: Text): string {
-  return translate(
-    entry.id as "text.reason.metricRead",
-    entry.values as Record<string, string | number>,
-  );
+  // `exercise.combatStrength` -> `text.exercise.combatStrength`
+  // `source.games`            -> `source.games` (já está no lugar certo)
+  const [group, ...rest] = entry.id.split(".");
+  const prefix = TEXT_PREFIX[group as keyof typeof TEXT_PREFIX];
+  const key = prefix ? `${prefix}.${rest.join(".")}` : entry.id;
+  return translate(key as TextKey, entry.values as Record<string, string | number>);
 }
 
+/** As chaves que o hook devolve para `premade.diagnosis`, sem arrastar o tipo do hook inteiro. */
+type TextKey = Parameters<ReturnType<typeof useTranslations<"premade.diagnosis">>>[0];
+
 /** O que `renderText` precisa do next-intl, sem arrastar o tipo inteiro do hook para a assinatura. */
-type TextTranslator = (key: "text.reason.metricRead", values?: Record<string, string | number>) => string;
+type TextTranslator = (key: TextKey, values?: Record<string, string | number>) => string;
 
 /** Um valor com a unidade que ele realmente tem: perMin não se lê como percentual. */
 function value(entry: DiagnosisEvidence): string {
