@@ -10,6 +10,7 @@ import type rankings from "../../messages/en/rankings.json";
 import type profile from "../../messages/en/profile.json";
 import type matches from "../../messages/en/matches.json";
 import type tft from "../../messages/en/tft.json";
+import type premade from "../../messages/en/premade.json";
 import type errors from "../../messages/en/errors.json";
 import type footer from "../../messages/en/footer.json";
 
@@ -29,6 +30,7 @@ declare module "next-intl" {
       profile: typeof profile;
       matches: typeof matches;
       tft: typeof tft;
+      premade: typeof premade;
       errors: typeof errors;
       footer: typeof footer;
     };

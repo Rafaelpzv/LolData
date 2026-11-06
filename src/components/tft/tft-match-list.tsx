@@ -32,39 +32,48 @@ export function TftMatchList({ matches, puuid, region, ddragonVersion, now }: Tf
   // Rows not in the server payload were appended by "load more" and rise in on mount.
   const initialIds = useMemo(() => new Set(matches.map((m) => m.metadata.match_id)), [matches]);
   const [loadedMatches, setLoadedMatches] = useState<TftMatch[]>(matches);
-  const [start, setStart] = useState(matches.length);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(matches.length >= 10);
   const [loadError, setLoadError] = useState(false);
 
-  const startRef = useRef(start);
-  startRef.current = start;
   const loadingRef = useRef(false);
   const consecutiveEmptyRef = useRef(0);
 
-  useEffect(() => {
+  // A new server payload replaces the list. Adjusting state during the render (the React pattern
+  // for "reset when a prop changes") keeps the pagination cursor derived from the list itself: no
+  // ref is written during render, and there is no extra effect pass.
+  const [syncedFrom, setSyncedFrom] = useState(matches);
+  if (syncedFrom !== matches) {
+    setSyncedFrom(matches);
     setLoadedMatches(matches);
-    setStart(matches.length);
-    startRef.current = matches.length;
     setHasMore(matches.length >= 10);
-    consecutiveEmptyRef.current = 0;
     setLoadError(false);
+  }
+  // The failure counter is a ref: resetting it in an effect is fine (only state writes there are
+  // the problem), and it must be cleared whenever a new payload arrives.
+  useEffect(() => {
+    consecutiveEmptyRef.current = 0;
   }, [matches]);
 
   /** `force` bypasses `hasMore` for a manual retry after repeated failures. */
-  const fetchMoreMatches = useCallback(async (force = false) => {
-    if (loadingRef.current || (!hasMore && !force)) return;
+  const fetchMoreMatches = useCallback(
+    async (force = false) => {
+      if (loadingRef.current || (!hasMore && !force)) return;
 
-    loadingRef.current = true;
-    setLoadingMore(true);
+      loadingRef.current = true;
+      setLoadingMore(true);
 
-    try {
-      const params = new URLSearchParams({
-        region,
-        puuid,
-        start: startRef.current.toString(),
-        count: "20",
-      });
+      try {
+        // The cursor is the list itself: what is loaded is what has been read from the API, so
+        // the next page starts there. No ref and no state can drift from it.
+        const start = loadedMatches.length;
+        const params = new URLSearchParams({
+          region,
+          puuid,
+          start: String(start),
+          count: "20",
+        });
+
 
       const res = await fetch(`/api/tft/matches?${params.toString()}`);
       if (!res.ok) throw new Error("TFT matches API error");
@@ -91,11 +100,6 @@ export function TftMatchList({ matches, puuid, region, ddragonVersion, now }: Tf
           const uniqueNew = newMatches.filter((m) => !existingIds.has(m.metadata.match_id));
           return [...prev, ...uniqueNew];
         });
-        setStart((prev) => {
-          const next = prev + newMatches.length;
-          startRef.current = next;
-          return next;
-        });
         setHasMore(json.hasMore !== false && newMatches.length >= 10);
       }
     } catch (error) {
@@ -107,7 +111,9 @@ export function TftMatchList({ matches, puuid, region, ddragonVersion, now }: Tf
       loadingRef.current = false;
       setLoadingMore(false);
     }
-  }, [hasMore, region, puuid]);
+    },
+    [hasMore, region, puuid, loadedMatches.length],
+  );
 
   const rows = useMemo(
     () =>

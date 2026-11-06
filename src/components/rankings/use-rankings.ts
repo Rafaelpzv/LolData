@@ -83,30 +83,43 @@ export function useRankings({ game, region, queueType, page, sort }: UseRankings
 
   const [pageData, setPageData] = useState<RankingData | null>(null);
   const [allData, setAllData] = useState<RankingData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSortingAll, setIsSortingAll] = useState(false);
-  const [error, setError] = useState<RankingsError | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
   const [allReloadToken, setAllReloadToken] = useState(0);
+  const [allErrorKey, setAllErrorKey] = useState<string | null>(null);
 
-  // A different leaderboard invalidates the full load used for sorting.
-  useEffect(() => {
+  // "Which leaderboard do the data on screen belong to" is state, and the loading flag is derived
+  // from it: nothing is set synchronously at the top of the effect, which is what React warns about.
+  const requestKey = `${query}|${page}|${reloadToken}`;
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  const [errorKey, setErrorKey] = useState<string | null>(null);
+
+  // A different leaderboard invalidates the full load used for sorting. Keyed, so it resets during
+  // the render instead of in an effect (a synchronous setState in an effect renders twice).
+  const [allDataKey, setAllDataKey] = useState(requestKey);
+  if (allDataKey !== requestKey) {
+    setAllDataKey(requestKey);
     setAllData(null);
-  }, [query]);
+    setAllErrorKey(null);
+  }
+
+  // A cached page is read during the render: it is an external store (localStorage), which is the
+  // documented case for reading state while rendering. Trusting it needs a finished backfill.
+  // `requestKey` carries the retry token, so a retry re-reads the cache instead of serving it.
+  const [, cacheEpoch] = requestKey.split("|");
+  const cachedPage = useMemo(() => {
+    void cacheEpoch;
+    const cached = cache.readPage(page);
+    return cached && allNamesReady(cached.entries ?? [], cached.summonerNames)
+      ? cached
+      : null;
+  }, [cache, page, cacheEpoch]);
 
   useEffect(() => {
     let cancelled = false;
-    setIsLoading(true);
-    setError(null);
-    setPageData(null);
 
-    // Cached pages are only trusted once every name was resolved by the backend backfill.
-    const cached = cache.readPage(page);
-    if (cached && allNamesReady(cached.entries ?? [], cached.summonerNames)) {
-      setPageData(cached);
-      setIsLoading(false);
-      return;
-    }
+    // A trusted cache needs no network call at all: `pageData` below already serves it during the
+    // render, so this effect only fetches when there is nothing trustworthy on disk.
+    if (cachedPage) return;
 
     (async () => {
       try {
@@ -120,16 +133,16 @@ export function useRankings({ game, region, queueType, page, sort }: UseRankings
       } catch (err) {
         if (cancelled) return;
         console.error("[useRankings] Error:", err);
-        setError("page");
+        setErrorKey(requestKey);
       } finally {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) setLoadedKey(requestKey);
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [cache, query, page, reloadToken]);
+  }, [cache, query, page, reloadToken, requestKey, cachedPage]);
 
   const fetchAll = useCallback(async (): Promise<RankingData> => {
     const fetchPage = async (n: number): Promise<RankingData> => {
@@ -163,13 +176,13 @@ export function useRankings({ game, region, queueType, page, sort }: UseRankings
     };
   }, [cache, query]);
 
+  /** What is on screen: the trusted cache for this request, otherwise what the fetch returned. */
+  const currentPage = cachedPage ?? pageData;
+
   // Any sort orders the whole leaderboard, so every page is loaded once per leaderboard.
-  const needsFullLoad = sort != null && !allData && (pageData?.pagination?.totalPages ?? 1) > 1;
-  useEffect(() => {
+  const needsFullLoad = sort != null && !allData && (currentPage?.pagination?.totalPages ?? 1) > 1;  useEffect(() => {
     if (!needsFullLoad) return;
     let cancelled = false;
-    setIsSortingAll(true);
-    setError(null);
     fetchAll()
       .then((all) => {
         if (!cancelled) setAllData(all);
@@ -177,23 +190,33 @@ export function useRankings({ game, region, queueType, page, sort }: UseRankings
       .catch((err) => {
         if (cancelled) return;
         console.error("[useRankings] Error loading all pages:", err);
-        setError("all");
-      })
-      .finally(() => {
-        if (!cancelled) setIsSortingAll(false);
+        setAllErrorKey(requestKey);
       });
     return () => {
       cancelled = true;
     };
-  }, [needsFullLoad, fetchAll, allReloadToken]);
+  }, [needsFullLoad, fetchAll, allReloadToken, requestKey]);
+
+  // The flags the hook returns are derived, never written by the effects above mid-render.
+  // A retry clears the previous error in the click handler, not inside the effect.
+  const pending = !cachedPage && loadedKey !== requestKey;
+  const error: RankingsError | null =
+    errorKey === requestKey ? "page" : allErrorKey === requestKey ? "all" : null;
+  const isLoading = pending;
+  const isSortingAllNow = needsFullLoad && allErrorKey !== requestKey;
 
   const retry = useCallback(() => {
-    if (error === "all") setAllReloadToken((n) => n + 1);
-    else setReloadToken((n) => n + 1);
+    if (error === "all") {
+      setAllErrorKey(null);
+      setAllReloadToken((n) => n + 1);
+    } else {
+      setErrorKey(null);
+      setReloadToken((n) => n + 1);
+    }
   }, [error]);
 
   // Sorting reads the full leaderboard once it is loaded, otherwise just this page.
-  const source = sort && allData ? allData : pageData;
+  const source = sort && allData ? allData : currentPage;
 
   const rows = useMemo<RankedRow[]>(() => {
     if (!source) return [];
@@ -214,7 +237,7 @@ export function useRankings({ game, region, queueType, page, sort }: UseRankings
     totalPages: source?.pagination?.totalPages ?? 0,
     // Pages of the sorted full leaderboard are sliced locally: no page load to wait for.
     isLoading: isLoading && !(sort && allData),
-    isSortingAll: isSortingAll || (needsFullLoad && error !== "all"),
+    isSortingAll: isSortingAllNow,
     error,
     retry,
   };

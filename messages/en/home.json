@@ -2,5 +2,7 @@
   "metaDescription": "Player statistics, ranked progress and match history for League of Legends and Teamfight Tactics.",
   "tagline": "Player statistics, ranked progress and match history.",
   "mode": "Game",
-  "viewRankings": "View {game} rankings"
+  "viewRankings": "View {game} rankings",
+  "premadeTitle": "Premade analysis",
+  "premadeHint": "Register your Flex 5x5 team and find out what it needs to improve."
 }

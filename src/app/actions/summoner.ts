@@ -172,8 +172,6 @@ export async function getSummonerByRiotId(
       headers: { "X-Riot-Token": API_KEY },
     });
 
-    console.log(profileData.profileIconId)
-
     return {
       puuid,
       name: profileData.name || profileData.gameName || accountData.gameName,

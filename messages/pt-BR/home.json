@@ -2,5 +2,7 @@
   "metaDescription": "Estatísticas de jogadores, progresso ranqueado e histórico de partidas de League of Legends e Teamfight Tactics.",
   "tagline": "Estatísticas de jogadores, progresso ranqueado e histórico de partidas.",
   "mode": "Jogo",
-  "viewRankings": "Ver rankings de {game}"
+  "viewRankings": "Ver rankings de {game}",
+  "premadeTitle": "Análise de premade",
+  "premadeHint": "Cadastre sua equipe de Flex 5x5 e descubra o que ela precisa melhorar."
 }

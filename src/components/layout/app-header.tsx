@@ -14,11 +14,16 @@ import { BrandMark } from "./brand-mark";
 import { ActivePill } from "@/components/motion/active-pill";
 
 /** Reads game + region from the current route so header search and nav stay in context. */
-function routeContext(pathname: string): { game: Game; region: string; section: "lol-rankings" | "tft-rankings" | null } {
+function routeContext(pathname: string): {
+  game: Game;
+  region: string;
+  section: "lol-rankings" | "tft-rankings" | "premade" | null;
+} {
   const seg = pathname.split("/").filter(Boolean);
   if (seg[0] === "tft" && seg[1] === "rankings") return { game: "tft", region: normalizeRegion(seg[2]), section: "tft-rankings" };
   if (seg[0] === "tft") return { game: "tft", region: normalizeRegion(seg[1]), section: null };
   if (seg[0] === "rankings") return { game: "lol", region: normalizeRegion(seg[2]), section: "lol-rankings" };
+  if (seg[0] === "premade") return { game: "lol", region: DEFAULT_REGION, section: "premade" };
   if (seg[0] === "lol") return { game: "lol", region: normalizeRegion(seg[1]), section: null };
   return { game: "lol", region: DEFAULT_REGION, section: null };
 }
@@ -45,6 +50,12 @@ export function AppHeader() {
       label: t("tftRankings"),
       short: t("tftShort"),
       active: ctx.section === "tft-rankings",
+    },
+    {
+      href: "/premade",
+      label: t("premade"),
+      short: t("premadeShort"),
+      active: ctx.section === "premade",
     },
   ];
 

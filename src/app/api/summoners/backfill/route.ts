@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { supabaseAdmin } from "@/lib/supabase";
 
@@ -56,11 +56,8 @@ function extractSummonerRows(matches: any[]): any[] {
  *
  * Uso: GET /api/summoners/backfill  (paginas por cursor; idempotente)
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const processAll =
-      (request.nextUrl.searchParams.get("all") || "").toLowerCase() === "true";
-
     const pattern = { like: "match:%" };
 
     let lastId: string | null = null;

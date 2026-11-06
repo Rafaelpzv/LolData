@@ -22,6 +22,7 @@ export const NAMESPACES = [
   "profile",
   "matches",
   "tft",
+  "premade",
   "errors",
   "footer",
 ] as const;

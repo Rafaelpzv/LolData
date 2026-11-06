@@ -1,0 +1,24 @@
+feat(premade): análise competitiva de premade Flex 5x5
+
+- Cadastro de time por pessoas (3-5 jogadores, múltiplas contas por região)
+- Coleta por cursor da queue 440 com lotes por orçamento de tempo,
+  filtro de mínimo de jogadores, re-coleta idempotente e Match-V5 Timeline
+- Análise: métricas com intervalo de confiança, dimensões independentes,
+  curva de ouro, sinergia de pares, integridade e recomendação por regra
+  com evidência/amostra/confiança (textos em messages/)
+- Inferência de amostra pequena: mudança só vira melhora/piora fora do ruído
+- Análise pós-partida, padrões recorrentes, diagnóstico individual,
+  acompanhamento de treinamento, elo do lobby e lineup público por share id
+- Senha de edição por equipe (scrypt com salt, sessão em cookie, bloqueio)
+- 22 migrações Supabase (0001-0022) e scripts de migração/seed/diagnóstico
+
+fix(matches): cursor de paginação derivado da lista em LoL e TFT
+
+Remove refs reescritos durante o render e o "load more" que repetia páginas;
+retry manual força a busca sem depender de hasMore.
+
+fix(rankings): cache lido no render e loading derivado da requisição
+
+Elimina setState síncrono no efeito e os renders duplicados.
+
+chore: Vitest, turbopack.root e allowedDevOrigins, README e .gitignore

@@ -1,0 +1,1474 @@
+{
+  "metaDescription": "Análise coletiva de uma equipe premade de Flex 5x5: consistência, sinergia, controle de mapa e recomendações.",
+  "register": {
+    "title": "Análise de premade",
+    "description": "Cadastre de 3 a 5 jogadores da sua Flex 5x5 para analisar o que o time precisa melhorar.",
+    "formTitle": "Nova equipe",
+    "formDescription": "De 3 a 5 jogadores, todos da mesma região.",
+    "nameLabel": "Nome da equipe",
+    "namePlaceholder": "Ex.: Time do Rifu",
+    "regionLabel": "Região",
+    "riotIdsLabel": "Riot IDs dos jogadores",
+    "riotIdsHint": "Um por linha, no formato Nome#TAG. Mínimo de três jogadores.",
+    "addSlot": "Adicionar jogador",
+    "submit": "Criar equipe",
+    "submitting": "Verificando os jogadores⬦",
+    "created": "Equipe criada",
+    "errors": {
+      "invalidBody": "Confira o nome e informe de 3 a 5 Riot IDs no formato Nome#TAG.",
+      "wrongRegion": "Estes jogadores não foram encontrados nesta região: {players}. Todos precisam ser da mesma região.",
+      "duplicatePlayers": "Os jogadores precisam ser diferentes entre si.",
+      "riotBusy": "A Riot está limitando as requisições. Tente de novo em instantes.",
+      "riotUnavailable": "Não foi possível consultar a Riot agora.",
+      "internal": "Não foi possível criar a equipe. Tente de novo."
+    }
+  },
+  "roster": {
+    "title": "Jogadores",
+    "manage": "Gerenciar",
+    "manageShort": "Gerenciar",
+    "manageTitle": "Gerenciar elenco",
+    "close": "Fechar",
+    "player": "Jogador",
+    "tag": "Tag",
+    "accounts": "contas",
+    "empty": "Histórico ainda não coletado",
+    "emptyHint": "A análise da equipe aparece aqui depois da coleta das partidas de Flex.",
+    "add": "Adicionar jogador",
+    "addPlaceholder": "Nome#TAG",
+    "addHint": "Cada conta do elenco pertence a uma pessoa. Uma pessoa pode ter várias contas: as estatísticas dela somam todas.",
+    "addAccount": "Adicionar conta",
+    "addAccountFor": "Adicionar conta a {name}",
+    "accountPlaceholder": "Nome#TAG",
+    "remove": "Remover",
+    "removeLabel": "Remover {name}",
+    "removeAccount": "Remover conta",
+    "removeAccountLabel": "Remover conta {name}",
+    "minRoster": "O elenco precisa de pelo menos três jogadores.",
+    "errors": {
+      "invalidRiotId": "Informe o Riot ID no formato Nome#TAG.",
+      "wrongRegion": "Jogador não encontrado nesta região.",
+      "duplicate": "Esta conta já está no elenco.",
+      "rosterTooSmall": "O elenco precisa manter pelo menos três jogadores.",
+      "generic": "Não foi possível atualizar o elenco."
+    },
+    "confirmRemoveAccount": "Remover a conta {name}? As partidas salvas por ela saem do time.",
+    "confirmRemovePlayer": "Remover {name} do time? A pessoa, as contas e as partidas dela saem do banco.",
+    "removeAccountLast": "Remover a conta (a pessoa sai junto, pois ficaria sem conta)",
+    "recollecting": "Removido. Coletando de novo as partidas do time com o novo elenco…",
+    "show": "Mostrar elenco",
+    "hide": "Ocultar elenco",
+    "editingLocked": "Edição bloqueada: desbloqueie com a senha da equipe para mudar o elenco."
+  },
+  "actions": {
+    "collect": "Coletar partidas",
+    "collecting": "Coletando partidas⬦",
+    "collectProgress": "Coletando {done} de {total}",
+    "collectDone": "{saved, plural, =0 {Nenhuma partida nova} other {# partida(s) nova(s)}}",
+    "collectSkipped": "{count, plural, one {# partida não pôde ser lida} other {# partidas não puderam ser lidas}}",
+    "collectError": "Não foi possível coletar as partidas.",
+    "collectHint": "Rode uma coleta para carregar as partidas de Flex que o elenco jogou junto.",
+    "retry": "Tentar de novo",
+    "cancel": "Cancelar",
+    "collectedCount": "{count, plural, one {# partida coletada} other {# partidas coletadas}}",
+    "progress": "Lendo partidas: {done}/{total}",
+    "candidateProgress": "{saved} de {total} candidatas",
+    "collectStopped": "Coleta pausada. Clique de novo para continuar de onde parou.",
+    "minPeople": "Mínimo de jogadores por partida",
+    "tiers": "Partidas por nível",
+    "tier": "{count} com {level}+",
+    "tiersHint": "Quantas partidas do lote entram em cada mínimo. O mínimo escolhido vale para a próxima coleta.",
+    "neverTogether": "Nenhuma partida teve {needed} pessoas do time juntas — o máximo encontrado foi {best}. Confira se falta alguém ou se algum jogador está na conta errada.",
+    "accountsWithoutGames": "{count} conta(s) do elenco não têm nenhuma partida de Flex nessa região.",
+    "collectSaved": "{count} partida(s) salva(s) agora."
+  },
+  "summary": {
+    "label": "Visão da equipe",
+    "winRate": "Taxa de vitória",
+    "kda": "KDA coletivo",
+    "deaths": "Mortes por partida",
+    "towers": "Torres por partida",
+    "games": "{count, plural, one {# partida} other {# partidas}}",
+    "confidence": {
+      "label": "Confiança",
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta",
+      "hint": "Amostra pequena: {count} de {needed} partidas. Conclusões fracas."
+    },
+    "shortOfFive": "{count} jogo(s) sem 5 pessoas do time (tinham {players})",
+    "kdaHint": "Abates e assistências dos cinco papéis sobre as mortes deles; com menos de 5 pessoas o denominador é o time da partida.",
+    "sideKda": "KDA do time",
+    "sideKdaComplete": "Lado inteiro nas {games} partidas: (abates + assistências) / mortes de toda a equipe, preenchimentos incluídos.",
+    "sideKdaEstimatePartial": "Estimativa: só {complete} de {games} partidas têm o lado inteiro lido. Nas demais as assistências vêm apenas dos cinco papéis do elenco, o que subestima o total.",
+    "sideKdaEstimate": "Indisponível como KDA do time: nenhuma das {games} partidas tem o lado inteiro lido (as assistências dos outros jogadores do lado nunca foram salvas).",
+    "deathsHint": "Mortes do lado por partida, não a soma do elenco: com menos de cinco pessoas as duas coisas são diferentes.",
+    "names": "Nomes",
+    "numbers": "Números",
+    "winRateInterval": "{rate} ({wins}/{games}) · IC95 {low}–{high}%",
+    "fullLineup": "{full} de {games} com o time completo",
+    "rosterKda": "KDA do elenco"
+  },
+  "integrity": {
+    "title": "De onde os números vêm",
+    "sets": {
+      "full": "com o time completo ({total} partidas)",
+      "partial": "com escalação parcial ({total})",
+      "substitutes": "com substituto no lugar de alguém do elenco ({total})",
+      "unattributed": "com conta que não pertence mais a ninguém do elenco ({total})",
+      "withTimeline": "com timeline coletada ({total})",
+      "withoutTimeline": "sem timeline ({total})"
+    },
+    "mixed": "O período mistura conjuntos: as métricas que precisam do time inteiro dizem o próprio n, e as que precisam de timeline usam só as partidas com timeline.",
+    "fullWithTimeline": "Somente {games} partidas ({share}) têm time completo E timeline: são as únicas em que todas as métricas podem ser lidas ao mesmo tempo."
+  },
+  "tabs": {
+    "label": "Seção da análise",
+    "overview": "Visão geral",
+    "individual": "Individual",
+    "collective": "Coletiva",
+    "training": "Treinamento",
+    "evolution": "Evolução",
+    "matches": "Partidas",
+    "patterns": "Padrões",
+    "excludedByMinPeople": "{kept} de {total} partidas no recorte (mínimo de {min} jogadores do elenco por partida)"
+  },
+  "matches": {
+    "empty": "Nenhuma partida com timeline coletada",
+    "emptyHint": "A análise pós-partida precisa da timeline da partida. Use a coleta de timeline para liberá-la.",
+    "coverage": "{found} de {total} partidas com um ponto de inflexão que se sustenta nos dados",
+    "onlyWithFinding": "Só com análise",
+    "win": "Vitória",
+    "loss": "Derrota",
+    "noFinding": "Sem ponto de inflexão identificável — a conclusão seria chute",
+    "inconclusiveBody": "O estado da partida não mudou de forma mensurável num episódio isolado. Isso não quer dizer que nada deu errado: quer dizer que os dados desta partida não permitem apontar um momento decisivo. Revisar o jogo inteiro ajuda mais do que procurar um culpado.",
+    "headline": "Principal observação",
+    "criticalMoment": "Momento crítico",
+    "impact": "Impacto observado",
+    "interpretation": "Interpretação",
+    "improvement": "O que melhorar",
+    "confidence_label": "Confiança",
+    "evidence": "Evidências",
+    "inflections": "Pontos de inflexão",
+    "involved": "Envolvidos",
+    "swing": "Variação de ouro: {value}",
+    "replay": "Revisar no replay: {from}–{to}",
+    "notEvaluated": "O que não foi possível avaliar",
+    "confidence": {
+      "high": "alta",
+      "medium": "média",
+      "low": "baixa",
+      "inconclusive": "inconclusiva"
+    },
+    "personFilter": "Filtrar por jogador",
+    "everyone": "Todos os jogadores",
+    "coverageFiltered": "{shown} de {total} partidas com este jogador · {found} com ponto de inflexão",
+    "noMatchesForPerson": "Nenhuma partida registrada com {name} neste recorte.",
+    "lineupTitle": "{count, plural, one {Escalação · 1 pessoa do elenco} other {Escalação · {count} pessoas do elenco}}",
+    "lineupEmpty": "Nenhuma pessoa do elenco identificada nesta partida — a conta não está ligada a ninguém.",
+    "headlineWithFact": "{headline}: {what}",
+    "frames": {
+      "wonDespite": "Apesar disto, venceu",
+      "mainProblem": "Principal problema",
+      "winNoInflection": "Vitória sem ponto de inflexão que se sustente nos dados.",
+      "lossNoInflection": "Derrota sem ponto de inflexão que se sustente nos dados."
+    },
+    "what": {
+      "deathsBeforeObjective": "{deaths, plural, one {# morte do grupo} other {# mortes do grupo}} nos {seconds}s antes {objective, select, dragon {do Dragão} baron {do Barão} other {do objetivo}}",
+      "objectiveLostAfterFight": "Luta desfavorável e, {seconds}s depois, o inimigo converteu em objetivo",
+      "killsWithoutConversion": "{kills, plural, one {# abate} other {# abates}} em {seconds}s sem nenhum objetivo conquistado",
+      "leadFading": "A vantagem de ouro caiu de {peak} para {later} em {minutes}",
+      "teamSplit": "Grupo espalhado por {units} unidades durante uma luta",
+      "objectiveOutnumbered": "Objetivo disputado com apenas {players, plural, one {# jogador do grupo} other {# jogadores do grupo}}",
+      "deathsIntoStructures": "{deaths, plural, one {# morte} other {# mortes}} em sequência e perda de estrutura na sequência"
+    },
+    "interpretationText": {
+      "deathsBeforeObjective": "O grupo chegou ao objetivo com desvantagem numérica: é uma situação desfavorável, não uma prova de erro individual.",
+      "objectiveLostAfterFight": "A morte aconteceu numa luta que o grupo já estava perdendo; a conversão em objetivo vem na sequência, não necessariamente por causa dela.",
+      "killsWithoutConversion": "Vantagem de abates que não virou estrutura nem objetivo: tempo ganho que não foi convertido.",
+      "leadFading": "A liderança desaparecendo é um sinal de jogo, não de uma pessoa: vale revisar o que o grupo deixou de converter nesse intervalo.",
+      "teamSplit": "Proximidade não é coordenação: o número mostra que estavam longe, não que a distância causou a derrota.",
+      "objectiveOutnumbered": "Disputa em inferioridade numérica: a decisão de contestar é coletiva, e o custo também.",
+      "deathsIntoStructures": "Mortes encadeadas tiram do grupo a chance de defender: a estrutura cai no intervalo em que faltava gente.",
+      "noInflection": "O resultado veio de acúmulo ao longo do jogo, não de um episódio isolado — ou os dados desta partida não permitem isolar um."
+    },
+    "impactText": {
+      "none": "Não foi possível isolar um momento em que o estado da partida mudou de forma mensurável.",
+      "measured": "{direction, select, gain {Ganho} loss {Perda} other {Mudança}} de {gold} de ouro no recorte ({before} → {after}), {sign}{objectives} objetivo(s) do grupo."
+    },
+    "improvementText": {
+      "deathsBeforeObjective": "Recuar 60s antes do objetivo quando faltar gente: chegar atrasado é pior do que não contestar.",
+      "objectiveLostAfterFight": "Depois de uma luta perdida, decidir em grupo se o objetivo ainda vale — e sair junto quando não vale.",
+      "killsWithoutConversion": "Depois de ganhar uma luta, chamar a próxima ação (torre, dragão) antes de voltar para a lane.",
+      "leadFading": "Com vantagem, reduzir o risco: trocar caça por pressão de mapa e visão de objetivo.",
+      "teamSplit": "Combinar o ponto de encontro antes de disputar: alguém chega sempre por último.",
+      "objectiveOutnumbered": "Não iniciar ou contestar objetivo com menos gente do que o necessário; avisar a contagem primeiro.",
+      "deathsIntoStructures": "Depois da segunda morte seguida, jogar seguro até o time voltar: a estrutura cai no intervalo.",
+      "noInflection": "Revisar a partida inteira em vez de um trecho ajuda mais aqui: a análise não achou um episódio decisivo."
+    },
+    "notEvaluatedText": {
+      "noVision": "Visão (wards) não é coletada: não é possível medir controle de visão antes dos objetivos.",
+      "sampledTimeline": "A timeline é amostrada por minuto, então dois eventos dentro do mesmo minuto não têm ordem exata.",
+      "fewRosterPlayers": "Poucos jogadores do elenco na partida: movimentação e dispersão do grupo não foram avaliadas.",
+      "noObjectives": "A timeline não registrou objetivos do grupo nesta partida: conversão não foi avaliada."
+    },
+    "evidenceLabels": {
+      "deathsBeforeObjective": "mortes antes do objetivo",
+      "peopleAtObjective": "pessoas do grupo no objetivo",
+      "groupDeathsInFight": "mortes do grupo na luta",
+      "groupKillsInFight": "abates do grupo na luta",
+      "secondsToConversion": "segundos até a conversão",
+      "killsInWindow": "abates na janela",
+      "objectivesConverted": "objetivos convertidos",
+      "peakGold": "ouro de vantagem no pico",
+      "goldAfter": "ouro de vantagem depois",
+      "drop": "queda",
+      "maxGroupDistance": "distância máxima no grupo",
+      "playersInFrame": "jogadores no frame",
+      "deathsAround": "mortes nos 30s em volta",
+      "deathsInSequence": "mortes na sequência",
+      "secondsToStructure": "segundos até a estrutura"
+    }
+  },
+  "patterns": {
+    "empty": "Nenhum padrão ainda",
+    "emptyHint": "Padrões recorrentes precisam de partidas com timeline para aparecer.",
+    "intro": "Hábitos que se repetem nas últimas {games} partidas com timeline. Cada padrão vem com frequência, comparação com a janela anterior e o que ele não prova.",
+    "strength": {
+      "recurring": "recorrente",
+      "suggestive": "indício",
+      "insufficient": "insuficiente"
+    },
+    "frequency": "Frequência",
+    "games": "Partidas",
+    "events": "Eventos",
+    "comparedTo": "Antes",
+    "noComparison": "sem janela anterior",
+    "interval": "IC95 {low}–{high}",
+    "period": "{days} dia(s) · {from} a {to}",
+    "examples": "Exemplos",
+    "limitations": "O que este padrão não prova",
+    "deathsTitle": "Mortes por partida",
+    "deathsHint": "Média, mediana e dispersão das mortes do grupo em cada partida da janela recente.",
+    "deaths": {
+      "mean": "Média",
+      "median": "Mediana",
+      "sd": "Desvio",
+      "range": "Mín–máx",
+      "previous": "Janela anterior"
+    },
+    "verdict": {
+      "improved": "melhorou",
+      "worsened": "piorou",
+      "inconclusive": "dentro do ruído",
+      "unmeasurable": "sem medida"
+    },
+    "units": {
+      "seconds": "{value} s",
+      "gold": "{value} de ouro",
+      "units": "{value} passos",
+      "players": "{value} jogadores"
+    },
+    "criteria": {
+      "minPlayers": "{value}",
+      "proximityRadius": "raio de",
+      "beforeObjectiveWindow": "janela de",
+      "killCluster": "sequência de",
+      "conversionWindow": "converter em",
+      "relevantLead": "vantagem de",
+      "togetherRadius": "junto até",
+      "collapseFactor": "acima da mediana"
+    },
+    "items": {
+      "unpreparedObjectives": {
+        "title": "Objetivo disputado sem gente suficiente",
+        "behavior": "O grupo disputa dragão ou barão com menos de {players} pessoas por perto, em vez de esperar o time se juntar.",
+        "limitations": {
+          "sampling": "Proximidade é medida em passos do mapa numa amostra de cerca de um frame por minuto: alguém a caminho pode parecer ausente.",
+          "position": "A posição mostra onde o jogador estava, não se ele decidiu ou foi impedido de estar lá."
+        },
+        "note": "{unprepared} de {objectives} objetivos sem gente suficiente"
+      },
+      "deathsBeforeObjectives": {
+        "title": "Mortes pouco antes do objetivo",
+        "behavior": "O grupo perde gente nos {seconds}s que antecedem dragão ou barão, chegando ao objetivo em desvantagem numérica.",
+        "limitations": {
+          "cause": "Uma morte antes do objetivo pode ser a causa da desvantagem ou o efeito de uma luta já perdida.",
+          "window": "A janela de {seconds}s é uma convenção: objetivos disputados antes disso não entram na conta."
+        },
+        "note": "{deaths} mortes nos {seconds}s antes de objetivos"
+      },
+      "killsWithoutConversion": {
+        "title": "Sequências de abates sem objetivo na sequência",
+        "behavior": "O grupo faz dois ou mais abates numa janela curta e não captura nenhum objetivo logo depois, voltando para a rota em vez de pressionar com a superioridade numérica.",
+        "limitations": {
+          "notEveryCluster": "Nem toda sequência oferece objetivo: matar quando o dragão não nasceu não é erro de conversão.",
+          "availability": "A disponibilidade do objetivo não é medida aqui — só se houve captura na janela."
+        },
+        "note": "{unconverted} de {clusters} sequências de abates sem objetivo"
+      },
+      "leadNotConverted": {
+        "title": "Vantagem de ouro que não virou vitória",
+        "behavior": "O grupo abre liderança de ouro e não a converte em estruturas suficientes para fechar o jogo.",
+        "limitations": {
+          "notAlwaysError": "Liderar em ouro e perder não é sempre erro de conversão: uma composição de escala pode perder estando à frente.",
+          "peakGold": "A vantagem é medida pelo pico de ouro, que pode ter vindo de uma única luta já no fim do jogo."
+        },
+        "note": "pico de {gold} de ouro"
+      },
+      "isolatedDeaths": {
+        "title": "Mortes sem aliado por perto",
+        "behavior": "O grupo permite mortes de alguém longe de qualquer aliado, o tipo de morte que decorre de estar deslocado do time em vez de uma decisão coletiva ruim.",
+        "limitations": {
+          "farIsNotWrong": "Estar longe não significa estar errado: numa split push ou defendendo uma lane, a distância é o plano.",
+          "sampling": "A amostra de posições é de cerca de um frame por minuto, então a aproximação pode não aparecer."
+        },
+        "note": "{share}% das mortes sem aliado perto"
+      },
+      "collapseGames": {
+        "title": "Partidas muito abaixo do próprio padrão",
+        "behavior": "O grupo tem jogos em que morre muito acima do seu habitual: o sinal de uma partida que desandou, e não de um jogo apenas mais longo.",
+        "limitations": {
+          "duration": "Um jogo de 35 minutos naturalmente tem mais mortes que um de 20: parte da diferença é duração, não queda de nível.",
+          "smallSample": "Com poucas partidas a referência do grupo é instável, e o corte fica impreciso."
+        },
+        "note": "{deaths} mortes (mediana da janela: {median})"
+      }
+    }
+  },
+  "diagnosis": {
+    "title": "O que desenvolver",
+    "problems": "A desenvolver",
+    "strengths": "Pontos fortes",
+    "none": "Nada a apontar para esta pessoa na amostra atual.",
+    "aspect": "Aspecto a desenvolver",
+    "evidence": "Evidência",
+    "evidence-summary": "Evidência",
+    "evidence-details": "Evidência e fontes",
+    "context": "Função",
+    "champion": "Campeão",
+    "games": "Partidas",
+    "fullGames": "{games} com time completo",
+    "why": "Por que esta confiança",
+    "exercise": "Exercício recomendado",
+    "tracking": "Indicador de acompanhamento",
+    "createGoal": "Virar objetivo de treinamento",
+    "noRole": "função não registrada",
+    "aspects": {
+      "farming": "Farm na rota",
+      "vision": "Visão",
+      "deaths": "Mortes",
+      "killParticipation": "Participação em abates",
+      "earlyGame": "Início de jogo",
+      "combat": "Eficiência em luta"
+    },
+    "confidence": {
+      "high": "alta",
+      "medium": "média",
+      "low": "baixa"
+    },
+    "shared": {
+      "title": "Não é desta pessoa",
+      "hint": "O dado existe, mas a evidência aponta para o contexto: o grupo, a escalação ou a amostra.",
+      "teamDeaths": "O time inteiro morre neste ritmo: é tema do grupo, não desta pessoa.",
+      "laneStructure": "A estrutura da rota explica o número mais que o jogador.",
+      "championNotEstablished": "Ainda não há campeão estabelecido para atribuir um hábito.",
+      "smallSample": "Amostra pequena: não dá para atribuir um hábito a esta pessoa.",
+      "notMeasured": "O dado desta métrica não foi medido no período: sem timeline não há posição."
+    },
+    "units": {
+      "perMin": "por min",
+      "perGame": "por partida",
+      "percent": "%",
+      "ratio": "",
+      "points": "de diferença"
+    },
+    "tracked": {
+      "csDiffAt10": "Diferença de CS aos 10 min",
+      "visionPerMin": "Visão por minuto",
+      "aloneDeathShare": "Mortes sem aliado perto",
+      "killParticipation": "Participação em abates",
+      "damagePerDeath": "Dano por morte",
+      "deathsPerGame": "Mortes por partida",
+      "teamDeathsPerGame": "Mortes do grupo por partida"
+    },
+    "roles": {
+      "TOP": "Topo",
+      "JUNGLE": "Selva",
+      "MIDDLE": "Meio",
+      "BOTTOM": "Atirador",
+      "UTILITY": "Suporte"
+    },
+    "evidence": {
+      "csVsLaneAt10": "CS em relação ao oponente de lane aos 10 min",
+      "csPerMin": "CS por minuto",
+      "visionPerMin": "Visão por minuto",
+      "roleAverage": "Média da própria função",
+      "deathsPerGame": "Mortes por partida",
+      "groupDeathsPerGame": "Mortes do grupo por partida",
+      "aloneDeaths": "Mortes sem aliado perto",
+      "killParticipation": "Participação em abates",
+      "damagePerDeath": "Dano por morte"
+    },
+    "source": {
+      "games": "{games, plural, one {# partida} other {# partidas}}",
+      "laneGamesWithTimeline": "média de {games} partidas com timeline",
+      "sameRoleGames": "{games, plural, one {# partida} other {# partidas}} da mesma função",
+      "gamesWithTimeline": "{games, plural, one {# partida} other {# partidas}} com timeline",
+      "rosterSameSide": "só as pessoas do elenco, no mesmo lado"
+    },
+    "text": {
+      "reason": {
+        "sampleBelowMinimum": "{games, plural, one {# partida} other {# partidas}}: abaixo do mínimo para afirmar algo sobre um hábito.",
+        "metricFewGames": "A métrica só pôde ser lida em {games, plural, one {# partida} other {# partidas}}.",
+        "metricRead": "Lida em {games, plural, one {# partida} other {# partidas}}.",
+        "farmingUnstableRole": "Sem uma função estável, a média contra o oponente de lane compara posições diferentes.",
+        "deathsTeamPace": "O grupo inteiro morre no mesmo ritmo: a evidência separa a pessoa do padrão e aponta o coletivo.",
+        "deathsNoTimeline": "As mortes estão altas, mas sem timeline não se sabe se foram isoladas ou em luta.",
+        "deathsWithAllies": "A maioria das mortes aconteceu com aliados por perto ({share}% sozinhas): a luta coletiva explica mais que a decisão individual.",
+        "kpNoTimeline": "Sem timeline, não se sabe se a pessoa ficou fora das lutas ou se as lutas aconteceram longe dela.",
+        "combatLaneBehind": "O início de jogo atrás de XP explica boa parte do dano baixo: é o problema da rota, não da luta."
+      },
+      "exercise": {
+        "farmingUnstableRole": "Tratar como tema de escalação: definir a função da pessoa antes de ler o farm.",
+        "farmingProblem": "Revisar os primeiros 10 minutos das partidas, especialmente a gestão de onda depois do recall.",
+        "farmingStrength": "Manter a rotina de recall que está funcionando e compartilhá-la com o resto da rota.",
+        "visionProblem": "Colocar uma sentinela antes de cada objetivo nas 4 partidas seguintes e contar quantas foram contestadas.",
+        "visionStrength": "Documentar onde os wards estão sendo colocados: é o posicionamento a ensinar para o time.",
+        "deathsTeamPace": "Tratar como tema do time: combinar o que fazer depois da segunda morte seguida antes de apontar um jogador.",
+        "deathsNoTimeline": "Coletar a timeline das próximas partidas para distinguir morte isolada de luta coletiva.",
+        "deathsWithAllies": "Revisar as lutas em grupo: entrada, ordem de alvo e saída.",
+        "deathsProblem": "Antes de entrar na jungle sozinho, checar onde estão os dois aliados mais próximos.",
+        "kpNoTimeline": "Coletar a timeline das próximas partidas antes de cobrar presença em luta.",
+        "kpProblem": "Nas próximas 5 partidas, acompanhar o time entre 12 e 20 minutos em vez de continuar na rota.",
+        "kpStrength": "Manter a presença nas lutas e chamar a rota para os objetivos que acontecem depois delas.",
+        "combatLaneBehind": "Revisar o plano dos primeiros 10 minutos antes de cobrar eficiência de luta.",
+        "combatProblem": "Em revisão, olhar as lutas em que morreu primeiro: escolher alvo antes de entrar e sair com vida.",
+        "combatStrength": "Usar as lutas em que trocou bem como referência: posição e alvo antes do contato."
+      }
+    }
+  },
+  "trainingForm": {
+    "title": "Novo objetivo de treinamento",
+    "hint": "Preenchido com o que a análise sabe sobre {person}. O nome, a meta e o exercício são decisão da equipe: nada é criado sem confirmar.",
+    "name": "Nome do objetivo",
+    "metric": "Métrica acompanhada",
+    "target": "Meta (número)",
+    "targetHint": "Deixe vazio para acompanhar a direção sem número",
+    "exercise": "Exercício combinado",
+    "cancel": "Cancelar",
+    "save": "Criar objetivo",
+    "metrics": {
+      "csDiffAt10": "Diferença de CS aos 10 min",
+      "visionPerMin": "Visão por minuto",
+      "aloneDeathShare": "Mortes sem aliado perto",
+      "killParticipation": "Participação em abates",
+      "damagePerDeath": "Dano por morte",
+      "deathsPerGame": "Mortes por partida",
+      "teamDeathsPerGame": "Mortes do grupo por partida"
+    }
+  },
+  "quick": {
+    "eyebrow": "Diagnóstico rápido",
+    "problemsTitle": "Principais problemas",
+    "strengthsTitle": "O que está funcionando",
+    "trendTitle": "Evolução recente",
+    "nothingYet": "Com {games} partidas ainda não há evidência suficiente para afirmar um problema ou um ponto forte. O que falta está abaixo, em qualidade dos dados.",
+    "dataGames": "{games} partidas analisadas",
+    "activeGoals": "{count, plural, =0 {nenhum objetivo ativo} one {1 objetivo ativo} other {# objetivos ativos}}",
+    "seeLimitations": "Ver limitações",
+    "sample": "{games} de {total} partidas",
+    "byPeople": "Pessoas: {names}",
+    "where": "Últimas {after} partidas contra as {before} anteriores",
+    "state": {
+      "problems": "Há problemas a resolver",
+      "mixed": "Há problemas e pontos fortes",
+      "steady": "Nenhum problema sustentado pelos dados",
+      "inconclusive": "Ainda não dá para afirmar"
+    },
+    "stateHint": {
+      "problems": "O que aparece abaixo tem amostra para ser levado a sério. Não é uma nota: é a lista do que está pesando.",
+      "mixed": "A equipe tem força medida e problema medido ao mesmo tempo. As duas coisas são reais e cobram trabalho diferente.",
+      "steady": "Nenhum diagnóstico atingiu a amostra mínima para apontar um hábito a corrigir. Isso não é aprovação: é ausência de evidência contra.",
+      "inconclusive": "A amostra é pequena ou faltam dados para apontar com honestidade. A análise completa diz o que falta."
+    },
+    "factors": {
+      "problem": {
+        "farming": "Farm na rota abaixo do esperado",
+        "vision": "Visão insuficiente para o tempo de jogo",
+        "deaths": "Mortes acima do padrão do grupo",
+        "killParticipation": "Participação em abates baixa",
+        "earlyGame": "Início de jogo difícil",
+        "combat": "Dano por morte baixo para a função"
+      },
+      "strength": {
+        "farming": "Farm acima da média na rota",
+        "vision": "Visão consistente",
+        "deaths": "Mortes abaixo do padrão do grupo",
+        "killParticipation": "Alta participação em abates",
+        "earlyGame": "Início de jogo forte",
+        "combat": "Dano por morte alto para a função"
+      },
+      "trend": {
+        "objectiveControl": "Controle de objetivos",
+        "objectivePreparation": "Preparação para objetivos",
+        "conversion": "Conversão de vantagem",
+        "synchronization": "Sincronização do grupo",
+        "consistency": "Consistência das partidas",
+        "individual": "Desempenho individual",
+        "map": "Controle de mapa",
+        "firstDragon": "Primeiro dragão",
+        "firstHerald": "Primeiro arauto",
+        "firstBaron": "Primeiro barão",
+        "firstTower": "Primeira torre",
+        "dragonsPerGame": "Dragões por partida",
+        "baronsPerGame": "Barões por partida",
+        "towersPerGame": "Torres por partida",
+        "dragonPresence": "Presença no dragão",
+        "averagePresence": "Presença média nas jogadas",
+        "groupedShare": "Tempo agrupado",
+        "playersAtKills": "Jogadores por abate",
+        "playersAtObjective": "Jogadores por objetivo",
+        "killToObjective": "Abate que vira objetivo",
+        "turretsPerKill": "Torres por abate",
+        "goldAt15": "Ouro aos 15 min",
+        "winRateAhead15": "Vitórias com vantagem aos 15",
+        "comebackRate": "Viradas depois de estar atrás",
+        "isolatedDeathShare": "Mortes sem aliado perto",
+        "deathsBeforeObjective": "Mortes antes do objetivo",
+        "deathsPerGame": "Mortes por partida",
+        "teamDeathsVariation": "Variação de mortes do time",
+        "teamGoldVariation": "Variação de ouro do time",
+        "fightsPerGame": "Lutas por partida",
+        "kda": "KDA do time",
+        "killParticipationGap": "Distância de participação em abates"
+      }
+    },
+    "evidence": {
+      "people": "pessoas",
+      "games": "partidas de referência",
+      "improved": "Variação",
+      "worsened": "Variação"
+    },
+    "units": {
+      "perGame": "por partida",
+      "percent": "%",
+      "percentPoints": "p.p.",
+      "seconds": "s",
+      "count": "",
+      "ratio": ""
+    },
+    "confidence": {
+      "high": "evidência forte",
+      "medium": "evidência média",
+      "low": "amostra pequena"
+    },
+    "areas": {
+      "objectives": "objetivos",
+      "preparation": "preparação para objetivos",
+      "conversion": "conversão",
+      "synchronization": "sincronização",
+      "consistency": "consistência",
+      "individual": "desempenho individual",
+      "map": "mapa"
+    },
+    "quality": {
+      "full": "{full} de {games} com o time completo",
+      "timeline": "{games} com timeline",
+      "both": "{games} com time completo e timeline",
+      "substitutes": "{games} com alguém de fora na escalação",
+      "unattributed": "{games} sem conta atribuída",
+      "thin": "Amostra ainda fina para: {areas}."
+    }
+  },
+  "training": {
+    "title": "Objetivos de treinamento",
+    "hint": "Cada objetivo compara as partidas recentes com a linha de base de antes do início. Sem causa, sem bala de prata: só o que mudou e o que o dado sustenta.",
+    "empty": "Nenhum objetivo ativo. Vá em Individual, escolha um diagnóstico e use \"Virar objetivo de treinamento\".",
+    "new": "Novo objetivo",
+    "team": "Time inteiro",
+    "metric": "Métrica",
+    "baseline": "Linha de base",
+    "current": "Agora",
+    "target": "Meta",
+    "noTarget": "sem número",
+    "reached": "atingida",
+    "notReached": "ainda não",
+    "exercise": "Exercício",
+    "evaluate": "Avaliar com as partidas de hoje",
+    "archive": "Arquivar",
+    "showHistory": "Histórico ({count})",
+    "hideHistory": "Ocultar histórico",
+    "history": "Leituras anteriores",
+    "noHistory": "Nenhuma leitura ainda: voltar ao painel depois das próximas partidas.",
+    "noWindow": "Nenhuma partida depois do início. A janela abre quando a equipe jogar.",
+    "windows": "{before} antes × {after} depois",
+    "interval": "intervalo de 95%: {low} a {high}",
+    "source": "Fonte: {source}",
+    "states": {
+      "planned": "planejado",
+      "running": "em andamento",
+      "achieved": "meta atingida",
+      "missed": "meta não atingida",
+      "inconclusive": "sem conclusão"
+    },
+    "verdicts": {
+      "consistent": "Evolução consistente",
+      "positiveButInconclusive": "Melhora ainda dentro do ruído",
+      "noChange": "Sem mudança mensurável",
+      "worse": "Piorou",
+      "initialGainLost": "Ganho inicial não se manteve",
+      "notEnoughGames": "Partidas insuficientes"
+    },
+    "confidence": {
+      "high": "confiança alta",
+      "medium": "confiança média",
+      "low": "confiança baixa"
+    },
+    "metrics": {
+      "csDiffAt10": "Diferença de CS aos 10 min",
+      "visionPerMin": "Visão por minuto",
+      "aloneDeathShare": "Mortes sem aliado perto",
+      "killParticipation": "Participação em abates",
+      "damagePerDeath": "Dano por morte",
+      "deathsPerGame": "Mortes por partida",
+      "teamDeathsPerGame": "Mortes do grupo por partida"
+    },
+    "sources": {
+      "csDiffAt10": "timeline: CS próprio menos o do oponente de lane aos 10 min",
+      "visionPerMin": "participante: visionScore / duração em minutos",
+      "aloneDeathShare": "timeline: mortes sem aliado dentro do raio de config.ts",
+      "killParticipation": "participante: abates + assistências / abates do lado",
+      "damagePerDeath": "participante: dano a campeões / mortes",
+      "deathsPerGame": "participante: mortes por partida",
+      "teamDeathsPerGame": "partida: mortes das pessoas do elenco no lado, por partida"
+    }
+  },
+  "lobby": {
+    "manage": "Gerenciar elenco",
+    "manageShort": "Gerenciar",
+    "moreAccounts": "+{count}",
+    "accountsTitle": "{count, plural, one {# conta} other {# contas}}",
+    "accountsCount": "{count, plural, one {# conta no elenco} other {# contas no elenco}}",
+    "playerAria": "{name}, {rank}. Seleciona este jogador na aba Individual.",
+    "unranked": "Sem elo"
+  },
+  "update": {
+    "action": "Atualizar dados",
+    "moreActions": "Mais ações de dados",
+    "advanced": {
+      "label": "Avançado",
+      "hint": "Roda uma etapa extra sobre as partidas salvas. Não busca partidas novas; a fila e os dados de timeline são lidos de novo."
+    },
+    "refreshRanks": "Atualizar elos e ícones",
+    "refreshRanksHint": "Lê de novo Flex e Solo/Duo de todas as contas, agora.",
+    "ranksError": "Não foi possível ler os elos. Veja o log do servidor para o motivo.",
+    "ranksDone": "{count, plural, one {# conta lida} other {# contas lidas}}: Flex e Solo/Duo gravados.",
+    "runs": {
+      "matches": "Coletando partidas…",
+      "timelines": "Coletando timelines…",
+      "ranks": "Lendo ícones e elos…"
+    },
+    "progress": {
+      "matches": "Partidas {done} de {total}",
+      "timelines": "Timelines {done} de {total}",
+      "ranks": "Contas {done}"
+    },
+    "lastUpdate": "Última atualização {time}",
+    "never": "Nunca atualizado",
+    "savedMatches": "{count, plural, =0 {Nenhuma partida nova} other {# partida(s) nova(s)}}",
+    "doneNoNew": "Tudo atualizado ({accounts} contas lidas).",
+    "stalled": "A atualização parou: nenhuma partida nova foi salva e a leitura não avançou. Veja o log do servidor ou tente de novo mais tarde.",
+    "minPeople": "Mínimo de jogadores por partida",
+    "excludedHint": "Partidas com menos que esse número de pessoas do elenco do mesmo lado ficam de fora da análise. As partidas por nível mostram quantas contam para cada mínimo.",
+    "locked": "Esta página está somente leitura: informe a senha da equipe acima para atualizar os dados e editar o elenco."
+  },
+  "individual": {
+    "title": "Por jogador",
+    "player": "Jogador",
+    "games": "Partidas",
+    "gamesCount": "n={games}",
+    "champions": "Campeões mais jogados",
+    "lanes": "Lanes",
+    "mainLane": "Lane principal: {lane}",
+    "kpTitle": "Participação em kills",
+    "kpHint": "Só as partidas da janela; cada pessoa soma as próprias contas.",
+    "kp": "Participação em kills",
+    "kpRange": "Mín–máx.",
+    "deathsVariation": "Variação de mortes",
+    "csVariation": "Variação de CS",
+    "empty": "Sem dados individuais ainda.",
+    "hint": "Cada jogador é medido só nas partidas em que jogou. Consistência: quanto menor a variação, mais estável.",
+    "rating": "Nota do jogador",
+    "sections": "Seções",
+    "summaryTitle": "Resumo",
+    "championsTitle": "Por campeão",
+    "pingsTitle": "Pings",
+    "earlyTitle": "Early game",
+    "visionTitle": "Visão",
+    "combatTitle": "Combate",
+    "deathsTitle": "Mortes",
+    "objectivesTitle": "Objetivos",
+    "trendTitle": "Tendência",
+    "synergyTitle": "Sinergia",
+    "detailTitle": "{champion} — detalhes",
+    "itemsTitle": "Itens mais comprados",
+    "buildTitle": "Build",
+    "firstItem": "Primeiro item completo",
+    "buildOrder": "Ordem mais comum",
+    "runesTitle": "Runa principal e árvores",
+    "spellsTitle": "Feitiços de invocador",
+    "skillsTitle": "Ordem de skills",
+    "buildWinRate": "Winrate com esta build",
+    "fields": "Lido em {games} de {total} partidas com os campos novos. Rode a recoleta para completar.",
+    "fieldsComplete": "Campos novos lidos em todas as {total} partidas.",
+    "derived": "{games} de {total} partidas com timeline para build, skills e lane.",
+    "compare": "Time {value}",
+    "compareLane": "Mesma lane {value}",
+    "diff": "Dif. {value}",
+    "perGame": "por partida",
+    "perMin": "por min",
+    "seconds": "{value}s",
+    "csAt": "CS aos {minute}'",
+    "xpAt": "Dif. de XP aos {minute}'",
+    "goldAt": "Dif. de ouro aos {minute}'",
+    "firstBlood": "First blood (kill / assistência)",
+    "deathsBefore10": "Mortes antes dos 10 min",
+    "deathsByPhase": "Mortes por fase",
+    "deathsByRegion": "Mortes por região",
+    "phases": {
+      "early": "Início (0–30%)",
+      "mid": "Meio",
+      "late": "Fim (70%+)"
+    },
+    "regions": {
+      "top": "Topo",
+      "mid": "Meio",
+      "bot": "Bot",
+      "jungle": "Selva",
+      "river": "Rio",
+      "base": "Base"
+    },
+    "alone": "Sozinho",
+    "costly": "Seguida de objetivo inimigo",
+    "winRate": "Winrate",
+    "kda": "KDA",
+    "damagePerMin": "Dano/min",
+    "goldPerMin": "Ouro/min",
+    "csPerMin": "CS/min",
+    "visionPerMin": "Visão/min",
+    "deathsPerGame": "Mortes/partida",
+    "deadTime": "Tempo morto",
+    "killParticipation": "Participação em kills",
+    "totalPings": "Pings/partida",
+    "aboveTeam": "Mais pings que o resto do time",
+    "replyDeaths": "Mortes nas partidas com mais pings de recuo {with}, nas outras {without}",
+    "pair": "Com {name}",
+    "best": "Melhor com",
+    "worst": "Pior com",
+    "noGames": "Nenhuma partida com este campeão.",
+    "noPairs": "Nenhuma dupla chega a {minimum} partidas juntas ainda.",
+    "trendRecent": "Últimas {games} partidas contra as {previous} anteriores",
+    "winsOfGames": "{wins} de {games} vencidas",
+    "sample": "n={games}",
+    "sampleTimeline": "{games} de {total} partidas com timeline",
+    "noData": "sem dados",
+    "lowConfidence": "poucas partidas: leia como indício, não conclusão",
+    "minuteHeader": "{minute}'",
+    "championPick": "Campeão",
+    "championPickHint": "Aparece a partir de {min} jogos",
+    "championPickEmpty": "Nenhum campeão com {min} jogos ou mais ainda. A lista abaixo tem todos os picks.",
+    "champion": "Campeão",
+    "replyDifference": "Mortes: mais pings de recuo vs o resto",
+    "wardsPlaced": "Sentinelas colocadas",
+    "wardsKilled": "Sentinelas destruídas",
+    "controlWards": "Sentinelas de controle",
+    "damagePerDeath": "Dano por morte",
+    "damageTaken": "Dano sofrido/jogo",
+    "mitigated": "Dano mitigado/jogo",
+    "cc": "CC/jogo",
+    "healing": "Cura/jogo",
+    "shielding": "Escudo/jogo",
+    "multikills": "Multikills",
+    "largestSpree": "Maior sequência",
+    "soloKills": "Abates solo/jogo",
+    "survivedLongest": "Maior tempo vivo",
+    "deathsTotal": "Mortes lidas",
+    "dragonParticipation": "Dragões",
+    "baronParticipation": "Barões",
+    "towerParticipation": "Torres",
+    "turretKillsPerGame": "Torres/jogo",
+    "damageToObjectives": "Dano a objetivos",
+    "damageToTurrets": "Dano a torres",
+    "stolen": "Objetivos roubados",
+    "teammate": "Companheiro",
+    "keystone": "Pedra-chave",
+    "primaryTree": "Árvore principal",
+    "secondaryTree": "Árvore secundária"
+  },
+  "lanes": {
+    "TOP": "Topo",
+    "JUNGLE": "Selva",
+    "MIDDLE": "Meio",
+    "BOTTOM": "Atirador",
+    "UTILITY": "Suporte"
+  },
+  "collective": {
+    "title": "Métricas coletivas",
+    "kills": "Abates",
+    "deaths": "Mortes",
+    "assists": "Assistências",
+    "objective": "Objetivo",
+    "firstRate": "Taxa de primeiro",
+    "average": "Média por partida",
+    "winRateWith": "Vitórias com",
+    "winRateWithout": "Vitórias sem",
+    "objectives": {
+      "dragon": "Dragão",
+      "riftHerald": "Arauto",
+      "baron": "Barão",
+      "tower": "Torre"
+    },
+    "consistency": "Variação (coeficiente)",
+    "teamDeaths": "Mortes do time",
+    "teamGold": "Ouro do time",
+    "teamXp": "XP do time",
+    "teamCs": "CS do time",
+    "conversion": "Conversão",
+    "killsToTurrets": "Torres por abate",
+    "winGoldPerKill": "Ouro por abate (vitórias)",
+    "lossGoldPerKill": "Ouro por abate (derrotas)",
+    "conversionHint": "Associação, não nota: mostra se a vantagem vira objetivo.",
+    "empty": "Sem dados coletados ainda.",
+    "firstStats": "Primeiro (n)",
+    "withStats": "Vitórias com (n)",
+    "withoutStats": "Vitórias sem (n)",
+    "varianceHint": "Coeficiente de variação = desvio padrão amostral ÷ média, em % ({games} partidas). Quanto menor, mais previsível.",
+    "median": "Mediana",
+    "objectivesNote": "\"Com\" inclui as partidas em que o time pegou pelo menos um; \"sem\", nenhuma. Associação, não causa.",
+    "killBand": "Janela de abates comparada",
+    "gamesShort": "partidas"
+  },
+  "evolution": {
+    "title": "Evolução",
+    "description": "A janela mais recente de {size} partidas contra a de {size} anteriores, com as datas e a formação de cada uma.",
+    "sessions": "Sessões",
+    "session": "Sessão {index}",
+    "sessionGames": "{count, plural, one {# jogo} other {# jogos}}",
+    "compareA": "Bloco recente",
+    "compareB": "Bloco anterior",
+    "delta": "Diferença",
+    "empty": "Ainda não há partidas suficientes para comparar períodos.",
+    "windowRecent": "Últimas {size} partidas",
+    "windowPrevious": "{size} anteriores",
+    "period": "{from} – {to}",
+    "fullGames": "{full} de {games} com o time completo",
+    "averagePeople": "Média de {people} pessoas por partida",
+    "change": "Variação",
+    "deltaPoints": "{value} pp",
+    "withinNoise": "Dentro do ruído",
+    "aboveNoise": "↑ acima do ruído",
+    "belowNoise": "Maior que o ruído (pior)",
+    "minGames": "Cada janela precisa de pelo menos {games} partidas para a comparação.",
+    "noComparison": "Ainda não há duas janelas completas para comparar.",
+    "dimensionsNote": "As sete dimensões abaixo (aba Visão geral) também comparam estas duas janelas."
+  },
+  "series": {
+    "title": "Resultados recentes",
+    "win": "Vitória",
+    "loss": "Derrota"
+  },
+  "pings": {
+    "caveat": "Os pings indicam hábito, não qualidade. Muitos pedidos de ajuda podem ser um jogador sempre em apuros.",
+    "kinds": {
+      "allInPings": "Tudo dentro",
+      "assistMePings": "Me ajuda",
+      "basicPings": "Básico",
+      "commandPings": "Comando",
+      "dangerPings": "Perigo",
+      "enemyMissingPings": "Inimigo sumiu",
+      "enemyVisionPings": "Visão inimiga",
+      "getBackPings": "Volta",
+      "holdPings": "Segura",
+      "needVisionPings": "Precisa de visão",
+      "onMyWayPings": "Já vou",
+      "pushPings": "Empurra",
+      "retreatPings": "Recuar",
+      "visionClearedPings": "Visão limpa"
+    }
+  },
+  "recommendations": {
+    "title": "O que o time precisa melhorar",
+    "subtitle": "Regras estatísticas sobre partidas de Flex. Sem conclusão forte em amostra pequena.",
+    "empty": "Sem padrões claros ainda.",
+    "confidence": {
+      "low": "Confiança baixa",
+      "medium": "Confiança média",
+      "high": "Confiança alta"
+    },
+    "confidenceHint": "Confiança calculada pelo tamanho e a dispersão da amostra.",
+    "preserve": "Padrão positivo para manter",
+    "rules": {
+      "smallSample": {
+        "title": "Amostra pequena",
+        "body": "São {games} partidas; recomendações confiáveis exigem cerca de {needed}."
+      },
+      "lowWinRate": {
+        "title": "Taxa de vitória abaixo de 50%",
+        "body": "A equipe venceu {winRate}% em {games} partidas."
+      },
+      "dragonFirstLow": {
+        "title": "Primeiro dragão raramente conquistado",
+        "body": "Apenas {rate}% das partidas tiveram domínio do primeiro dragão, e vitórias com ele foram {winRateWith}%."
+      },
+      "dragonFirstHigh": {
+        "title": "Domínio do primeiro dragão",
+        "body": "{rate}% das partidas com primeiro dragão; vitórias com ele {winRateWith}% contra {winRateWithout}% sem."
+      },
+      "baronConversion": {
+        "title": "Objetivos não geram vantagem",
+        "body": "O time pega o primeiro dragão em {dragonFirst}% das partidas, mas a taxa de vitória com ele ({winRateWithDragon}%) não supera a geral ({winRate}%)."
+      },
+      "heraldLow": {
+        "title": "Arauto pouco disputado",
+        "body": "O primeiro arauto saiu em {rate}% de {games} partidas."
+      },
+      "fewTowers": {
+        "title": "Vantagem não vira torre",
+        "body": "{towersPerKill} torres por kill, {towersPerGame} torres por partida, em {games} partidas."
+      },
+      "manyDeaths": {
+        "title": "Mortes elevadas",
+        "body": "Média de {deathsPerGame} mortes do time por partida."
+      },
+      "deathsVolatile": {
+        "title": "Mortes inconsistentes",
+        "body": "As mortes do time variam {variation}% entre partidas."
+      },
+      "goldConversion": {
+        "title": "Ouro do time converte pouco",
+        "body": "Ouro por abate nas vitórias ({winGoldPerKill}) é menor que nas derrotas ({lossGoldPerKill})."
+      },
+      "kpGapLow": {
+        "title": "{player} participa de menos lutas",
+        "body": "Participação em kills de {kp}%, contra média de {average}% do time."
+      },
+      "kpGapHigh": {
+        "title": "{player} participa de mais lutas",
+        "body": "Participação em kills de {kp}%, acima da média de {average}% do time."
+      },
+      "pingAssistMe": {
+        "title": "Pedidos de ajuda frequentes",
+        "body": "{player} pede ajuda {perGame} vezes por partida em média."
+      },
+      "pingDanger": {
+        "title": "Sinalizações de perigo frequentes",
+        "body": "{player} marca perigo {perGame} vezes por partida em média."
+      },
+      "recentSlide": {
+        "title": "As últimas partidas estão piores",
+        "body": "As últimas {games} partidas têm {recent}% de vitórias contra {previous}% na janela anterior."
+      },
+      "positiveStreak": {
+        "title": "Padrão estável a manter",
+        "body": "A variação de mortes do time é de apenas {variation}%."
+      },
+      "leadNotKept": {
+        "title": "Vantagem aos 15 minutos não é mantida",
+        "body": "O time liderou aos 15 minutos em {ahead} partidas e venceu {winRateAhead}% delas; perdeu {lost} das {games} partidas em que liderava aos 15."
+      },
+      "strongFromAhead": {
+        "title": "Vantagem aos 15 minutos costuma virar vitória",
+        "body": "O time estava à frente aos 15 minutos em {ahead} partidas e venceu {winRateAhead}% delas."
+      },
+      "slowDragons": {
+        "title": "O primeiro dragão chega tarde",
+        "body": "O primeiro dragão chega em {seconds}s em média, em {games} partidas."
+      },
+      "slowObjectives": {
+        "title": "Torres e barões chegam tarde",
+        "body": "A primeira torre cai aos {tower}s ({towerGames} partidas) e o primeiro barão aos {baron}s ({baronGames} partidas)."
+      },
+      "lateHerald": {
+        "title": "O arauto fica no mapa",
+        "body": "O primeiro arauto é pego aos {seconds}s em média, em {games} partidas."
+      },
+      "conversionSlow": {
+        "title": "Kills demoram a virar objetivo",
+        "body": "Depois de uma kill, o próximo objetivo vem {seconds}s depois em média ({kills} kills seguidas de objetivo)."
+      },
+      "costlyDeaths": {
+        "title": "Mortes que custam objetivo",
+        "body": "{costly} de {total} mortes do grupo ({share}%) foram seguidas de um objetivo inimigo em até um minuto. {perGame} mortes do grupo por partida."
+      },
+      "isolatedDeaths": {
+        "title": "Mortes pegas sozinho",
+        "body": "{isolated} de {total} mortes do grupo ({share}%) aconteceram sem nenhum aliado por perto."
+      },
+      "scattered": {
+        "title": "O grupo se espalha",
+        "body": "O grupo estava todo junto em apenas {grouped}% dos minutos amostrados, com distância média de {distance} unidades até o aliado mais próximo; {nearKill} jogadores por kill do grupo."
+      },
+      "watchTogether": {
+        "title": "O grupo se move junto",
+        "body": "O grupo estava todo junto em {grouped}% dos minutos amostrados, com {nearKill} jogadores por kill do grupo."
+      },
+      "conversionSlowDeaths": {
+        "title": "Mortes caras",
+        "body": "{costly} de {total} mortes do grupo custaram um objetivo."
+      },
+      "awayFromFights": {
+        "title": "{player} fica longe das jogadas",
+        "body": "{player} participou de {presence}% das kills do grupo, contra média de {average}%, ficando {distance} unidades do aliado mais próximo em média."
+      },
+      "noTimelines": {
+        "title": "Timelines incompletas",
+        "body": "{games} de {total} partidas têm timeline: as leituras de early game, mortes e lane cobrem só essas."
+      },
+      "recentRise": {
+        "title": "As últimas partidas estão melhores",
+        "body": "As últimas {games} partidas têm {recent}% de vitórias contra {previous}% na janela anterior."
+      },
+      "stableDeaths": {
+        "title": "Mortes estáveis a manter",
+        "body": "A variação de mortes do time é de apenas {variation}% em {games} partidas."
+      },
+      "buildVariation": {
+        "title": "{player}: build fora da vencedora",
+        "body": "{champion} com a build comum vence {withBuild}%; com outra build, {other}% ({games} partidas)."
+      },
+      "replyPings": {
+        "title": "{player}: recuos pedidos sem efeito",
+        "body": "{perGame} pings de recuo (get back) por partida e {with} mortes por partida nessas partidas, contra {without} nas demais. Pings mostram hábito, não qualidade."
+      },
+      "laneFarm": {
+        "title": "{player}: farm atrás aos 10 minutos",
+        "body": "{cs} de CS aos 10 minutos, {diff} contra o oponente de lane ({games} partidas)."
+      },
+      "visionLow": {
+        "title": "{player}: visão abaixo da mesma lane",
+        "body": "{vision} de visão por minuto contra {team} da mesma lane na janela ({lane}) em {games} partidas."
+      },
+      "visionHigh": {
+        "title": "{player}: visão acima da mesma lane",
+        "body": "{vision} de visão por minuto contra {team} da mesma lane na janela ({lane}) em {games} partidas."
+      },
+      "csClimbing": {
+        "title": "{player}: farm melhorando",
+        "body": "CS por minuto subiu {delta} nas últimas partidas ({games} partidas comparadas)."
+      },
+      "csFalling": {
+        "title": "{player}: farm caindo",
+        "body": "CS por minuto caiu {delta} nas últimas partidas ({games} partidas comparadas)."
+      },
+      "deathsClimbing": {
+        "title": "{player}: morrendo mais",
+        "body": "Mortes por partida subiram {delta} nas últimas partidas ({games} partidas comparadas)."
+      },
+      "kdaClimbing": {
+        "title": "{player}: KDA melhorando",
+        "body": "KDA subiu {delta} nas últimas partidas ({games} partidas comparadas)."
+      },
+      "towerConversion": {
+        "title": "Torres aparecem nas vitórias",
+        "body": "Vitórias nas partidas com pelo menos uma torre: {withIt}; sem torre: {withoutIt}."
+      }
+    },
+    "gamesShort": "partidas",
+    "untranslated": "Leitura indisponível",
+    "lane": "mesma lane",
+    "teamAverage": "média do time"
+  },
+  "score": {
+    "title": "Nota do time",
+    "openBreakdown": "Ver de onde vem a nota",
+    "closeBreakdown": "Ocultar detalhes",
+    "sampleNote": "{percent}% da confiança: nota puxada para o neutro (5,5) pelo tamanho da amostra",
+    "hint": "Nota de 0 a 10 por dimensão com pesos fixos e declarados. É uma heurística de leitura, não uma medida validada, e amostra pequena puxa a nota para 5,5.",
+    "parts": {
+      "winRate": "Vitórias",
+      "objectives": "Objetivos",
+      "turrets": "Torres",
+      "deaths": "Mortes",
+      "conversion": "Conversão de ouro",
+      "consistency": "Regularidade",
+      "presence": "Time completo",
+      "kda": "KDA",
+      "farm": "Farm (CS/min)",
+      "vision": "Visão",
+      "synergy": "Sinergia (participação)"
+    },
+    "evidence": {
+      "winRate": "{winRate}% em {games} jogos",
+      "objectives": "{firstDragon}% primeiro dragão · {firstTower}% primeira torre · {dragons} dragões e {barons} barões por jogo",
+      "turrets": "{perGame} torres por jogo",
+      "deaths": "{perGame} mortes por jogo",
+      "conversion": "{goldPerKill} de ouro por abate · {winRate}% de vitória com dragão",
+      "consistency": "variação: mortes {deaths}% · ouro {gold}% · XP {xp}%",
+      "presence": "média de {average} pessoas do time por jogo",
+      "kda": "KDA {kda} · {kills} abates e {assists} assistências por jogo",
+      "farm": "{cs} de CS por minuto",
+      "vision": "{vision} de visão por minuto",
+      "synergy": "participação em abates {kp}% · dano {damage}% · ouro {gold}%"
+    }
+  },
+  "explorer": {
+    "title": "Linha do tempo da partida",
+    "hint": "Navegue minuto a minuto, filtre por jogador e por tipo de evento, e abra a evidência de cada acontecimento.",
+    "empty": "Nenhuma timeline coletada para explorar.",
+    "match": "Partida",
+    "matchOption": "{win} · {duration}",
+    "win": "Vitória",
+    "loss": "Derrota",
+    "previousMinute": "Minuto anterior",
+    "nextMinute": "Próximo minuto",
+    "wholeGame": "Partida inteira",
+    "minuteLabel": "Minuto {minute}",
+    "person": "Jogador",
+    "everyone": "Todos os jogadores",
+    "outside": "fora do elenco",
+    "noEvents": "Nenhum evento com estes filtros.",
+    "filters": {
+      "all": "Tudo",
+      "groupKill": "Abates do grupo",
+      "groupDeath": "Mortes do grupo",
+      "objective": "Objetivos",
+      "fillKill": "Fora do elenco"
+    },
+    "kinds": {
+      "groupKill": "Abate do grupo",
+      "groupDeath": "Morte do grupo",
+      "fillKill": "Abate de conta preenchida",
+      "dragon": "Dragão",
+      "herald": "Arauto",
+      "baron": "Barão",
+      "tower": "Torre",
+      "inhibitor": "Inibidor",
+      "other": "Evento"
+    },
+    "sources": {
+      "kills": "eventos de abate da timeline",
+      "objectives": "eventos de objetivo da timeline",
+      "deaths": "mortes do mapa na timeline"
+    },
+    "evidence": {
+      "time": "Momento",
+      "source": "Fonte",
+      "near": "Jogadores por perto",
+      "variant": "Variante",
+      "position": "Posição"
+    },
+    "critical": {
+      "leadFlipped": "A liderança virou no placar de ouro ({gold})",
+      "biggestSwing": "Maior queda da partida ({gold})"
+    },
+    "sequencesTitle": "Sequências de acontecimentos",
+    "sequencesHint": "Morte do grupo seguida de objetivo perdido na janela de 60 s: o par que o placar cobra.",
+    "sequences": {
+      "deathThenObjective": "Morte → objetivo perdido"
+    },
+    "sequenceDetail": "{count, plural, one {{person} morreu e o adversário levou {objective} logo depois.} other {{person} morreram e o adversário levou {objective} logo depois.}}",
+    "caveat": "A coleta amostra a posição cerca de uma vez por minuto: por isso a navegação é por minuto, e não por segundo.",
+    "sequenceOutside": "{count, plural, one {Conta fora do elenco morreu e o adversário levou {objective} logo depois.} other {Contas fora do elenco morreram e o adversário levou {objective} logo depois.}}"
+  },
+  "timeline": {
+    "collect": "Coletar timelines",
+    "collectHint": "Carrega ouro, objetivos e posicionamento das partidas salvas.",
+    "collecting": "Coletando timelines⬦",
+    "progress": "Timelines {done} de {total}",
+    "saved": "{count, plural, one {# timeline salva} other {# timelines salvas}}",
+    "done": "{withTimeline} de {total} partidas com timeline.",
+    "failures": "Ignoradas: {list}",
+    "title": "Como o grupo joga a partida",
+    "subtitle": "Lido da timeline da partida do Riot: ouro, objetivos, mortes e posicionamento.",
+    "empty": "Nenhuma timeline ainda. Use Coletar timelines.",
+    "coverage": "{withTimeline} de {total} partidas com timeline ({rate}%).",
+    "curveTitle": "Diferença de ouro",
+    "curveHint": "Minutos da partida no eixo X e vantagem de ouro do time no eixo Y.",
+    "curveAria": "Curva de diferença de ouro",
+    "minute": "Minuto {minute}",
+    "checkpoints": {
+      "title": "Vantagem em cada marco",
+      "minute": "Minuto",
+      "games": "Partidas",
+      "averageLead": "Vantagem média",
+      "winRateAhead": "Vitórias à frente",
+      "winRateBehind": "Vitórias atrás"
+    },
+    "throws": "Liderou aos 15 e perdeu",
+    "comebacks": "Perdia aos 15 e venceu",
+    "objectivesTitle": "Tempos dos objetivos",
+    "objective": "Objetivo",
+    "first": "Primeiro",
+    "average": "Média",
+    "games": "Partidas",
+    "total": "Pegos",
+    "grouping": "Agrupamento",
+    "groupedShare": "Tempo agrupado",
+    "averageDistance": "Distância do aliado",
+    "nearKill": "Jogadores por kill",
+    "nearObjective": "Jogadores por objetivo",
+    "fights": "Lutas por partida",
+    "conversion": "Kill → objetivo",
+    "seconds": "{value}s",
+    "playersTitle": "Presença nas jogadas",
+    "player": "Jogador",
+    "presence": "Nas kills do grupo",
+    "objectivesPresent": "Nos objetivos",
+    "deaths": "Mortes",
+    "isolatedDeaths": "Sozinho",
+    "costlyDeaths": "Caras",
+    "distance": "Distância",
+    "pairsTitle": "Duplas mais próximas",
+    "pair": "Dupla",
+    "closeness": "Tempo próximo",
+    "closeGames": "Partidas juntos",
+    "caveat": "A timeline amostra a posição cerca de uma vez por minuto e não diz nada sobre voz ou intenção. Toda leitura aqui é aproximada.",
+    "smallSample": "Apenas {count} timelines: leia os números como indício, não como conclusão.",
+    "singleTitle": "Uma partida",
+    "aheadShort": "à frente",
+    "behindShort": "atrás",
+    "preparationTitle": "Preparação de objetivos",
+    "preparationHint": "Lido nas timelines: jogadores do time a até {radius} unidades do objetivo, mortes do time na janela de {window}s antes dele. Posições são amostradas cerca de uma vez por minuto.",
+    "prepEvents": "Objetivos",
+    "prepPlayers": "Jogadores por objetivo",
+    "prepWithPlayers": "Com 3+ por perto",
+    "prepDeaths": "Mortes antes",
+    "gamesShort": "jogos",
+    "frames": "Quadros amostrados",
+    "timingHint": "\"Primeiro\" é a mediana do primeiro objetivo de cada partida; \"mediana\" lê todos os objetivos que o time pegou.",
+    "median": "mediana"
+  },
+  "chips": {
+    "pings": "pings",
+    "vision": "visão",
+    "early": "early game",
+    "deaths": "mortes",
+    "lowConfidence": "poucas partidas: leia como indício, não conclusão",
+    "noData": "sem dados",
+    "sample": "n={games}",
+    "sampleTimeline": "{games} de {total} partidas com timeline"
+  },
+  "recollect": {
+    "action": "Reler partidas salvas",
+    "hint": "Lê de novo as partidas já salvas, para preencher os campos mais novos.",
+    "running": "Relendo partidas…",
+    "progress": "Relendo {done} de {total}",
+    "done": "{remaining} de {total} partidas ainda sem os campos novos.",
+    "failures": "Ignoradas: {list}"
+  },
+  "access": {
+    "lockedTitle": "Somente leitura: senha da equipe",
+    "lockedHint": "Quem tem o link lê a análise. A senha libera o elenco e a atualização de dados.",
+    "setTitle": "Esta equipe ainda não tem senha",
+    "setHint": "Defina uma para proteger a edição. Quem souber dela gerencia o elenco e atualiza os dados.",
+    "password": "Senha",
+    "unlock": "Desbloquear",
+    "setAction": "Salvar senha",
+    "wrong": "Senha errada.",
+    "blocked": "Muitas tentativas. Espere alguns minutos e tente de novo.",
+    "length": "Use pelo menos 4 caracteres.",
+    "editingLocked": "Edição bloqueada: desbloqueie com a senha da equipe para mudar o elenco."
+  },
+  "share": {
+    "title": "Compartilhar lineup",
+    "hint": "Página pública somente leitura, sem login: bandeiras, elos e o resumo do time.",
+    "disabledHint": "O link compartilhado está desativado e responde 404 até você religar.",
+    "loading": "Lendo o estado do link…",
+    "failedHint": "Não foi possível ler o link agora. Tente de novo.",
+    "retry": "Tentar de novo",
+    "copy": "Copiar link",
+    "copied": "Link copiado",
+    "open": "Abrir lineup",
+    "more": "Opções do link",
+    "regenerate": "Gerar outro link",
+    "disable": "Desativar link",
+    "enable": "Religar link"
+  },
+  "lineup": {
+    "title": "Lineup",
+    "rosterTitle": "Elenco",
+    "open": "Abrir a página da equipe",
+    "lastUpdate": "Atualizado em {time}",
+    "never": "nunca atualizado",
+    "noRank": "Sem elo",
+    "laneTitle": "Rota principal: {lane}",
+    "championsTitle": "Mais jogados",
+    "summaryTitle": "Resumo do time",
+    "analysisTitle": "Análise do time",
+    "readOnly": "Página somente leitura. Quem tem o link vê o elenco.",
+    "games": "{count, plural, one {# partida} other {# partidas}}",
+    "queueFlex": "Flex",
+    "queueSolo": "Solo",
+    "championRate": "{rate}% de vitórias com esse campeão",
+    "openProfile": "Abrir o perfil de {name}",
+    "lpValue": "{lp} PDL",
+    "moreAccounts": "+{count} contas",
+    "noLane": "Sem rota",
+    "gamesLabel": "Partidas",
+    "incompleteGames": "{count, plural, one {# partida} other {# partidas}} sem 5"
+  },
+  "dimensions": {
+    "title": "Dimensões do time",
+    "subtitle": "Janela recente: {recent} partidas ({recentFull} com 5 pessoas) · janela anterior: {previous} partidas ({previousFull} com 5). Sem nota única: cada número vem com a amostra.",
+    "caveat": "Cada métrica é independente e traz o próprio n. \"Mudança\" é (depois − antes) comparada ao erro-padrão da diferença (t de Welch), não ao desvio das partidas: \"dentro do ruído\" significa que o intervalo de 95% da mudança contém o zero. Nada aqui é causal.",
+    "empty": "Sem dados suficientes para as dimensões ainda.",
+    "noData": "sem dados",
+    "sample": "n",
+    "previous": "antes",
+    "withinNoise": "≈ ruído",
+    "aboveNoise": "↑ acima do ruído",
+    "belowNoise": "↓ abaixo do ruído",
+    "noiseUnits": "erros-padrão",
+    "noComparison": "sem comparação",
+    "intervalTooltip": "IC95: {low} – {high} · n={before}/{after}",
+    "improved": "↑ melhora",
+    "worsened": "↓ piora",
+    "higherBetter": "maior é melhor",
+    "lowerBetter": "menor é melhor",
+    "names": {
+      "objectiveControl": "Controle de objetivos",
+      "objectivePreparation": "Preparação de objetivos",
+      "conversion": "Conversão de vantagem",
+      "synchronization": "Sincronização",
+      "consistency": "Consistência",
+      "individual": "Performance individual",
+      "map": "Mapa"
+    },
+    "metrics": {
+      "firstDragon": "Primeiro dragão",
+      "firstHerald": "Primeiro arauto",
+      "firstBaron": "Primeiro barão",
+      "firstTower": "Primeira torre",
+      "dragonsPerGame": "Dragões por partida",
+      "baronsPerGame": "Barões por partida",
+      "dragonPresence": "Dragão com pelo menos 3 do time por perto",
+      "playersAtObjective": "Jogadores do time por objetivo",
+      "deathsBeforeObjective": "Mortes do time nos 60s antes do objetivo",
+      "winRateAhead15": "Vitórias liderando aos 15 min",
+      "comebackRate": "Voltas a partir de −1k aos 15 min",
+      "killToObjective": "Abate → próximo objetivo (mediana, s)",
+      "turretsPerKill": "Torres por abate",
+      "groupedShare": "Momentos com o time todo junto",
+      "playersAtKills": "Jogadores por abate do time",
+      "isolatedDeathShare": "Mortes sem aliado por perto",
+      "teamDeathsVariation": "Variação de mortes (CV)",
+      "teamGoldVariation": "Variação de ouro (CV)",
+      "deathsPerGame": "Mortes do time por partida",
+      "killParticipationGap": "Diferença de participação entre o maior e o menor",
+      "kda": "KDA",
+      "averagePresence": "Pessoas do time por partida",
+      "towersPerGame": "Torres por partida",
+      "fightsPerGame": "Lutas por partida",
+      "goldAt15": "Diferença de ouro aos 15 min"
+    }
+  },
+  "gold": {
+    "title": "Ouro por minuto",
+    "hint": "Diferença de ouro do time, minuto a minuto, em {games} partidas com timeline (faltam {missing}). A linha clara é a mediana, a faixa é o intervalo interquartil e as cores separam vitórias e derrotas.",
+    "aria": "Diferença de ouro do time por minuto: mediana, faixa interquartil, vitórias e derrotas.",
+    "legendMedian": "Mediana de todas",
+    "legendWins": "Mediana nas vitórias",
+    "legendLosses": "Mediana nas derrotas",
+    "legendBand": "50% das partidas",
+    "axes": "Eixo vertical: diferença de ouro (acima de zero = time à frente; abaixo = atrás), limitado a {limit}. Eixo horizontal: minutos da partida.",
+    "minute": "Minuto",
+    "median": "Mediana",
+    "range": "Q1 – Q3",
+    "games": "Partidas",
+    "ahead": "Vitórias à frente",
+    "behind": "Vitórias atrás",
+    "caveat": "Só entram as partidas cujo último quadro chegou ao minuto; a amostra cai nos minutos finais. \"À frente\" = +1k ou mais; \"atrás\" = −1k ou menos. Associação com a vitória, nunca causa."
+  },
+  "synergy": {
+    "title": "Sinergia observada entre pares",
+    "hint": "Partidas em que os dois participaram do mesmo abate, contra o que as participações individuais deles preveem (0,70 × 0,60 = 42%). Fator acima de 1× indica mais jogadas conjuntas que o esperado. Mínimo de {games} partidas juntas ({unranked} par(es) ficaram de fora).",
+    "empty": "Ainda não há {games} partidas com timeline para um par.",
+    "pair": "Duo",
+    "together": "Mesmo abate",
+    "expected": "Esperado",
+    "lift": "Fator",
+    "sharedObjectives": "Objetivos juntos",
+    "caveat": "Presença em um abate é um registro da timeline. Não significa combinação, comunicação ou foco de alvo."
+  },
+  "insights": {
+    "title": "O que os dados mostram",
+    "subtitle": "Cada observação vem com o número, a amostra, a limitação e um exercício sugerido. Nada aqui é causal.",
+    "limitationLabel": "Limitação",
+    "exerciseLabel": "Exercício sugerido",
+    "band": {
+      "label": "Amostra",
+      "good": "boa",
+      "moderate": "moderada",
+      "low": "baixa",
+      "veryLow": "muito baixa",
+      "insufficient": "insuficiente"
+    },
+    "objectivePresenceHelps": {
+      "title": "Estar no objetivo com o time aparece nas vitórias",
+      "body": "Quando 4 ou mais do time foram vistos perto de um objetivo, vitórias: {withIt}. Sem ninguém perto: {withoutIt}.",
+      "limitation": "Associação entre presença e vitória, não causa. Uma partida já ganha junta o time nos objetivos.",
+      "exercise": "Antes de iniciar dragão, confiram os cinco na contagem: quem está na lane oposta puxa a wave primeiro."
+    },
+    "objectivePresenceWeak": {
+      "title": "Estar no objetivo não tem aparecido nas vitórias",
+      "body": "Quando o time esteve perto de um objetivo, vitórias: {withIt}. Sem presença: {withoutIt}.",
+      "limitation": "Amostra pequena para separar presença de outros fatores; a posição é amostrada cerca de uma vez por minuto.",
+      "exercise": "Vejam duas partidas em que o time estava no dragão e verifiquem se a visão (sentinelas) chegou antes."
+    },
+    "leadHeld": {
+      "title": "A vantagem aos 15 minutos costuma virar vitória",
+      "body": "Liderando por +1k ou mais aos 15 min, vitórias: {withIt}. Atrás por 1k ou mais.",
+      "limitation": "O ouro mede vantagem material, não qualidade de decisão; a amostra são as partidas com timeline.",
+      "exercise": "Guardem uma partida em que lideravam e a mantenha: comparem quando começaram a forçar objetivo sem visão."
+    },
+    "leadLost": {
+      "title": "Liderar aos 15 minutos não tem bastado",
+      "body": "Liderando por +1k ou mais aos 15 min, vitórias: {withIt}. Atrás por 1k ou mais.",
+      "limitation": "Associação; pode refletir o nível dos adversários e a composição, não apenas decisão.",
+      "exercise": "Depois de uma luta vencida no mid game, escolham UMA coisa: barão com visão, torre aberta ou reset para item."
+    },
+    "costlyDeaths": {
+      "title": "Parte das mortes custa um objetivo",
+      "body": "Mortes do time seguidas de objetivo inimigo em até 60 s: {value}.",
+      "limitation": "A janela de 60 s é uma heurística; um objetivo pode sair por outro motivo.",
+      "exercise": "Após uma morte no mid/late, deixem um jogador atrasar a chegada inimiga e os outros escolherem um alvo alternativo."
+    },
+    "isolatedDeaths": {
+      "title": "Mortes sem nenhum aliado por perto",
+      "body": "Mortes do time sem outro jogador do elenco em 4.000 unidades: {value}.",
+      "limitation": "A posição vem de quadros de cerca de um minuto; \"sozinho\" é uma aproximação.",
+      "exercise": "Nas waves laterais, combinem quem recua primeiro quando o inimigo some do mapa."
+    },
+    "scattered": {
+      "title": "O time passa bastante tempo espalhado",
+      "body": "Momentos com todos os jogadores do time a até 6.000 unidades de um aliado: {value}.",
+      "limitation": "Estar junto não é jogar bem junto: lanes separadas são normais no early game.",
+      "exercise": "Depois dos 15 min, marquem no mapa um ponto de encontro antes de disputar visão."
+    },
+    "grouped": {
+      "title": "O time se mantém junto",
+      "body": "Momentos com todos os jogadores do time a até 6.000 unidades de um aliado: {value}.",
+      "limitation": "Proximidade não prova coordenação; apenas mostra onde os jogadores estavam.",
+      "exercise": "Mantenham a regra de que, ao pegar um objetivo, o próximo é escolhido antes do reset."
+    },
+    "conversionSlow": {
+      "title": "Abates viram objetivo com alguma demora",
+      "body": "Tempo mediano de um abate até o próximo objetivo do time, quando houve um em até 45 s: {median}s em {games} de {kills} abates.",
+      "limitation": "Mede a mediana das conversões que aconteceram; abates sem objetivo depois não entram no tempo.",
+      "exercise": "Após um abate com superioridade numérica, chamem o objetivo em voz alta no pings de comando."
+    },
+    "noTimelines": {
+      "title": "Ainda não há timelines",
+      "body": "As leituras de posicionamento e de ouro minuto a minuto precisam da coleta de timelines.",
+      "limitation": "Sem timeline, os números de mapa simplesmente não existem para este time.",
+      "exercise": "Rode a coleta de timelines nas próximas partidas."
+    },
+    "timelineCoverage": {
+      "title": "Parte das partidas não tem timeline",
+      "body": "Somente {games} de {total} partidas têm timeline: as leituras de ouro e posição cobrem só essas.",
+      "limitation": "As métricas de mapa e de presença são lidas só nas partidas com timeline; não são extrapoladas.",
+      "exercise": "Colete as timelines faltantes antes de comparar períodos."
+    }
+  }
+}

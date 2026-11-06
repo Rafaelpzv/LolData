@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { ChevronDown, Check, X } from "lucide-react";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -40,10 +40,30 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 /**
  * Downloads, in the background, the full history of every player in the match while the card is
  * expanded, page by page, so the match cache is warm when someone opens their profile.
+ *
+ * The warm-up is keyed by the puuids, not by the array identity: the match payload is rebuilt on
+ * every render, and reading the participants from the closure would restart the loop each time.
  */
-function useWarmPlayersCache(region: string, participants: LolParticipant[], expanded: boolean) {
-  const playersRef = useRef(participants);
-  playersRef.current = participants;
+function useWarmPlayersCache(
+  region: string,
+  participants: LolParticipant[],
+  expanded: boolean,
+) {
+  const puuids = useMemo(
+    () => participants.map((player) => player.puuid).join(","),
+    [participants],
+  );
+  const identity = useMemo(() => {
+    const byPlayer = new Map<string, { gameName?: string; tagLine?: string }>();
+    for (const player of participants) {
+      if (player.puuid)
+        byPlayer.set(player.puuid, {
+          gameName: player.riotIdGameName,
+          tagLine: player.riotIdTagline,
+        });
+    }
+    return byPlayer;
+  }, [participants]);
   const runningRef = useRef(false);
   const stopRef = useRef(false);
 
@@ -52,14 +72,14 @@ function useWarmPlayersCache(region: string, participants: LolParticipant[], exp
     runningRef.current = true;
 
     try {
-      for (const player of playersRef.current) {
+      for (const puuid of puuids.split(",")) {
         if (stopRef.current) break;
-        if (!player.puuid) continue;
+        if (!puuid) continue;
 
         // Players whose history is already stored don't need a warm-up.
         try {
           const status = await fetch(
-            `/api/summoner/players/status?region=${encodeURIComponent(region)}&puuid=${encodeURIComponent(player.puuid)}`,
+            `/api/summoner/players/status?region=${encodeURIComponent(region)}&puuid=${encodeURIComponent(puuid)}`,
           );
           if (stopRef.current) break;
           const { exists } = await status.json();
@@ -70,13 +90,14 @@ function useWarmPlayersCache(region: string, participants: LolParticipant[], exp
 
         let start = 0;
         let failCount = 0;
+        const { gameName, tagLine } = identity.get(puuid) ?? {};
 
         while (!stopRef.current) {
           let finished = false;
           try {
-            const query = new URLSearchParams({ region, puuid: player.puuid, start: String(start), count: "20" });
-            if (player.riotIdGameName) query.set("gameName", player.riotIdGameName);
-            if (player.riotIdTagline) query.set("tagLine", player.riotIdTagline);
+            const query = new URLSearchParams({ region, puuid, start: String(start), count: "20" });
+            if (gameName) query.set("gameName", gameName);
+            if (tagLine) query.set("tagLine", tagLine);
 
             const res = await fetch(`/api/summoner/matches?${query.toString()}`);
             if (stopRef.current) break;
@@ -105,7 +126,7 @@ function useWarmPlayersCache(region: string, participants: LolParticipant[], exp
     } finally {
       runningRef.current = false;
     }
-  }, [region]);
+  }, [region, puuids, identity]);
 
   useEffect(() => {
     if (expanded) {

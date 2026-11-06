@@ -65,27 +65,24 @@ export function MatchHistory({
   const abortControllerRef = useRef<AbortController | null>(null);
   const loadingRef = useRef(false);
   const consecutiveEmptyRef = useRef(0);
-  // Refs so the pagination callback always reads current values (no stale closures; see git history).
-  const startRef = useRef(initialMatches.length);
-  const hasMoreRef = useRef(hasMore);
-  hasMoreRef.current = hasMore;
-  const latestInitialRef = useRef(initialMatches);
-  latestInitialRef.current = initialMatches;
 
-  // Reset the list only when the filter actually changes (not on every new array reference).
+  // Reset the list when the filter actually changes (not on every new array reference). Adjusting
+  // state during the render is the React pattern for "derived from props"; writing refs there is
+  // not allowed, so the cursor lives in state and the guard is kept in state too.
   const filterKey = `${region}||${puuid}||${queueId}||${championId ?? ""}`;
-  const prevFilterKeyRef = useRef(filterKey);
-  useEffect(() => {
-    if (prevFilterKeyRef.current === filterKey) return;
-    prevFilterKeyRef.current = filterKey;
-    abortControllerRef.current?.abort();
-    const fresh = latestInitialRef.current;
-    setMatches(fresh);
-    setInitialCount(fresh.length);
-    startRef.current = fresh.length;
-    setHasMore(fresh.length >= 10);
-    consecutiveEmptyRef.current = 0;
+  const [loadedFilter, setLoadedFilter] = useState(filterKey);
+  if (loadedFilter !== filterKey) {
+    setLoadedFilter(filterKey);
+    setMatches(initialMatches);
+    setInitialCount(initialMatches.length);
+    setHasMore(initialMatches.length >= 10);
     setLoadError(false);
+  }
+
+  useEffect(() => {
+    // A filter change must cancel the page in flight and forget the failure count.
+    abortControllerRef.current?.abort();
+    consecutiveEmptyRef.current = 0;
   }, [filterKey]);
 
   // Broadcast wins/losses so the header summary follows the loaded list.
@@ -95,8 +92,9 @@ export function MatchHistory({
     window.dispatchEvent(new CustomEvent(MATCH_STATS_EVENT, { detail }));
   }, [matches, puuid]);
 
-  const fetchMoreMatches = useCallback(async () => {
-    if (loadingRef.current || !hasMoreRef.current) return;
+  /** `force` bypasses `hasMore` for a manual retry: `setHasMore(true)` has not landed yet. */
+  const fetchMoreMatches = useCallback(async (force = false) => {
+    if (loadingRef.current || (!hasMore && !force)) return;
     loadingRef.current = true;
     setLoadingMore(true);
 
@@ -105,10 +103,11 @@ export function MatchHistory({
     abortControllerRef.current = controller;
 
     try {
+      // The cursor is the list itself, so no ref can drift from what is actually rendered.
       const params = new URLSearchParams({
         region,
         puuid,
-        start: String(startRef.current),
+        start: String(matches.length),
         count: "20",
         gameName,
         tagLine,
@@ -138,7 +137,6 @@ export function MatchHistory({
           const existing = new Set(prev.map((m) => m.metadata.matchId));
           return [...prev, ...newMatches.filter((m) => !existing.has(m.metadata.matchId))];
         });
-        startRef.current += newMatches.length;
         setHasMore(json.hasMore !== false && newMatches.length >= 10);
       }
     } catch (error) {
@@ -153,14 +151,13 @@ export function MatchHistory({
       loadingRef.current = false;
       setLoadingMore(false);
     }
-  }, [region, puuid, queueId, championId, gameName, tagLine]);
+  }, [region, puuid, queueId, championId, gameName, tagLine, hasMore, matches.length]);
 
   const retry = () => {
     consecutiveEmptyRef.current = 0;
-    hasMoreRef.current = true;
     setHasMore(true);
     setLoadError(false);
-    fetchMoreMatches();
+    fetchMoreMatches(true);
   };
 
   const queueLabel = (match: LolMatch) => {
@@ -245,7 +242,7 @@ export function MatchHistory({
 
       {hasMore && !loadError && (
         <div className="flex justify-center pt-2">
-          <Button onClick={fetchMoreMatches} loading={loadingMore}>
+          <Button onClick={() => fetchMoreMatches()} loading={loadingMore}>
             {t("loadMore")}
           </Button>
         </div>

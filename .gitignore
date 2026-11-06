@@ -1,4 +1,4 @@
-﻿# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
@@ -46,3 +46,15 @@ _dev.*.log
 
 # logs de verificacao local
 _dev.*.log
+
+# Dados locais de diagnóstico: o cache guarda PUUIDs reais de todas as contas analisadas.
+/premade_diag_cache.json
+/.premade-depth.json
+/.dev-pid
+.dev-*.log
+*.py
+
+# Documentos de trabalho do fork (não são código do produto)
+PREMADE_*.md
+prompt*.md
+lineup-banner-example.html
