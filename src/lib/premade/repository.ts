@@ -1,6 +1,7 @@
 // Supabase access for premades. Server-only: every write uses the service-role client.
 import { supabaseAdmin } from "@/lib/supabase";
 
+import { PREMADE_QUEUE_ID, premadeQueueId } from "./collect";
 import { PREMADE_MIN_SIZE } from "./members";
 import {
   RANK_REFRESH_MS,
@@ -60,6 +61,8 @@ interface MatchRow {
   team_totals: TeamTotals;
   participants: PremadeParticipantSample[];
   game_version: string | null;
+  /** A fila da partida (migration 0023); nula nas linhas anteriores à coluna. */
+  queue_id?: number | null;
 }
 
 /**
@@ -94,6 +97,7 @@ function toMatchSample(
       : null;
   return {
     matchId: row.match_id,
+    queueId: row.queue_id ?? PREMADE_QUEUE_ID,
     gameCreation: Number(row.game_creation),
     season: 0,
     win: row.win,
@@ -302,12 +306,20 @@ export async function getTeamById(
 export async function getTeamMatches(
   teamId: string,
   limit = 1000,
+  mode: {
+    /**
+     * Modo cujas partidas são lidas ("flex", "classic"), pela migração 0023. Sem modo, todas.
+     * Uma partida sem fila guardada é de antes da coluna existir e conta como Flex.
+     */
+    queueKey?: string | null;
+  } = {},
 ): Promise<PremadeMatchSample[]> {
+  const queueId = mode.queueKey ? premadeQueueId(mode.queueKey) : null;
   const [{ data, error }, lineage, extra] = await Promise.all([
     supabaseAdmin
       .from("premade_matches")
       .select(
-        "match_id, game_creation, win, duration, team_side, objectives, team_totals, participants",
+        "match_id, game_creation, win, duration, team_side, objectives, team_totals, participants, queue_id",
       )
       .eq("team_id", teamId)
       .order("game_creation", { ascending: false })
@@ -317,10 +329,19 @@ export async function getTeamMatches(
   ]);
   if (error) throw error;
 
+  const rows = ((data as (MatchRow & { queue_id?: number | null })[] | null) ?? [])
+    .map((row) => ({ ...row, queueId: row.queue_id ?? PREMADE_QUEUE_ID }))
+    // A mode filter runs in memory, because a row from before the column holds no queue id and
+    // still belongs to Flex: asking the database for `queue_id = 440` would lose those games.
+    .filter((row) => (queueId === null ? true : row.queueId === queueId));
+
   return attachParticipantFields(
     teamId,
-    ((data as MatchRow[] | null) ?? []).map((row) => {
-      const sample = toMatchSample(row, extra.get(row.match_id));
+    rows.map((row) => {
+      const sample = toMatchSample(
+        { ...row, queue_id: row.queueId } as MatchRow,
+        extra.get(row.match_id),
+      );
       // Only accounts of people still on the lineup get an accountId: an account of a removed
       // person keeps none, so that game stops counting them without losing the stored history.
       return {
@@ -429,6 +450,8 @@ export async function saveMatchSamples(
       },
       participants: sample.participants,
       roster_puuids: sample.participants.map((p) => p.puuid),
+      // The mode of the game: the analysis of one mode reads it, and the page says where it comes from.
+      queue_id: sample.queueId ?? PREMADE_QUEUE_ID,
       // The people, not their accounts: these two accounts of one person are a single entry.
       person_puuids: [
         ...new Set(sample.participants.map((p) => p.accountId ?? p.puuid)),
@@ -1113,6 +1136,12 @@ interface CursorRow {
   last_listed_at: string | null;
 }
 
+/** O cursor de um modo (migração 0023): as mesmas colunas, com o prefixo do modo. */
+type ModeCursorRow = Record<
+  "next_start" | "finished" | "pages_fetched" | "epoch" | "emitted" | "last_listed_at",
+  unknown
+>;
+
 function toCursor(row: CursorRow): CollectionCursor {
   return {
     puuid: row.puuid,
@@ -1125,21 +1154,67 @@ function toCursor(row: CursorRow): CollectionCursor {
   };
 }
 
-/** Pagination state of every roster player, keyed by puuid. Missing means "never scanned". */
+/** The cursor of one mode inside its row: the original columns, or the `classic_` ones. */
+function toModeCursor(puuid: string, row: ModeCursorRow): CollectionCursor {
+  return {
+    puuid,
+    nextStart: Number(row.next_start) || 0,
+    finished: row.finished === true,
+    pagesFetched: Number(row.pages_fetched) || 0,
+    epoch: Number(row.epoch) || 0,
+    emitted: Number(row.emitted) || 0,
+    lastListedAt: row.last_listed_at
+      ? Date.parse(String(row.last_listed_at)) || 0
+      : 0,
+  };
+}
+
+const CLASSIC_CURSOR_SELECT =
+  "classic_next_start, classic_finished, classic_pages_fetched, classic_epoch, classic_emitted, classic_last_listed_at";
+
+function classicCursorRow(row: Record<string, unknown>): ModeCursorRow {
+  return {
+    next_start: row.classic_next_start,
+    finished: row.classic_finished,
+    pages_fetched: row.classic_pages_fetched,
+    epoch: row.classic_epoch,
+    emitted: row.classic_emitted,
+    last_listed_at: row.classic_last_listed_at,
+  };
+}
+
+/**
+ * Pagination state of every roster player, keyed by puuid. Missing means "never scanned".
+ *
+ * Each mode has its own cursor: the Flex one is the original row, CLASSIC reads the `classic_`
+ * columns (migration 0023). Without the mode the answer is Flex, what every caller read before.
+ */
 export async function getCollectionCursors(
   teamId: string,
+  queueKey: string | null = null,
 ): Promise<Map<string, CollectionCursor>> {
-  const { data, error } = await supabaseAdmin
-    .from("premade_collection_cursors")
-    .select(
-      "puuid, next_start, finished, pages_fetched, seen_ids, epoch, emitted, last_listed_at",
-    )
-    .eq("team_id", teamId);
+  const classic = queueKey === "classic";
+  // The column list is a literal per branch: Supabase types the row from the string it is given, and
+  // a template would turn the whole select into an untyped string.
+  const { data, error } = classic
+    ? await supabaseAdmin
+        .from("premade_collection_cursors")
+        .select(
+          `puuid, next_start, finished, pages_fetched, seen_ids, epoch, emitted, last_listed_at, ${CLASSIC_CURSOR_SELECT}`,
+        )
+        .eq("team_id", teamId)
+    : await supabaseAdmin
+        .from("premade_collection_cursors")
+        .select(
+          "puuid, next_start, finished, pages_fetched, seen_ids, epoch, emitted, last_listed_at",
+        )
+        .eq("team_id", teamId);
   if (error) throw error;
+  const rows = (data as unknown as (CursorRow & Record<string, unknown>)[] | null) ?? [];
   return new Map(
-    ((data as CursorRow[] | null) ?? []).map((row) => [
+    rows.map((row) => [
       row.puuid,
-      toCursor(row),
+      classic ? toModeCursor(row.puuid, classicCursorRow(row)) : toCursor(row),
     ]),
   );
 }
@@ -1159,6 +1234,10 @@ export async function getCursorSeenIds(
   return (data as { seen_ids: string[] | null } | null)?.seen_ids ?? [];
 }
 
+/**
+ * Writes the cursor of ONE mode. Flex writes the original columns; CLASSIC writes the `classic_`
+ * ones, so updating a mode never moves the position of the other one.
+ */
 export async function saveCollectionCursor(
   teamId: string,
   puuid: string,
@@ -1170,19 +1249,21 @@ export async function saveCollectionCursor(
     emitted?: number;
     listedAt?: number;
   },
+  queueKey: string | null = null,
 ): Promise<void> {
+  const prefix = queueKey === "classic" ? "classic_" : "";
   const { error } = await supabaseAdmin
     .from("premade_collection_cursors")
     .upsert(
       {
         team_id: teamId,
         puuid,
-        next_start: state.nextStart,
-        finished: state.finished,
-        pages_fetched: state.pagesFetched,
-        epoch: state.epoch ?? 0,
-        emitted: state.emitted ?? 0,
-        last_listed_at: state.listedAt
+        [`${prefix}next_start`]: state.nextStart,
+        [`${prefix}finished`]: state.finished,
+        [`${prefix}pages_fetched`]: state.pagesFetched,
+        [`${prefix}epoch`]: state.epoch ?? 0,
+        [`${prefix}emitted`]: state.emitted ?? 0,
+        [`${prefix}last_listed_at`]: state.listedAt
           ? new Date(state.listedAt).toISOString()
           : null,
         updated_at: new Date().toISOString(),
@@ -1259,16 +1340,24 @@ interface SessionRow {
   roster_key: string | null;
   finished_at: string | null;
   error: string | null;
+  /** Onde a sessão CLASSIC parou (migração 0023): as mesmas colunas, com o prefixo do modo. */
+  classic_next_start?: Record<string, number> | null;
+  classic_account_start?: Record<string, number> | null;
+  classic_ids?: Record<string, string[]> | null;
+  classic_games?: Record<string, number> | null;
 }
 
-function toSession(row: SessionRow): CollectionSession {
+function toSession(row: SessionRow, queueKey: string | null = null): CollectionSession {
+  // Each mode resumes from its own columns: a CLASSIC pause must not rebase the Flex cursors.
+  const classic = queueKey === "classic";
   return {
     id: row.id,
     minRoster: row.min_roster,
-    nextStart: row.next_start ?? {},
-    accountStart: row.account_start ?? {},
-    ids: row.ids ?? {},
-    games: row.games ?? {},
+    nextStart: (classic ? row.classic_next_start : row.next_start) ?? {},
+    accountStart:
+      (classic ? row.classic_account_start : row.account_start) ?? {},
+    ids: (classic ? row.classic_ids : row.ids) ?? {},
+    games: (classic ? row.classic_games : row.games) ?? {},
     scansDone: row.scans_done,
     scansTotal: row.scans_total,
     rosterKey: row.roster_key ?? "",
@@ -1278,7 +1367,7 @@ function toSession(row: SessionRow): CollectionSession {
 }
 
 const SESSION_COLUMNS =
-  "id, min_roster, next_start, account_start, ids, games, scans_done, scans_total, roster_key, finished_at, error";
+  "id, min_roster, next_start, account_start, ids, games, scans_done, scans_total, roster_key, finished_at, error, classic_next_start, classic_account_start, classic_ids, classic_games";
 
 /** The session still running for the team, or null when the last one already finished. */
 export async function getOpenCollectionSession(
@@ -1304,6 +1393,8 @@ export async function openCollectionSession(
     scansTotal: number;
     rosterKey: string;
     restart?: boolean;
+    /** O modo da coleta: a sessão lê e retoma as colunas dele. */
+    queueKey?: string | null;
   },
 ): Promise<CollectionSession> {
   if (!options.restart) {
@@ -1315,7 +1406,7 @@ export async function openCollectionSession(
       open.minRoster === options.minRoster &&
       open.rosterKey === options.rosterKey
     )
-      return open;
+      return toSession(open as unknown as SessionRow, options.queueKey ?? null);
     if (open) await finishCollectionSession(open.id);
   }
 
@@ -1330,9 +1421,10 @@ export async function openCollectionSession(
     .select(SESSION_COLUMNS)
     .single();
   if (error) throw error;
-  return toSession(data as SessionRow);
+  return toSession(data as SessionRow, options.queueKey ?? null);
 }
 
+/** Writes where one mode's batch stopped: Flex in the original columns, CLASSIC in the `classic_`. */
 export async function saveCollectionSession(
   sessionId: string,
   state: {
@@ -1344,14 +1436,18 @@ export async function saveCollectionSession(
     scansTotal: number;
     error?: string | null;
   },
+  queueKey: string | null = null,
 ): Promise<void> {
+  const prefix = queueKey === "classic" ? "classic_" : "";
   const { error } = await supabaseAdmin
     .from("premade_collect_sessions")
     .update({
-      next_start: state.nextStart,
-      ...(state.accountStart ? { account_start: state.accountStart } : {}),
-      ids: state.ids,
-      games: state.games,
+      [`${prefix}next_start`]: state.nextStart,
+      ...(state.accountStart
+        ? { [`${prefix}account_start`]: state.accountStart }
+        : {}),
+      [`${prefix}ids`]: state.ids,
+      [`${prefix}games`]: state.games,
       scans_done: state.scansDone,
       scans_total: state.scansTotal,
       ...(state.error !== undefined ? { error: state.error } : {}),

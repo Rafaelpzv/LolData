@@ -262,12 +262,18 @@ export interface ParticipantDerived {
 }
 
 /**
- * A valid premade match: the queue-440 game where enough roster people shared a side.
- * Timeline fields are deliberately absent: Match Timeline is out of the MVP, but every metric
- * takes this shape, so adding it later does not touch the callers.
+ * A valid premade match: the collected-mode game (Flex 440 or CLASSIC 710) where enough roster
+ * people shared a side. Timeline fields are deliberately absent: Match Timeline is out of the MVP,
+ * but every metric takes this shape, so adding it later does not touch the callers.
  */
 export interface PremadeMatchSample {
   matchId: string;
+  /**
+   * The queue the game was played in (440 Flex, 710 CLASSIC), read from `info.queueId`. The mode
+   * divides every analysis: a game without it (collected before the column existed) counts as Flex.
+   * The name of the mode is `PREMADE_QUEUES` in ./collect.
+   */
+  queueId?: number | null;
   /** Game end (or start) in epoch ms. */
   gameCreation: number;
   /** Season the game belongs to, for period comparison later. */

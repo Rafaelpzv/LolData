@@ -63,6 +63,8 @@ export interface GameReport {
   matchId: string;
   gameCreation: number;
   win: boolean;
+  /** A fila da partida: 440 Flex, 710 CLASSIC. `null` quando o registro não traz a fila. */
+  queueId: number | null;
   /** The headline and the confidence, which is all the collapsed list shows. */
   summary: {
     duration: number;
@@ -339,6 +341,8 @@ export function buildTeamAnalysis(
         matchId: entry.matchId,
         gameCreation: match.gameCreation ?? 0,
         win: match.win,
+        // A fila viaja com a partida: a lista diz de qual modo o jogo veio, sem mais uma consulta.
+        queueId: match.queueId ?? null,
         summary: {
           duration: report.duration,
           // A lista mostra a mesma manchete do relatório: o enquadramento e, quando existe, o fato.

@@ -653,6 +653,13 @@
     "playerAria": "{name}, {rank}. Seleciona este jogador na aba Individual.",
     "unranked": "Sem elo"
   },
+  "queues": {
+    "label": "Modo",
+    "all": "Todos os modos",
+    "flex": "Flex 5x5",
+    "classic": "Ranqueada 5s",
+    "hint": "Por padrão a análise junta Flex 5x5 (fila 440) e Ranqueada 5s (fila 710), que é o histórico inteiro do time. Escolha um modo para ver só as partidas dele."
+  },
   "update": {
     "action": "Atualizar dados",
     "moreActions": "Mais ações de dados",

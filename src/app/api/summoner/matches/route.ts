@@ -20,15 +20,49 @@ const matchesSchema = z.object({
   championName: z.string().optional(),
 });
 
+/** One inspected page of the CLASSIC sweep: what is left to walk and the games that matched. */
+interface SweepL1 {
+  data: any;
+  expires: number;
+  hasMore: boolean;
+  kept: any[];
+  nextOffset: number;
+}
+
 const matchCache = new Map<
   string,
-  { data: any; expires: number; hasMore: boolean }
+  { data: any; expires: number; hasMore: boolean } | SweepL1
 >();
 const L1_TTL = 5 * 60 * 1000;
 const L2_TTL_MINUTES = 30;
 const MAX_RIOT_OFFSET = 200;
 
 const DETAIL_BATCH_SIZE = 20;
+
+/**
+ * O filtro da partida CLASSIC (fila 710), o modo que o cliente mostra como "CLASSIC / Ranked 5s".
+ *
+ * A lista de ids do Riot responde pela "display queue" da partida: um jogo CLASSIC entra pelo 400
+ * (normal), pelo 480 (Quickplay) ou pela ARAM 450, e não pelo 710. Pedir `queue=710` volta vazio.
+ * Por isso o filtro varre os ids de todas as filas e deixa passar só o detalhe cujo `queueId` é 710.
+ */
+const CLASSIC_QUEUE_ID = 710;
+
+export function isClassicModeQueue(queueId: string): boolean {
+  return Number(queueId) === CLASSIC_QUEUE_ID;
+}
+
+/**
+ * O filtro conferido contra a fila que o detalhe da partida carrega (`info.queueId`, não
+ * `gameMode`: TODO jogo CLASSIC tem `gameMode: "CLASSIC"`). Sem `queueId` no detalhe, cai no
+ * `gameMode`, para uma partida antiga sem fila ainda ser encontrada pelo nome do modo.
+ */
+export function matchesQueueFilter(match: any, queueId: string): boolean {
+  if (!queueId) return true;
+  const queue = Number(match?.info?.queueId);
+  if (Number.isFinite(queue) && queue > 0) return queue === Number(queueId);
+  return String(match?.info?.gameMode ?? "").toUpperCase() === queueId;
+}
 
 // Filtra por championId (numérico) OU por nome, para suportar
 // tanto os antigos slugs ("kaisa") quanto o novo formato por id ("103").
@@ -98,8 +132,19 @@ export async function GET(request: NextRequest) {
     const championKey = (championName || championId).toLowerCase();
     const isFilteringByChampion = !!championKey && championKey !== "all";
 
+    // A filter of the CLASSIC mode (710) is read from a sweep of every queue, because Riot answers
+    // no game for `queue=710`. The sweep keeps its own L1 cache (offset + the ids already inspected)
+    // and its own L2 key, so it never pollutes the per-queue history stored by the other filters.
+    const isClassicMode = isClassicModeQueue(queueId);
+    // The sweep stores every match it inspected (kept or not) and where it stood in the list.
+    const SWEEP_STEP = 20;
+    const sweepCacheKey = (key: string) =>
+      `matches:${region}:${puuid}:classic-sweep:${key}`;
+
     // cacheKey do Supabase/L2 — não inclui start, representa o histórico acumulado
-    const baseCacheKey = `matches:${region}:${puuid}:${queueId || "all"}:all`;
+    const baseCacheKey = isClassicMode
+      ? sweepCacheKey("all")
+      : `matches:${region}:${puuid}:${queueId || "all"}:all`;
     const cacheKey = isFilteringByChampion
       ? `matches:${region}:${puuid}:${queueId || "all"}:${championKey}`
       : baseCacheKey;
@@ -109,6 +154,9 @@ export async function GET(request: NextRequest) {
     // Antes, todas as páginas usavam a mesma chave no L1. A chamada start=20
     // sobrescrevia o L1 com as partidas 20-40, e a próxima chamada start=40
     // recebia essas partidas erradas como cache hit.
+    //
+    // A varredura da fila CLASSIC guarda no L1, por página, as compatíveis e onde a varredura parou:
+    // refazer uma página já inspirada não custa nenhuma chamada ao Riot.
     const l1Key = `${cacheKey}:${start}`;
     const now = Date.now();
 
@@ -127,14 +175,17 @@ export async function GET(request: NextRequest) {
 
     let existingMatches: any[] = [];
     let riotOffset = 0;
+    // Only the CLASSIC sweep reads it: where the sweep stood when it last stopped.
+    let classicOffset = 0;
 
     if (supabaseCached) {
       existingMatches = supabaseCached.matches || [];
       riotOffset = supabaseCached.riotOffset ?? existingMatches.length;
+      classicOffset = supabaseCached.classicOffset ?? 0;
     }
 
     // ================= BASE CACHE REUSE (filtro de campeão) =================
-    if (isFilteringByChampion && existingMatches.length < start + count) {
+    if (isFilteringByChampion && !isClassicMode && existingMatches.length < start + count) {
       const baseCached = await getFromSupabase(baseCacheKey);
 
       if (baseCached) {
@@ -212,6 +263,7 @@ export async function GET(request: NextRequest) {
     const detailsApiUrl = getRegionalUrl(validatedData.region);
 
     const PAGE_SIZE = isFilteringByChampion ? 50 : count;
+    // The sweep walks with a fixed step, so the offset stored with it is exact on every stop.
     const MAX_PAGES = isFilteringByChampion ? 5 : 1;
 
     const collectedMatches: any[] = [];
@@ -228,10 +280,19 @@ export async function GET(request: NextRequest) {
         `${detailsApiUrl}/lol/match/v5/matches/by-puuid/${validatedData.puuid}/ids`,
       );
 
-      matchIdsUrl.searchParams.set("start", String(currentStart));
-      matchIdsUrl.searchParams.set("count", String(PAGE_SIZE));
+      // A CLASSIC game (queue 710) is answered for the mode queues it belongs to, never for 710: the
+      // display queue and the legendary ones come back under `queue`. Asking the list with
+      // `queue=710` returns nothing, so this branch walks every queue and keeps what the mode matches.
+      matchIdsUrl.searchParams.set(
+        "start",
+        String(isClassicMode ? classicOffset + currentStart : currentStart),
+      );
+      matchIdsUrl.searchParams.set(
+        "count",
+        String(isClassicMode ? SWEEP_STEP : PAGE_SIZE),
+      );
 
-      if (queueId) {
+      if (queueId && !isClassicMode) {
         matchIdsUrl.searchParams.set("queue", String(queueId));
       }
 
@@ -317,6 +378,7 @@ export async function GET(request: NextRequest) {
             (p: any) => p.puuid === validatedData.puuid,
           );
           if (!participant) return false;
+          if (!matchesQueueFilter(match, queueId)) return false;
           if (!isFilteringByChampion) return true;
           return participantMatchesChampion(
             participant,
@@ -330,8 +392,59 @@ export async function GET(request: NextRequest) {
 
       currentStart += matchIds.length;
 
-      if (collectedMatches.length >= count) break;
+      if (!isClassicMode && collectedMatches.length >= count) break;
       if (matchIds.length < PAGE_SIZE) break;
+    }
+
+    // ================= CLASSIC SWEEP =================
+    // The sweep walks every queue; what the detail says it is decides. A page that brought no
+    // matching game is stored as-is: the next call resumes after it, so no id is paid twice.
+    if (isClassicMode) {
+      const swept = [...existingMatches, ...collectedMatches].filter(
+        (match, index, self) =>
+          index ===
+          self.findIndex((m) => m.metadata.matchId === match.metadata.matchId),
+      );
+      // Newest first, the order of the list the sweep walked (the ids come newest first).
+      swept.sort((a, b) => b.info.gameCreation - a.info.gameCreation);
+      const kept = isFilteringByChampion
+        ? swept.filter((match: any) => {
+            const participant = match.info?.participants?.find(
+              (p: any) => p.puuid === puuid,
+            );
+            return (
+              !!participant &&
+              participantMatchesChampion(participant, championName, championId)
+            );
+          })
+        : swept;
+      const page = kept.slice(start, start + count);
+      const classicHasMore =
+        kept.length > start + count ||
+        (!hitOffsetLimit && classicOffset + currentStart < MAX_RIOT_OFFSET);
+
+      // Empty at the front without reaching the end is a transient miss: do not store it.
+      if (swept.length > 0) {
+        saveToSupabase(
+          cacheKey,
+          { matches: swept, classicOffset: classicOffset + currentStart },
+          gameName,
+          tagLine,
+        ).catch(() => {});
+        matchCache.set(l1Key, {
+          data: page,
+          expires: now + L1_TTL,
+          hasMore: classicHasMore,
+          kept,
+          nextOffset: classicOffset + currentStart,
+        });
+      }
+
+      return NextResponse.json({
+        data: page,
+        cache: "MISS_UPDATE",
+        hasMore: classicHasMore,
+      });
     }
 
     // ================= MERGE =================

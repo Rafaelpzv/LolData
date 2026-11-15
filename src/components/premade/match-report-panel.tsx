@@ -214,7 +214,15 @@ function GameRow({
   formattedDate: string;
 }) {
   const t = useTranslations("premade.matches");
+  const tQueues = useTranslations("queues");
   const found = game.summary.inflections > 0;
+  // A fila no rótulo da partida: Flex e CLASSIC são coletados juntos, e a lista diz qual é qual.
+  const queueLabel =
+    game.queueId === 710
+      ? tQueues("classic")
+      : game.queueId === 440
+        ? tQueues("flex")
+        : null;
 
   return (
     <Card padding="none" className="overflow-hidden">
@@ -247,6 +255,7 @@ function GameRow({
             </span>
             <span className="truncate text-xs text-muted-foreground">
               {formattedDate} · {mmss(game.summary.duration)}
+              {queueLabel ? ` · ${queueLabel}` : ""}
             </span>
           </span>
           <span className="mt-0.5 block truncate text-xs text-muted-foreground">

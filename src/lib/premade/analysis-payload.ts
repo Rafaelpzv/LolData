@@ -82,15 +82,24 @@ export async function evaluateTrainingGoals(
  * `minPeople` recorta as partidas pela escalação ANTES de qualquer número: o seletor de mínimo só
  * faz sentido se as métricas, as recomendações e a lista de partidas virem todas do mesmo conjunto.
  * Filtrar depois — só a lista, ou só um cartão — faria a página discordar de si mesma.
+ *
+ * `queueKey` é opcional e recorta pelo MODO (Flex ou CLASSIC). Sem ele vêm os dois juntos, que é o
+ * padrão: o histórico inteiro do time. Com ele, só a fila pedida — e então a lista de partidas e os
+ * números saem do mesmo conjunto, nunca um de cada modo.
  */
 export async function loadAnalysisPayload(
   slug: string,
-  options: { persistTraining?: boolean; minPeople?: number } = {},
+  options: {
+    persistTraining?: boolean;
+    minPeople?: number;
+    /** Modo da análise ("flex", "classic"); sem ele, todas as partidas coletadas. */
+    queueKey?: string | null;
+  } = {},
 ): Promise<AnalysisPayload | null> {
   const team = await getTeamBySlug(slug).catch(() => null);
   if (!team) return null;
   const [allMatches, players, timelines, goals] = await Promise.all([
-    getTeamMatches(team.id),
+    getTeamMatches(team.id, 1000, { queueKey: options.queueKey ?? null }),
     getPlayers(team.id),
     getTimelines(team.id),
     // Um banco ainda sem a migração 0021 não pode derrubar a análise inteira.

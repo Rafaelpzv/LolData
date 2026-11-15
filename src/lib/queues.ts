@@ -10,11 +10,19 @@ export interface MatchQueue {
   labelKey: string;
 }
 
+/**
+ * Queue of the CLASSIC game mode in the competitive ladder: "Ranked 5s". The game mode every other
+ * queue shares (and the name the client shows for it) is CLASSIC; the queue id is what the Riot
+ * history filter takes, so 710 is what a CLASSIC-only link or filter sends.
+ */
+export const CLASSIC_QUEUE_ID = 710;
+
 /** Match history filters (LoL profile). "all" means no queue filter. */
 export const MATCH_QUEUES: readonly MatchQueue[] = [
   { slug: "all", id: "all", labelKey: "all" },
   { slug: "soloDuo", id: "420", labelKey: "soloDuo" },
   { slug: "flex", id: "440", labelKey: "flex" },
+  { slug: "classic", id: String(CLASSIC_QUEUE_ID), labelKey: "classic" },
   { slug: "aram", id: "450", labelKey: "aram" },
   { slug: "normal", id: "400", labelKey: "normal" },
   { slug: "quickplay", id: "490", labelKey: "quickplay" },

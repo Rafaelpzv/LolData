@@ -1,8 +1,17 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  ALL_MODES_KEY,
+  CLASSIC_QUEUE_ID,
+  DEFAULT_QUEUE_MODE,
+  PREMADE_QUEUES,
   collectMatchSamples,
   normalizeMinPeople,
+  premadeQueueId,
+  premadeQueueIdsFor,
+  premadeQueueKey,
+  readModeFilter,
+  rejectionReason,
   tierCounts,
   toMatchSample,
 } from "./collect";
@@ -113,6 +122,16 @@ describe("toMatchSample", () => {
 
   it("rejects other queues", () => {
     expect(toMatchSample(match({ queueId: 420 }), PUUIDS)).toBeNull();
+  });
+
+  it("keeps a CLASSIC (710) game and stamps its queue", () => {
+    const sample = toMatchSample(match({ queueId: 710 }), PUUIDS);
+    expect(sample?.matchId).toBe("BR1_1");
+    expect(sample?.queueId).toBe(710);
+  });
+
+  it("stamps Flex (440) on a Flex game", () => {
+    expect(toMatchSample(match(), PUUIDS)?.queueId).toBe(440);
   });
 
   it("rejects remakes", () => {
@@ -235,5 +254,57 @@ describe("collectMatchSamples", () => {
       PUUIDS,
     );
     expect(samples.map((s) => s.gameCreation)).toEqual([5_000, 1_000]);
+  });
+
+  it("collects Flex and CLASSIC games side by side, with the queue of each", () => {
+    const flex = match({ gameEndTimestamp: 1_000 });
+    const classic = match({ queueId: 710, gameEndTimestamp: 2_000 });
+    classic.metadata.matchId = "BR1_2";
+    const samples = collectMatchSamples([flex, classic], PUUIDS);
+    expect(samples.map((s) => [s.gameCreation, s.queueId])).toEqual([
+      [2_000, 710],
+      [1_000, 440],
+    ]);
+  });
+
+  it("rejects a game whose queue is not collected", () => {
+    expect(rejectionReason(match({ queueId: 420 }), PUUIDS)).toBe("wrongQueue");
+    expect(rejectionReason(match({ queueId: 710 }), PUUIDS)).toBeNull();
+  });
+});
+
+describe("the collected modes", () => {
+  it("list Flex and CLASSIC, Flex first", () => {
+    expect(PREMADE_QUEUES.map((queue) => [queue.key, queue.id])).toEqual([
+      ["flex", 440],
+      ["classic", 710],
+    ]);
+    expect(DEFAULT_QUEUE_MODE).toBe(ALL_MODES_KEY);
+    expect(CLASSIC_QUEUE_ID).toBe(710);
+  });
+
+  it("read the mode filter of the URL: nothing means every mode together", () => {
+    expect(readModeFilter(undefined)).toBeNull();
+    expect(readModeFilter(ALL_MODES_KEY)).toBeNull();
+    expect(readModeFilter("aram")).toBeNull();
+    expect(readModeFilter("flex")).toBe("flex");
+    expect(readModeFilter("classic")).toBe("classic");
+  });
+
+  it("resolve a mode name to its queue and back", () => {
+    expect(premadeQueueId("classic")).toBe(710);
+    expect(premadeQueueId("flex")).toBe(440);
+    expect(premadeQueueId("aram")).toBeNull();
+    expect(premadeQueueKey(710)).toBe("classic");
+    expect(premadeQueueKey("710")).toBe("classic");
+    expect(premadeQueueKey(420)).toBeNull();
+  });
+
+  it("asks Riot for the queue of the chosen mode only", () => {
+    expect(premadeQueueIdsFor("classic")).toEqual([710]);
+    expect(premadeQueueIdsFor("flex")).toEqual([440]);
+    // A name the collection does not know never becomes an empty list: it falls back to all modes.
+    expect(premadeQueueIdsFor("aram")).toEqual([440, 710]);
+    expect(premadeQueueIdsFor(null)).toEqual([440, 710]);
   });
 });

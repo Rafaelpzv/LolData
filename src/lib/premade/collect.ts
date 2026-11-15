@@ -9,8 +9,93 @@ import type {
 } from "./types";
 import { readParticipantFields } from "./participant-fields";
 
-/** Premade is only ever ranked Flex 5x5. */
-export const PREMADE_QUEUE_ID = 440;
+/**
+ * As filas que a coleta lê. Flex 5x5 (440) é o modo histórico da premade; CLASSIC (710) é o modo
+ * novo, que o cliente lista como "CLASSIC" nas partidas CLASSIC do modo ranqueado. Uma partida vale
+ * quando o `info.queueId` é o de algum destes modos.
+ */
+export const PREMADE_QUEUES = [
+  { id: 440, key: "flex" },
+  { id: 710, key: "classic" },
+] as const;
+
+/** The modos a premade collection reads. */
+export type PremadeQueueKey = (typeof PREMADE_QUEUES)[number]["key"];
+
+/** Modos que valem quando o chamador não escolhe um: os dois, em qualquer ordem. */
+export const PREMADE_QUEUE_IDS: readonly number[] = PREMADE_QUEUES.map(
+  (queue) => queue.id,
+);
+
+/** A fila que a premade lê por padrão quando a leitura não nomeia uma: Flex, a de sempre. */
+export const PREMADE_QUEUE_ID = PREMADE_QUEUES[0].id;
+
+/**
+ * O filtro de modo da análise: `null` é o padrão e quer dizer TODOS os modos juntos, que é como a
+ * premade mede um grupo — o histórico inteiro do time, Flex e CLASSIC na mesma lista.
+ */
+export type PremadeModeFilter = PremadeQueueKey | null;
+
+/** O valor do seletor que mostra todos os modos: é o padrão, e por isso não vai para a URL. */
+export const ALL_MODES_KEY = "all";
+
+/** O que o seletor mostra por padrão: todos os modos juntos. */
+export const DEFAULT_QUEUE_MODE = ALL_MODES_KEY;
+
+/**
+ * Lê o `?queue=` da URL: um modo conhecido recorta a análise, qualquer outra coisa (inclusive
+ * nada, ou um valor inválido) mostra todos os modos.
+ */
+export function readModeFilter(raw: string | undefined | null): PremadeModeFilter {
+  return isPremadeQueueKey(raw) ? raw : null;
+}
+
+/** A fila que carrega o modo CLASSIC: o modo que o cliente mostra como "CLASSIC". */
+export const CLASSIC_QUEUE_ID =
+  PREMADE_QUEUES.find((queue) => queue.key === "classic")?.id ?? 710;
+
+/**
+ * Atraso, em segundos, da segunda leitura do "fresh" de uma conta.
+ *
+ * O cursor é um só por conta e por fila, e a sessão já avançou por ele: quando essa leitura não
+ * devolve nada (o jogo que o probe por epoch escondeu, ou a fila inteira já lida), a passada
+ * atrasada pega o que veio depois do que este lote leu, e não a mesma página outra vez.
+ */
+export const FRESH_PROBE_DELAY = 60;
+
+/** O tamanho de página que a listagem do Riot devolve (e o máximo que aceita). */
+export const PAGE_SIZE = 100;
+
+/** The page size the collection reads; kept exported for the callers that report progress. */
+export { PAGE_SIZE as LIST_PAGE_SIZE };
+
+/** As chaves de i18n de cada modo ("premade.queues.flex", "premade.queues.classic"). */
+export function isPremadeQueueKey(value: unknown): value is PremadeQueueKey {
+  return PREMADE_QUEUES.some((queue) => queue.key === value);
+}
+
+/** As filas que uma leitura desta coleta pede ao Riot: só a do modo, ou todas sem modo. */
+export function premadeQueueIdsFor(
+  key: string | null | undefined,
+): readonly number[] {
+  if (!key) return PREMADE_QUEUE_IDS;
+  const id = premadeQueueId(key);
+  // Um modo desconhecido não pode virar "nenhuma lista": cai no padrão da coleção.
+  return id === null ? PREMADE_QUEUE_IDS : [id];
+}
+
+/** The queue id of a mode, or null for a name the collection does not know. */
+export function premadeQueueId(key: string | null | undefined): number | null {
+  const match = PREMADE_QUEUES.find((queue) => queue.key === key);
+  return match ? match.id : null;
+}
+
+/** The mode name of a queue id; null for a queue the collection does not read. */
+export function premadeQueueKey(id: unknown): PremadeQueueKey | null {
+  const match = PREMADE_QUEUES.find((queue) => queue.id === Number(id));
+  return match ? match.key : null;
+}
+
 /** A full side. A bigger roster can bring more than that across games. */
 export const TEAM_SIDE_SIZE = 5;
 /** People needed on the same side for a game to count, by default: a full side of the roster. */
@@ -202,8 +287,8 @@ function challengeOrNull(value: unknown): number | null {
 
 /**
  * A match only counts when at least `minPeople` distinct roster people are on the same side of a
- * queue-440 game. Accounts are grouped by their owner first: one person with two accounts counts
- * once. The sample keeps only the roster accounts that actually played it.
+ * collected-mode game (Flex 440 or CLASSIC 710). Accounts are grouped by their owner first: one
+ * person with two accounts counts once. The sample keeps only the roster accounts that played it.
  * Returns null otherwise (other queue, too few people, remake, missing payload).
  */
 export function toMatchSample(
@@ -221,7 +306,8 @@ export function toMatchSample(
   if (!info || typeof matchId !== "string" || teamPuuids.length === 0)
     return null;
 
-  if (num(info.queueId) !== PREMADE_QUEUE_ID) return null;
+  const queueKey = premadeQueueKey(info.queueId);
+  if (queueKey === null) return null;
   if (num(info.gameDuration) < REMAKE_SECONDS) return null;
 
   const required = normalizeMinPeople(minPeople);
@@ -298,6 +384,7 @@ export function toMatchSample(
 
   return {
     matchId,
+    queueId: num(info.queueId),
     gameCreation:
       num(info.gameEndTimestamp) ||
       num(info.gameStartTimestamp) ||
@@ -418,7 +505,7 @@ export function rejectionReason(
   } | null;
   const info = match?.info;
   if (!info || typeof match?.metadata?.matchId !== "string") return "noPayload";
-  if (num(info.queueId) !== PREMADE_QUEUE_ID) return "wrongQueue";
+  if (premadeQueueKey(info.queueId) === null) return "wrongQueue";
   if (num(info.gameDuration) < REMAKE_SECONDS) return "remake";
 
   const required = normalizeMinPeople(minPeople);

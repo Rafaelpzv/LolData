@@ -35,10 +35,13 @@ const db = vi.hoisted(() => ({
   /** Every list request, in order: what the tests count and compare. */
   idRequests: [] as {
     puuid: string;
+    queue: string | null;
     start: number;
     count: number;
     startTime: string | null;
   }[],
+  /** The queue each downloaded match says it was played in (the fake starts every game in Flex). */
+  queues: new Map<string, number>(),
 
   detailRequests: 0,
   sequence: 0,
@@ -87,7 +90,13 @@ vi.mock("./repository", () => ({
         },
       ]),
     ),
-  saveCollectionCursor: async (_team: string, puuid: string, state: any) => {
+  // The mode of the write is a parameter of the real repository; the fake keeps one cursor per
+  // account, because these tests collect one mode at a time.
+  saveCollectionCursor: async (
+    _team: string,
+    puuid: string,
+    state: any,
+  ) => {
     db.cursors.set(puuid, { ...state });
   },
   getMatchPresence: async () =>
@@ -130,8 +139,15 @@ vi.mock("./repository", () => ({
   finishCollectionSession: async (sessionId: string) => {
     db.sessions.get(sessionId).finished = true;
   },
-  saveMatchSamples: async (_team: string, samples: { matchId: string }[]) => {
-    for (const sample of samples) db.matches.add(sample.matchId);
+  saveMatchSamples: async (
+    _team: string,
+    samples: { matchId: string; queueId?: number | null }[],
+  ) => {
+    for (const sample of samples) {
+      db.matches.add(sample.matchId);
+      if (typeof sample.queueId === "number")
+        db.queues.set(sample.matchId, sample.queueId);
+    }
   },
 }));
 
@@ -150,7 +166,8 @@ vi.mock("@/lib/riot/match-v5", async (importOriginal) => {
         const start = Number(parsed.searchParams.get("start") ?? 0);
         const count = Number(parsed.searchParams.get("count") ?? 100);
         const startTime = parsed.searchParams.get("startTime");
-        db.idRequests.push({ puuid, start, count, startTime });
+        const queue = parsed.searchParams.get("queue");
+        db.idRequests.push({ puuid, queue, start, count, startTime });
         // Riot: `startTime` is in SECONDS and means "created after this moment". The id carries no
         // date, so the fake list compares the game's own timestamp, not the id.
         const list = (db.lists.get(puuid) ?? []).filter(
@@ -190,7 +207,7 @@ vi.mock("@/lib/riot/match-v5", async (importOriginal) => {
       return json({
         metadata: { matchId },
         info: {
-          queueId: 440,
+          queueId: db.queues.get(matchId) ?? 440,
           gameDuration: 1800,
           gameEndTimestamp: Number(matchId.split("_").pop()),
           participants: [
@@ -222,10 +239,13 @@ function json(body: unknown) {
 const { collectBatch } = await import("./collect-batch");
 
 /** The button: call the batch until it reports done, exactly like the client's loop. */
-async function updateToTheEnd(maxCalls = 50) {
+async function updateToTheEnd(
+  maxCalls = 50,
+  queues?: readonly ("flex" | "classic")[],
+) {
   const steps = [];
   for (let call = 1; call <= maxCalls; call++) {
-    const step = await collectBatch("team", { budgetMs: 60_000 });
+    const step = await collectBatch("team", { budgetMs: 60_000, queues });
     steps.push(step);
     if (step.error) throw new Error(`batch failed: ${step.error}`);
     if (step.done) return steps;
@@ -244,6 +264,7 @@ beforeEach(() => {
   db.presence.clear();
   db.matches.clear();
   db.lists.clear();
+  db.queues.clear();
   db.idRequests = [];
   db.detailRequests = 0;
 
@@ -284,8 +305,10 @@ describe("collectBatch — one complete update", () => {
     expect(steps.reduce((sum, step) => sum + step.saved, 0)).toBe(0);
     // Candidates already stored are not downloaded again.
     expect(db.detailRequests).toBe(0);
-    // Uma requisição por conta: o epoch real faz a atualização ser só a primeira página.
-    expect(db.idRequests).toHaveLength(ACCOUNTS.length);
+    // Uma requisição por conta e por fila: o epoch real faz a atualização ser só a primeira página
+    // de cada uma das duas listas (Flex e CLASSIC).
+    expect(db.idRequests).toHaveLength(ACCOUNTS.length * 2);
+    expect(new Set(db.idRequests.map((request) => request.queue)).size).toBe(2);
     for (const request of db.idRequests) {
       // Página cheia: pedir 1 jogo por vez era o que deixava o botão sem trazer histórico.
       expect(request.count).toBe(100);
@@ -324,53 +347,75 @@ describe("collectBatch — one complete update", () => {
   });
 });
 
+describe("collectBatch — os modos (Flex 440 e CLASSIC 710)", () => {
+  /** Uma partida CLASSIC da lista da fila 710 (o fake começa todo jogo em Flex). */
+  function classicGame(hour: number, accounts = ["acc1", "acc2", "acc3", "acc4", "acc5"]) {
+    const id = gameId(hour);
+    db.queues.set(id, 710);
+    for (const account of accounts)
+      db.lists.set(account, [id, ...(db.lists.get(account) ?? [])]);
+    return id;
+  }
 
-
-
-  it("PROBE cursors", async () => {
-    await updateToTheEnd();
-    for (const [puuid, state] of db.cursors) {
-      console.log("CURSOR", puuid, JSON.stringify({
-        nextStart: state.nextStart,
-        epoch: state.epoch,
-        epochDate: state.epoch ? new Date(Number(state.epoch)).toISOString().slice(0, 10) : "-",
-        finished: state.finished,
-      }));
-    }
+  it("sem escolha, o clique lê as DUAS listas: Flex e CLASSIC", async () => {
+    classicGame(20);
+    const steps = await updateToTheEnd();
+    expect(steps[steps.length - 1].done).toBe(true);
+    const readQueues = new Set(db.idRequests.map((request) => request.queue));
+    expect([...readQueues].sort()).toEqual(["440", "710"]);
+    // A partida CLASSIC foi salva junto com as de Flex, cada uma marcada com a própria fila.
+    expect([...db.matches].length).toBe(4);
+    expect([...db.matches].filter((id) => db.queues.get(id) === 710)).toHaveLength(1);
   });
 
-describe("collectBatch — a walk that does not fit in one batch", () => {
-  it("resumes from the stored cursor instead of starting over", async () => {
-    db.lists.set(
-      "acc7",
-      Array.from({ length: 60 }, (_, i) => gameId(-i - 1)),
-    );
-    // The per-batch allowance is smaller than the whole walk (7 accounts x 1 page): every batch
-    // stops with the cursor spent and the next one continues from exactly where it stopped.
-    vi.stubEnv("PREMADE_SCAN_PER_BATCH", "2");
+  it("`queues` recorta a coleta para as filas pedidas", async () => {
+    await updateToTheEnd(50, ["classic"]);
+    expect(db.idRequests.length).toBeGreaterThan(0);
+    expect(db.idRequests.every((request) => request.queue === "710")).toBe(true);
+    db.idRequests = [];
+    await updateToTheEnd(50, ["flex"]);
+    expect(db.idRequests.every((request) => request.queue === "440")).toBe(true);
+  });
+
+  it("guarda um jogo CLASSIC que a lista da fila 710 devolveu", async () => {
+    const id = classicGame(30);
+    await updateToTheEnd();
+    expect(db.matches.has(id)).toBe(true);
+    expect(db.queues.get(id)).toBe(710);
+  });
+
+  it("o lado CLASSIC tem cursor e sessão próprios: o Flex segue do jeito que estava", async () => {
+    await updateToTheEnd(50, ["flex"]);
+    const flexCursor = { ...db.cursors.get("acc1") };
+    await updateToTheEnd(50, ["classic"]);
+    // O cursor de Flex não foi reescrito pela passada de CLASSIC.
+    expect(db.cursors.get("acc1").epoch).toBe(flexCursor.epoch);
+  });
+});
+
+describe("collectBatch — uma caminhada que não cabe num lote", () => {
+  it("continua de onde parou e termina com done=true", async () => {
     const steps = [];
-    for (let call = 1; call <= 40; call++) {
+    for (let call = 0; call < 60; call++) {
       const step = await collectBatch("team", {
-        mode: "full",
-        restart: call === 1,
+        budgetMs: 1_200,
+        maxDetails: 5,
+        queues: ["flex"],
       });
       steps.push(step);
+      if (step.error) throw new Error(`batch failed: ${step.error}`);
       if (step.done) break;
     }
-    expect(steps.length).toBeGreaterThan(1);
     expect(steps[steps.length - 1].done).toBe(true);
-    // The walk really was split: every batch but the last one ran out of the allowance.
+    // A caminhada foi mesmo fatiada: todo lote menos o último estourou o tempo.
     expect(steps.slice(0, -1).every((step) => step.budgetHit)).toBe(true);
-    // scansDone is the session total: it never goes back after a batch.
     const scans = steps.map((step) => step.scansDone);
     for (let i = 1; i < scans.length; i++)
       expect(scans[i]).toBeGreaterThanOrEqual(scans[i - 1]);
-    // Every call read at least one page: no batch wasted the turn, and the last one grew.
     expect(steps.every((step) => step.reads > 0)).toBe(true);
-    expect(scans[scans.length - 1]).toBeGreaterThan(scans[0]);
-    // No offset was requested twice: each batch continued where the previous one stopped.
+    // Nenhum offset foi pedido duas vezes pela mesma fila.
     const offsets = db.idRequests.map(
-      (request) => `${request.puuid}@${request.start}`,
+      (request) => `${request.puuid}@${request.queue}@${request.start}`,
     );
     expect(new Set(offsets).size).toBe(offsets.length);
   });

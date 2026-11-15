@@ -9,7 +9,7 @@ import { RosterDrawer } from "@/components/premade/roster-section";
 import { ShareLineup } from "@/components/premade/share-lineup";
 import { TeamView } from "@/components/premade/team-view";
 import { UpdateDataButton } from "@/components/premade/update-data-button";
-import { DEFAULT_MIN_PEOPLE } from "@/lib/premade/collect";
+import { ALL_MODES_KEY, DEFAULT_MIN_PEOPLE } from "@/lib/premade/collect";
 import { accountGamesOf, personCards } from "@/lib/premade/lobby";
 import {
   getAccountRanks,
@@ -30,7 +30,21 @@ export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ minPeople?: string }>;
+  searchParams: Promise<{ minPeople?: string; queue?: string }>;
+}
+
+/** Os modos que o seletor mostra: "todos" (o padrão) e cada fila coletada. */
+const MODES = [ALL_MODES_KEY, "flex", "classic"] as const;
+
+/**
+ * O filtro de modo: sem `?queue=`, a análise junta Flex (440) e CLASSIC (710), que é o histórico
+ * inteiro do time. Com `?queue=flex` ou `?queue=classic`, a página recorta só aquela fila.
+ *
+ * Fica na URL como o mínimo: a análise é feita no servidor, então a lista de partidas e os números
+ * vêm do mesmo conjunto. Um valor desconhecido mostra todos os modos em vez de derrubar a página.
+ */
+function readQueue(raw: string | undefined): string {
+  return MODES.find((mode) => mode === raw) ?? ALL_MODES_KEY;
 }
 
 /**
@@ -60,13 +74,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PremadeTeamPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
-  const { minPeople: rawMinPeople } = await searchParams;
+  const { minPeople: rawMinPeople, queue: rawQueue } = await searchParams;
   const minPeople = readMinPeople(rawMinPeople);
+  const queueKey = readQueue(rawQueue);
   const team = await getTeamBySlug(slug);
   if (!team) notFound();
 
   const [allMatches, players, ranks, allTimelines, lastUpdate] = await Promise.all([
-    getTeamMatches(team.id),
+    // Sem filtro (o padrão) vêm os dois modos juntos; com `?queue=`, só a fila escolhida. A lista de
+    // partidas e os números que a acompanham vêm do mesmo conjunto.
+    getTeamMatches(team.id, 1000, {
+      queueKey: queueKey === ALL_MODES_KEY ? null : queueKey,
+    }),
     getPlayers(team.id),
     getAccountRanks(team.id),
     getTimelines(team.id),
@@ -78,7 +97,11 @@ export default async function PremadeTeamPage({ params, searchParams }: PageProp
   const timelines = allTimelines.filter((entry) => keptIds.has(entry.matchId));
 
   // One builder for both pages: the shared lineup shows the same tabs with the same numbers.
-  const payload = await loadAnalysisPayload(slug, { persistTraining: true, minPeople });
+  const payload = await loadAnalysisPayload(slug, {
+    persistTraining: true,
+    minPeople,
+    queueKey: queueKey === ALL_MODES_KEY ? null : queueKey,
+  });
   const analysis = payload?.analysis ?? buildTeamAnalysis(matches, players, timelines);
   const cards = personCards(players, ranks, accountGamesOf(matches));
   const summaries = Object.fromEntries(
@@ -112,6 +135,7 @@ export default async function PremadeTeamPage({ params, searchParams }: PageProp
       <TeamView
         slug={slug}
         minPeople={minPeople}
+        queueKey={queueKey}
         excludedByMinPeople={{ dropped, bySize, total: allMatches.length }}
         data={{
           players,

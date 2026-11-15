@@ -653,6 +653,13 @@
     "playerAria": "{name}, {rank}. Selects this player in the Individual tab.",
     "unranked": "No rank"
   },
+  "queues": {
+    "label": "Mode",
+    "all": "All modes",
+    "flex": "Flex 5x5",
+    "classic": "Ranked 5s",
+    "hint": "By default the analysis joins Flex 5x5 (queue 440) and Ranked 5s (queue 710), which is the team's whole history. Pick a mode to see only its games."
+  },
   "update": {
     "action": "Update data",
     "moreActions": "More data actions",

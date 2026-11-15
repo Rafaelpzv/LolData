@@ -7,7 +7,7 @@ import { Users } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { DEFAULT_MIN_PEOPLE } from "@/lib/premade/collect";
+import { DEFAULT_MIN_PEOPLE, DEFAULT_QUEUE_MODE } from "@/lib/premade/collect";
 import type { PlayerCard } from "@/lib/premade/lobby";
 import type { PremadePlayer } from "@/lib/premade/types";
 
@@ -23,6 +23,8 @@ type AnalysisData = Omit<
   | "onTabChange"
   | "minPeople"
   | "onMinPeopleChange"
+  | "queueKey"
+  | "onQueueChange"
   | "players"
 >;
 
@@ -41,11 +43,14 @@ export interface TeamViewData {
 export function TeamView({
   data,
   minPeople,
+  queueKey,
   excludedByMinPeople,
   slug,
 }: {
   data: TeamViewData;
   minPeople: number;
+  /** Modo cuja análise a página mostra ("flex" ou "classic"). */
+  queueKey: string;
   /**
    * O que o filtro de mínimo escondeu, calculado no servidor. Existe para a interface poder dizer
    * "N partidas fora do recorte" em vez de encolher a lista em silêncio.
@@ -76,6 +81,20 @@ export function TeamView({
     router.push(query ? `?${query}` : "?", { scroll: false });
   };
 
+  /**
+   * Trocar o modo refaz a análise no servidor, pelo mesmo motivo do mínimo: o recorte fica lá.
+   *
+   * O padrão ("all", sem parâmetro na URL) junta Flex e CLASSIC: é o histórico inteiro do time. Um
+   * modo escolhido recorta a página, para olhar só aquela fila.
+   */
+  const changeQueue = (value: string) => {
+    const params = new URLSearchParams(window.location.search);
+    if (value === DEFAULT_QUEUE_MODE) params.delete("queue");
+    else params.set("queue", value);
+    const query = params.toString();
+    router.push(query ? `?${query}` : "?", { scroll: false });
+  };
+
   const current = data.cards.some((card) => card.person === selected)
     ? selected
     : (data.cards[0]?.person ?? null);
@@ -102,6 +121,8 @@ export function TeamView({
             onTabChange={setTab}
             minPeople={minPeople}
             onMinPeopleChange={changeMinPeople}
+            queueKey={queueKey}
+            onQueueChange={changeQueue}
             excludedByMinPeople={excludedByMinPeople}
             onCreateGoal={slug ? training.createFrom : undefined}
             onEvaluateGoal={slug ? training.evaluate : undefined}

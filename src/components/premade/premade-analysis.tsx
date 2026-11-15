@@ -28,6 +28,7 @@ import { IntegrityPanel } from "./integrity-panel";
 import { MatchReportPanel } from "./match-report-panel";
 import { PatternsPanel } from "./patterns-panel";
 import { MinPeoplePicker } from "./min-people-picker";
+import { QueuePicker } from "./queue-picker";
 import { Recommendations } from "./recommendations";
 import { ScoreNote } from "./team-score";
 import { TeamSummary } from "./team-summary";
@@ -110,6 +111,14 @@ export interface PremadeAnalysisProps extends AnalysisData {
   minPeople: number;
   onMinPeopleChange: (value: number) => void;
   /**
+   * Modo cuja análise é mostrada (Flex ou CLASSIC): também muda os números, pela mesma razão.
+   * A página com sessão de edição troca de modo refazendo a análise no servidor (`onQueueChange`);
+   * a escalação compartilhada, que não tem como refazer, navega pelo link de cada modo (`queueHrefs`).
+   */
+  queueKey: string;
+  onQueueChange?: (value: string) => void;
+  queueHrefs?: Record<string, string>;
+  /**
    * O que o mínimo escondeu. Sem isto o seletor parece não ter efeito: a lista encolhe e a página
    * não diz por quê. Calculado no servidor, do mesmo recorte que gerou os números.
    */
@@ -152,6 +161,9 @@ export function PremadeAnalysis({
   onTabChange,
   minPeople,
   onMinPeopleChange,
+  queueKey,
+  onQueueChange,
+  queueHrefs,
   excludedByMinPeople,
   onCreateGoal,
   onEvaluateGoal,
@@ -186,7 +198,14 @@ export function PremadeAnalysis({
           onChange={onTabChange}
           options={TABS.map((value) => ({ value, label: t(value) }))}
         />
-        <MinPeoplePicker value={minPeople} onChange={onMinPeopleChange} />
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <QueuePicker
+            value={queueKey}
+            onChange={onQueueChange}
+            hrefs={queueHrefs}
+          />
+          <MinPeoplePicker value={minPeople} onChange={onMinPeopleChange} />
+        </div>
       </div>
 
       {/* O seletor precisa dizer o que ficou de fora: sem isto, a lista menor parece não ter efeito. */}

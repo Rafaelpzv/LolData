@@ -21,11 +21,16 @@ import type { AnalysisData } from "./premade-analysis";
 export function LineupAnalysis({
   players,
   analysis,
+  queueKey,
+  queueHrefs,
 }: {
   players: PremadePlayer[];
   /** A análise da equipe com o diagnóstico rápido e os objetivos de treinamento já montados. */
   analysis: Omit<TeamAnalysis, "groupDeathsPerGame"> &
     Pick<AnalysisData, "quick" | "training">;
+  /** O modo que a página compartilhada está mostrando, e a URL de cada modo (recarrega a página). */
+  queueKey: string;
+  queueHrefs: Record<string, string>;
 }) {
   const t = useTranslations("premade.roster");
   const [tab, setTab] = useState<Tab>("overview");
@@ -64,6 +69,8 @@ export function LineupAnalysis({
       onTabChange={setTab}
       minPeople={minimum}
       onMinPeopleChange={setMinimum}
+      queueKey={queueKey}
+      queueHrefs={queueHrefs}
     />
   );
 }

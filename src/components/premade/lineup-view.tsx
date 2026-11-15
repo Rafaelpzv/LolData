@@ -54,6 +54,9 @@ interface LineupViewProps {
   people: LineupPerson[];
   /** The four analysis tabs, built by the page from the same data the editor reads. */
   analysis: AnalysisData;
+  /** O modo que a escalação mostra (Flex ou CLASSIC) e a URL que troca para o outro. */
+  queueKey: string;
+  queueHrefs: Record<string, string>;
 }
 
 /**
@@ -68,6 +71,8 @@ export async function LineupView({
   metrics,
   people,
   analysis,
+  queueKey,
+  queueHrefs,
 }: LineupViewProps) {
   const t = await getTranslations("premade.lineup");
   const tSummary = await getTranslations("premade.summary");
@@ -115,7 +120,12 @@ export async function LineupView({
       )}
 
       <section aria-label={t("analysisTitle")}>
-        <LineupAnalysis players={analysis.players} analysis={analysis} />
+        <LineupAnalysis
+          players={analysis.players}
+          analysis={analysis}
+          queueKey={queueKey}
+          queueHrefs={queueHrefs}
+        />
       </section>
 
       <p className="text-2xs text-muted-foreground">{t("readOnly")}</p>
