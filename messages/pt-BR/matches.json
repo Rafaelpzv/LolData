@@ -17,7 +17,15 @@
     "championSearch": "Buscar campeão…",
     "allChampions": "Todos os campeões",
     "noChampions": "Nenhum campeão encontrado",
-    "champions": "Campeões"
+    "champions": "Campeões",
+    "premadeOnly": "Com a premade"
+  },
+  "premade": {
+    "failed": "Não foi possível carregar as partidas com a premade.",
+    "retry": "Tentar de novo",
+    "empty": "Nenhuma partida coletada com as premades deste jogador ainda.",
+    "ranked5s": "Ranqueada 5s",
+    "flex": "Flex 5x5"
   },
   "loadMore": "Carregar mais partidas",
   "loadMoreFailed": "Não foi possível carregar mais partidas.",

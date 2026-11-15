@@ -21,6 +21,8 @@ import { MatchFilters } from "@/components/lol/match-filters";
 import { MatchHistory } from "@/components/lol/match-history";
 import { MatchListSkeleton } from "@/components/lol/match-card-skeleton";
 import { MatchStatsText } from "@/components/lol/match-stats-text";
+import { PremadeHistory } from "@/components/lol/premade-history";
+import { getTeamsByPuuid } from "@/lib/premade/repository";
 import {
   MasteryGrid,
   MasteryGridSkeleton,
@@ -41,6 +43,7 @@ interface RouteParams {
 
 interface SummonerPageProps {
   params: Promise<RouteParams>;
+  searchParams: Promise<{ premade?: string }>;
 }
 
 const TOP_MASTERIES = 5;
@@ -152,8 +155,21 @@ async function MatchHistorySection(ctx: MatchContext & { errorTitle: string }) {
   );
 }
 
-export default async function SummonerPage({ params }: SummonerPageProps) {
+/** As premades do jogador: enquanto carrega (e se falhar) a lista normal continua no lugar. */
+async function PremadeSection({
+  region,
+  puuid,
+}: {
+  region: string;
+  puuid: string;
+}) {
+  return <PremadeHistory region={region} puuid={puuid} />;
+}
+
+export default async function SummonerPage({ params, searchParams }: SummonerPageProps) {
   const raw = await params;
+  const { premade } = await searchParams;
+  const premadeOnly = premade === "1";
   // The raw route region (e.g. "br1") is what the actions and match API cache keys expect.
   const region = raw.region;
   const gameName = decodeParamOnce(raw.gameName);
@@ -164,6 +180,9 @@ export default async function SummonerPage({ params }: SummonerPageProps) {
   // The only blocking call: without the player there is nothing to show.
   const summoner = await findSummoner(region, gameName, tagLine);
   if (!summoner) notFound();
+
+  // As premades do jogador: uma consulta ao banco, e o botão só aparece se houver alguma.
+  const premadeTeams = await getTeamsByPuuid(summoner.puuid).catch(() => []);
 
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
@@ -227,13 +246,31 @@ export default async function SummonerPage({ params }: SummonerPageProps) {
             {t("title")}
           </h2>
           <Suspense fallback={<Skeleton className="h-4 w-48" />}>
-            <MatchStatsSection {...matchCtx} />
+            {/* O resumo de vitórias é da lista que está na tela: no modo premade quem o informa é a
+                própria PremadeHistory, então o resumo do histórico normal não é buscado. */}
+            {premadeOnly ? <MatchStatsText initialWins={0} initialLosses={0} /> : <MatchStatsSection {...matchCtx} />}
           </Suspense>
         </div>
-        <MatchFilters region={region} gameName={gameName} tagLine={tagLine} queueId={queueId} championId={championId} />
-        <Suspense fallback={<MatchListSkeleton count={4} label={t("loadingMatches")} />}>
-          <MatchHistorySection {...matchCtx} errorTitle={tErrors("matches")} />
-        </Suspense>
+        <MatchFilters
+          region={region}
+          gameName={gameName}
+          tagLine={tagLine}
+          queueId={queueId}
+          championId={championId}
+          premadeCount={premadeTeams.length}
+          premadeMode={premadeOnly}
+        />
+        {premadeOnly ? (
+          // A mesma seção e o mesmo título: o que troca é a lista, que passa a ser só as partidas
+          // que as premades do jogador coletaram.
+          <Suspense fallback={<MatchListSkeleton count={4} label={t("loadingMatches")} />}>
+            <PremadeSection region={region} puuid={summoner.puuid} />
+          </Suspense>
+        ) : (
+          <Suspense fallback={<MatchListSkeleton count={4} label={t("loadingMatches")} />}>
+            <MatchHistorySection {...matchCtx} errorTitle={tErrors("matches")} />
+          </Suspense>
+        )}
       </Reveal>
     </PageShell>
   );

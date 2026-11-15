@@ -51,6 +51,12 @@ export const RANKED_QUEUES: readonly RankedQueue[] = [
   { slug: "flex", apiValue: "RANKED_FLEX_SR", labelKey: "flex" },
 ] as const;
 
+/**
+ * A fila da Ranqueada 5s no League-V4 (`/lol/league/v4/entries/by-puuid`): o nome que o Riot usa
+ * para a fila 710, aquela que o histórico chama de "classic". Confirmada contra a API real.
+ */
+export const CLASSIC_RANKED_QUEUE = "RANKED_PREMADE_5x5" as const;
+
 /** Case-insensitive; unknown slugs fall back to Solo/Duo. */
 export function rankedQueueFromSlug(slug: string | null | undefined): RankedQueue {
   const s = (slug ?? "").toLowerCase();

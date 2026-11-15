@@ -805,6 +805,90 @@ function toAccount(row: AccountRow): PremadeAccount {
 }
 
 /**
+ * As premades em que um PUUID está cadastrado. Uma conta arquivada continua contando: os jogos dela
+ * são histórico, e o perfil do jogador deve mostrar o que ele de fato jogou com o time.
+ */
+export async function getTeamsByPuuid(puuid: string): Promise<PremadeTeam[]> {
+  const { data, error } = await supabaseAdmin
+    .from("premade_accounts")
+    .select("team_id")
+    .eq("puuid", puuid);
+  if (error) throw error;
+  const teamIds = [...new Set((data ?? []).map((row) => String(row.team_id)))];
+  if (teamIds.length === 0) return [];
+  const teams = await Promise.all(
+    teamIds.map((id) => getTeamById(id).catch(() => null)),
+  );
+  return teams.filter((team): team is PremadeTeam => team !== null);
+}
+
+/** Uma partida coletada pelo time em que o jogador estava: só o id, para buscar o detalhe. */
+export interface PlayerTeamMatch {
+  teamId: string;
+  teamName: string;
+  teamSlug: string;
+  matchId: string;
+  gameCreation: number;
+  /** Fila da partida (440 Flex, 710 Ranqueada 5s), como o time a guardou. */
+  queueId: number | null;
+}
+
+/**
+ * As partidas do jogador que as premades dele coletaram, mais novas primeiro.
+ *
+ * Sai só do que os times já têm guardado: nada é pedido ao Riot aqui. O detalhe (KDA, itens, os dois
+ * times) é o mesmo que o perfil já busca para o histórico.
+ */
+export async function getPremadeMatchesForPuuid(
+  teams: readonly { id: string; name: string; slug: string }[],
+  puuid: string,
+): Promise<PlayerTeamMatch[]> {
+  const perTeam = await Promise.all(
+    teams.map(async (team) => {
+      const { data, error } = await supabaseAdmin
+        .from("premade_matches")
+        .select("match_id, game_creation, participants, queue_id")
+        .eq("team_id", team.id)
+        .order("game_creation", { ascending: false })
+        .limit(1000);
+      if (error) throw error;
+      const rows =
+        (data as (Pick<MatchRow, "match_id" | "game_creation" | "participants"> & {
+          queue_id?: number | null;
+        })[] | null) ?? [];
+      return rows
+        .filter((row) =>
+          (row.participants ?? []).some(
+            (participant) => participant?.puuid === puuid,
+          ),
+        )
+        .map((row) => ({
+          teamId: team.id,
+          teamName: team.name,
+          teamSlug: team.slug,
+          matchId: row.match_id,
+          gameCreation: Number(row.game_creation) || 0,
+          queueId: row.queue_id ?? null,
+        }));
+    }),
+  );
+  // Uma conta em dois times não repete a partida: o detalhe é o mesmo, o time é que muda.
+  const seen = new Set<string>();
+  return perTeam
+    .flat()
+    .sort((a, b) => b.gameCreation - a.gameCreation)
+    .filter((match) => {
+      if (seen.has(match.matchId)) return false;
+      seen.add(match.matchId);
+      return true;
+    });
+}
+
+/**
+ * The people of a team with their accounts, newest account last. Archived people and accounts are
+ * included by default: they still explain the games already collected.
+ */
+/**
  * The people of a team with their accounts, newest account last. Archived people and accounts are
  * included by default: they still explain the games already collected.
  */

@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { championIconUrl } from "@/lib/cdn";
 import { championName } from "@/lib/champions";
-import { RANKED_QUEUES } from "@/lib/queues";
+import { RANKED_QUEUES, CLASSIC_RANKED_QUEUE } from "@/lib/queues";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { IconFrame } from "@/components/ui/icon-frame";
@@ -31,13 +31,18 @@ export interface ChampionMastery {
 export const rankedGridClass = "grid gap-3 sm:grid-cols-2 md:w-[40rem] md:shrink-0";
 export const masteryGridClass = "grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5";
 
-/** Solo/Duo + Flex cards. */
+/** Solo/Duo + Flex + Ranked 5s cards. */
 export function RankedCards({ ranked }: { ranked: RankedEntry[] }) {
   const t = useTranslations("matches");
   const tQueues = useTranslations("queues");
+  // A Ranqueada 5s é a fila 710: o card dela fica depois do Flex, como no histórico.
+  const queues = [
+    ...RANKED_QUEUES.map((q) => ({ apiValue: q.apiValue as string, labelKey: q.labelKey })),
+    { apiValue: CLASSIC_RANKED_QUEUE as string, labelKey: "classic" },
+  ];
   return (
     <div aria-label={t("rankedLabel")} role="group" className={rankedGridClass}>
-      {RANKED_QUEUES.map((q) => {
+      {queues.map((q) => {
         const entry = ranked.find((r) => r.queueType === q.apiValue);
         return (
           <RankedSummary
@@ -59,7 +64,7 @@ export function RankedCards({ ranked }: { ranked: RankedEntry[] }) {
 export function RankedCardsSkeleton() {
   return (
     <div aria-hidden className={rankedGridClass}>
-      {[0, 1].map((i) => (
+      {[0, 1, 2].map((i) => (
         <Card key={i} padding="md" className="flex items-center gap-4">
           <Skeleton className="size-12 rounded-full" />
           <div className="flex-1 space-y-2">

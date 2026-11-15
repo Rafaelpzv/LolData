@@ -22,6 +22,8 @@ interface WinrateCardProps {
   puuid: string;
   /** Queue id filter ("420"...); "all" or empty means every queue. */
   queueId?: string;
+  /** Só as partidas coletadas pelas premades do jogador, em vez do histórico inteiro. */
+  premadeOnly?: boolean;
   className?: string;
 }
 
@@ -39,11 +41,11 @@ type Status = "idle" | "loading" | "error";
  * Win rate over a selectable period, fetched from /api/summoner/winrate. One point per hour/day/week
  * that has games (empty periods are skipped, so the line never breaks), over a 50% baseline.
  */
-export function WinrateCard({ region, puuid, queueId, className }: WinrateCardProps) {
+export function WinrateCard({ region, puuid, queueId, premadeOnly = false, className }: WinrateCardProps) {
   const t = useTranslations("matches.winrate");
   const [period, setPeriod] = useState<WinratePeriod>(DEFAULT_PERIOD);
   const queue = queueId && queueId !== "all" ? queueId : "";
-  const key = `${region}|${puuid}|${queue}|${period}`;
+  const key = `${region}|${puuid}|${queue}|${period}|${premadeOnly ? "premade" : "all"}`;
 
   // Responses per request key (session cache); the last shown key keeps the chart up while the next loads.
   const [results, setResults] = useState<Record<string, WinrateResponse>>({});
@@ -56,6 +58,7 @@ export function WinrateCard({ region, puuid, queueId, className }: WinrateCardPr
     const controller = new AbortController();
     const params = new URLSearchParams({ region, puuid, period });
     if (queue) params.set("queueId", queue);
+    if (premadeOnly) params.set("premade", "1");
 
     (cached
       ? Promise.resolve(cached)
@@ -77,7 +80,7 @@ export function WinrateCard({ region, puuid, queueId, className }: WinrateCardPr
       });
 
     return () => controller.abort();
-  }, [key, region, puuid, period, queue, attempt]);
+  }, [key, region, puuid, period, queue, premadeOnly, attempt]);
 
   const retry = () => {
     setFailedKey(null);

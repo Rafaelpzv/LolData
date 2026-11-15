@@ -13,7 +13,9 @@ import {
   isWinratePeriod,
   periodRange,
   type WinrateGame,
+  type WinratePeriod,
 } from "@/lib/riot/winrate";
+import { getPremadeMatchesForPuuid, getTeamsByPuuid } from "@/lib/premade/repository";
 
 /** Small parallel batches keep bursts well under the dev key limit (20 req / s). */
 const DETAIL_BATCH_SIZE = 5;
@@ -32,6 +34,59 @@ function toGame(match: any, puuid: string): WinrateGame | null {
   return { ts, win: p.win === true };
 }
 
+/**
+ * A mesma série, limitada às partidas que as premades do jogador coletaram.
+ *
+ * O recorte vem do banco (quem são os jogos) e o cache de detalhes dá data e resultado. Só o que não
+ * está no cache é buscado no Riot, em lotes pequenos, como faz o resto das rotas do perfil.
+ */
+async function premadeWinrate(
+  region: string,
+  puuid: string,
+  period: WinratePeriod,
+  queueId: string,
+  now: number,
+) {
+  const teams = await getTeamsByPuuid(puuid);
+  if (teams.length === 0) return aggregateWinrate([], period, now, false);
+
+  const collected = await getPremadeMatchesForPuuid(teams, puuid);
+  const { from } = periodRange(period, now);
+  // Jogos fora do período não entram na série: não há por que buscar o detalhe deles. A data aqui é
+  // só um corte grosso (o fim da partida); o limite exato é o que o agregador aplica depois.
+  const inRange = collected
+    .filter((match) => !queueId || match.queueId === Number(queueId))
+    .filter((match) => match.gameCreation >= from)
+    .map((match) => match.matchId);
+  if (inRange.length === 0) return aggregateWinrate([], period, now, false);
+
+  const details = new Map<string, any>();
+  for (const [id, data] of await getMatchDetailsBatch(inRange)) details.set(id, data);
+
+  const missing = inRange.filter((id) => !details.get(id)?.info?.participants);
+  const fetched = await fetchInBatches(
+    missing.map(
+      (id) => () =>
+        safeFetch(`${getRegionalUrl(region)}/lol/match/v5/matches/${id}`, {
+          headers: { "X-Riot-Token": process.env.RIOT_API_KEY ?? "" },
+          next: { revalidate: 86400 },
+        })
+          .then((res) => (res.ok ? res.json() : null))
+          .catch(() => null),
+    ),
+    DETAIL_BATCH_SIZE,
+  );
+  const riotDetails = fetched.filter((m: any) => m?.metadata?.matchId && m?.info?.participants);
+  saveMatchDetailsBatch(riotDetails).catch(() => {});
+
+  const games: WinrateGame[] = [];
+  for (const match of [...details.values(), ...riotDetails]) {
+    const game = toGame(match, puuid);
+    if (game) games.push(game);
+  }
+  return aggregateWinrate(games, period, now, false);
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl;
@@ -39,6 +94,8 @@ export async function GET(request: NextRequest) {
     const puuid = searchParams.get("puuid") || "";
     const period = searchParams.get("period");
     const queueId = searchParams.get("queueId") || "";
+    // "premade=1": a série é só das partidas que as premades do jogador coletaram.
+    const premadeOnly = searchParams.get("premade") === "1";
 
     if (!region || puuid.length < 20 || !isWinratePeriod(period) || (queueId && !/^\d+$/.test(queueId))) {
       return NextResponse.json({ error: "Invalid request parameters" }, { status: 400 });
@@ -50,6 +107,13 @@ export async function GET(request: NextRequest) {
     }
 
     const now = Date.now();
+
+    if (premadeOnly) {
+      // A lista de partidas do jogador com as premades dele é o recorte: nada é pedido ao Riot para
+      // decidir QUAIS jogos são. O detalhe (data, vitória) sai do mesmo cache do histórico.
+      const result = await premadeWinrate(region, puuid, period, queueId, now);
+      return NextResponse.json(result, { headers: CACHE_HEADERS });
+    }
     const { from } = periodRange(period, now);
     const apiUrl = getRegionalUrl(region);
 

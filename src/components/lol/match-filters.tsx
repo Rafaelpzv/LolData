@@ -3,7 +3,7 @@
 import { useCallback, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import { DURATION, EASE_OUT } from "@/lib/motion";
@@ -12,7 +12,7 @@ import { championIconUrl } from "@/lib/cdn";
 import { CHAMPIONS, championName } from "@/lib/champions";
 import { MATCH_QUEUES, queueSlugFromId } from "@/lib/queues";
 import { normalizeRegion } from "@/lib/regions";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { IconFrame } from "@/components/ui/icon-frame";
 import { fieldBase } from "@/components/ui/input";
 import { Floating, FloatingAnchor, FloatingContent, listOptionClass } from "@/components/ui/popover-surface";
@@ -24,14 +24,16 @@ interface MatchFilterBase {
   tagLine: string;
 }
 
-/** /lol/<region>/<name>/<tag>/<queue slug>/<champion id | all> */
+/** /lol/<region>/<name>/<tag>/<queue slug>/<champion id | all>?premade=1 */
 export function matchFilterHref(
   { region, gameName, tagLine }: MatchFilterBase,
   queueId: string,
   championId: string | null,
+  premadeOnly = false,
 ): string {
   const r = normalizeRegion(region).toLowerCase();
-  return `/lol/${r}/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/${queueSlugFromId(queueId)}/${championId ?? "all"}`;
+  const path = `/lol/${r}/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/${queueSlugFromId(queueId)}/${championId ?? "all"}`;
+  return premadeOnly ? `${path}?premade=1` : path;
 }
 
 interface MatchFiltersProps extends MatchFilterBase {
@@ -39,23 +41,55 @@ interface MatchFiltersProps extends MatchFilterBase {
   queueId: string;
   /** Current champion id, or null for all champions. */
   championId: string | null;
+  /** Quantas premades o jogador tem. Zero (o padrão) esconde o botão de premade. */
+  premadeCount?: number;
+  /** A lista de partidas está mostrando as premades em vez do histórico normal. */
+  premadeMode?: boolean;
 }
 
 /** Queue tabs + champion combobox. Both navigate (filters live in the URL). */
-export function MatchFilters({ queueId, championId, ...base }: MatchFiltersProps) {
+export function MatchFilters({
+  queueId,
+  championId,
+  premadeCount = 0,
+  premadeMode = false,
+  ...base
+}: MatchFiltersProps) {
   const t = useTranslations("matches.filters");
   const tQueues = useTranslations("queues");
 
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-      <SegmentedNav
-        label={t("queue")}
-        items={MATCH_QUEUES.map((q) => ({
-          href: matchFilterHref(base, q.id, championId),
-          label: tQueues(q.labelKey as "all"),
-          active: q.id === queueId,
-        }))}
-      />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <SegmentedNav
+          label={t("queue")}
+          items={MATCH_QUEUES.map((q) => ({
+            href: premadeMode
+              ? matchFilterHref(base, q.id, championId, true)
+              : matchFilterHref(base, q.id, championId),
+            label: tQueues(q.labelKey as "all"),
+            active: q.id === queueId,
+          }))}
+        />
+        {premadeCount > 0 && (
+          // Troca a lista: o histórico normal de todas as partidas, ou só as que ele jogou com as
+          // premades dele. É um link, como as filas: o estado vive na URL.
+          <Button asChild variant="default" size="sm">
+            <Link
+              href={matchFilterHref(base, queueId, championId, !premadeMode)}
+              scroll={false}
+              aria-pressed={premadeMode}
+              className={cn(
+                "gap-2",
+                premadeMode && "border-brand/60 bg-accent text-foreground",
+              )}
+            >
+              <Users aria-hidden className="size-4" />
+              {t("premadeOnly")}
+            </Link>
+          </Button>
+        )}
+      </div>
       <ChampionFilter base={base} queueId={queueId} championId={championId} />
     </div>
   );

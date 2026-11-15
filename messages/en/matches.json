@@ -17,7 +17,15 @@
     "championSearch": "Search champion…",
     "allChampions": "All champions",
     "noChampions": "No champions found",
-    "champions": "Champions"
+    "champions": "Champions",
+    "premadeOnly": "With my premade"
+  },
+  "premade": {
+    "failed": "Could not load the premade matches.",
+    "retry": "Try again",
+    "empty": "No collected game with this player's premade teams yet.",
+    "ranked5s": "Ranked 5s",
+    "flex": "Flex 5x5"
   },
   "loadMore": "Load more games",
   "loadMoreFailed": "Could not load more matches.",
